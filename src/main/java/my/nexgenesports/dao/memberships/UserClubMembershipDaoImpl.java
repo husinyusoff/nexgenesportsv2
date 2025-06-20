@@ -37,7 +37,7 @@ public class UserClubMembershipDaoImpl implements UserClubMembershipDao {
     @Override
     public UserClubMembership findLatestByUser(String userId) throws SQLException {
         String sql = """
-            SELECT id, sessionId, purchaseDate, expiryDate, status, payment_reference
+            SELECT id, userId, sessionId, purchaseDate, expiryDate, status, payment_reference
               FROM userclubmemberships
              WHERE userId = ?
                AND status = 'ACTIVE'
