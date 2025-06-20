@@ -21,11 +21,12 @@ public class UserGamingPass {
                           LocalDate purchaseDate,
                           LocalDate expiryDate,
                           String paymentReference) {
-        this.id            = id;
-        this.userId        = userId;
-        this.tier          = tier;
-        this.purchaseDate  = purchaseDate;
-        this.expiryDate    = expiryDate;
+        this.id               = id;
+        this.userId           = userId;
+        this.tier             = tier;
+        this.purchaseDate     = purchaseDate;
+        this.expiryDate       = expiryDate;
+        this.paymentReference = paymentReference;
     }
 
     public int getId() { return id; }
