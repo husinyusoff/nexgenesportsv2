@@ -36,7 +36,7 @@ public class UserGamingPassDaoImpl implements UserGamingPassDao {
     @Override
     public UserGamingPass findLatestByUser(String userId) throws SQLException {
         String sql = """
-            SELECT id, tierId, purchaseDate, expiryDate, paymentReference
+            SELECT id, userId, tierId, purchaseDate, expiryDate, paymentReference
               FROM usergamingpasses
              WHERE userId = ?
              ORDER BY expiryDate DESC
