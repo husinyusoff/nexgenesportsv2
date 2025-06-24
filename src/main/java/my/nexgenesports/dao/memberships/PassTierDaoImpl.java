@@ -1,4 +1,3 @@
-// src/main/java/my/nexgenesports/dao/PassTierDaoImpl.java
 package my.nexgenesports.dao.memberships;
 
 import my.nexgenesports.model.PassTier;
@@ -19,6 +18,7 @@ public class PassTierDaoImpl implements PassTierDao {
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+
             List<PassTier> list = new ArrayList<>();
             while (rs.next()) {
                 PassTier t = new PassTier();
@@ -26,6 +26,7 @@ public class PassTierDaoImpl implements PassTierDao {
                 t.setTierName(rs.getString("tierName"));
                 t.setPrice(rs.getBigDecimal("price"));
                 t.setDiscountRate(rs.getInt("discountRate"));
+                // benefitLines set later by service
                 list.add(t);
             }
             return list;

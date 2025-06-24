@@ -1,11 +1,12 @@
-// src/main/java/my/nexgenesports/service/PaymentService.java
+// src/main/java/my/nexgenesports/service/general/PaymentService.java
 package my.nexgenesports.service.general;
 
-import my.nexgenesports.service.memberships.MembershipService;
 import my.nexgenesports.service.booking.BookingService;
+import my.nexgenesports.service.memberships.MembershipService;
+import my.nexgenesports.service.memberships.PassService;
+
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import my.nexgenesports.service.memberships.PassService;
 
 public class PaymentService {
     private final BookingService    bookingSvc    = new BookingService();
@@ -20,7 +21,7 @@ public class PaymentService {
      * @param module  "booking", "membership" or "pass"
      * @param id      primary key of the record being paid
      * @param amount  how much to charge
-     * @return 
+     * @return redirect URL
      */
     public String createCharge(String module, int id, BigDecimal amount) {
         if (simulate) {
@@ -35,28 +36,38 @@ public class PaymentService {
     }
 
     /**
-     * Callback entrypoint: flips statuses or records references based on module.
-     * @param module     "booking", "membership", "pass"
-     * @param id         primary key (bookingID, ucm.id, ugp.id)
-     * @param paid       true if payment succeeded
-     * @param reference  external reference string
-     * @throws java.sql.SQLException
+     * Callback entrypoint: flips statuses or records references.
+     * @param module    "booking", "membership" or "pass"
+     * @param id        primary key (bookingID, ucm.id, ugp.id)
+     * @param paid      true if payment succeeded
+     * @param reference external reference string
      */
-    public void handleCallback(String module, int id, boolean paid, String reference) throws SQLException {
-        if (null == module) {
+    public void handleCallback(String module,
+                               int id,
+                               boolean paid,
+                               String reference)
+            throws SQLException
+    {
+        if (module == null) {
             throw new IllegalArgumentException("Unknown module: " + module);
         }
-        else switch (module) {
-            case "booking" -> bookingSvc.updatePaymentStatus(
-                        id,
-                        paid ? "PAID" : "FAILED",
-                        paid ? Integer.valueOf(reference.replace("SIM-", "")) : null
+        switch (module) {
+            case "booking" -> {
+                bookingSvc.updatePaymentStatus(
+                    id,
+                    paid ? "PAID" : "FAILED",
+                    paid ? Integer.valueOf(reference.replace("SIM-", "")) : null
                 );
+            }
             case "membership" -> {
                 String status = paid ? "ACTIVE" : "CANCELLED";
                 membershipSvc.updateMembershipRecord(id, status, reference);
             }
-            case "pass" -> passSvc.updatePassRecord(id, reference);
+            case "pass" -> {
+                // NEW: flip pass status too
+                String status = paid ? "ACTIVE" : "CANCELLED";
+                passSvc.updatePassRecord(id, reference, status);
+            }
             default -> throw new IllegalArgumentException("Unknown module: " + module);
         }
     }

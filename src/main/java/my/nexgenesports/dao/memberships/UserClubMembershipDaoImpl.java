@@ -1,4 +1,3 @@
-// src/main/java/my/nexgenesports/dao/UserClubMembershipDaoImpl.java
 package my.nexgenesports.dao.memberships;
 
 import my.nexgenesports.model.UserClubMembership;
@@ -21,8 +20,8 @@ public class UserClubMembershipDaoImpl implements UserClubMembershipDao {
              PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, m.getUserId());
             ps.setString(2, m.getSession().getSessionId());
-            ps.setDate(3, Date.valueOf(m.getPurchaseDate()));
-            ps.setDate(4, Date.valueOf(m.getExpiryDate()));
+            ps.setTimestamp(3, Timestamp.valueOf(m.getPurchaseDate()));
+            ps.setTimestamp(4, Timestamp.valueOf(m.getExpiryDate()));
             ps.setString(5, m.getStatus());
             ps.setString(6, m.getPaymentReference());
             ps.executeUpdate();
@@ -48,8 +47,7 @@ public class UserClubMembershipDaoImpl implements UserClubMembershipDao {
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
-                return mapRow(rs);
+                return rs.next() ? mapRow(rs) : null;
             }
         }
     }
@@ -65,8 +63,7 @@ public class UserClubMembershipDaoImpl implements UserClubMembershipDao {
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
-                return mapRow(rs);
+                return rs.next() ? mapRow(rs) : null;
             }
         }
     }
@@ -75,15 +72,16 @@ public class UserClubMembershipDaoImpl implements UserClubMembershipDao {
     public void update(UserClubMembership m) throws SQLException {
         String sql = """
             UPDATE userclubmemberships
-               SET status = ?, expiryDate = ?, payment_reference = ?
+               SET status = ?, purchaseDate = ?, expiryDate = ?, payment_reference = ?
              WHERE id = ?
         """;
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, m.getStatus());
-            ps.setDate(2, Date.valueOf(m.getExpiryDate()));
-            ps.setString(3, m.getPaymentReference());
-            ps.setInt(4, m.getId());
+            ps.setTimestamp(2, Timestamp.valueOf(m.getPurchaseDate()));
+            ps.setTimestamp(3, Timestamp.valueOf(m.getExpiryDate()));
+            ps.setString(4, m.getPaymentReference());
+            ps.setInt(5, m.getId());
             ps.executeUpdate();
         }
     }
@@ -94,8 +92,8 @@ public class UserClubMembershipDaoImpl implements UserClubMembershipDao {
         m.setUserId(rs.getString("userId"));
         MembershipSession sess = sessionDao.findById(rs.getString("sessionId"));
         m.setSession(sess);
-        m.setPurchaseDate(rs.getDate("purchaseDate").toLocalDate());
-        m.setExpiryDate(rs.getDate("expiryDate").toLocalDate());
+        m.setPurchaseDate(rs.getTimestamp("purchaseDate").toLocalDateTime());
+        m.setExpiryDate(rs.getTimestamp("expiryDate").toLocalDateTime());
         m.setStatus(rs.getString("status"));
         m.setPaymentReference(rs.getString("payment_reference"));
         return m;

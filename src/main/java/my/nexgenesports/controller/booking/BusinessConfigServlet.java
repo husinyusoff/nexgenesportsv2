@@ -15,7 +15,7 @@ public class BusinessConfigServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         req.setAttribute("cfg", cfg);
-        req.getRequestDispatcher("/WEB-INF/views/businessHours.jsp")
+        req.getRequestDispatcher("businessHours.jsp")
            .forward(req, resp);
     }
 

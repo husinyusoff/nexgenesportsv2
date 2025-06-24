@@ -1,63 +1,103 @@
-// src/main/java/com/nexgenesports/model/MembershipSession.java
 package my.nexgenesports.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 public class MembershipSession {
-    private String    sessionId;
-    private String    sessionName;
-    private LocalDate startMembershipDate;
-    private LocalDate endMembershipDate;
+    private String sessionId;
+    private String sessionName;
+    private LocalDateTime startMembershipDate;
+    private LocalDateTime endMembershipDate;
     private BigDecimal fee;
-    private String    description;
-    private boolean   isActive;
-    private Integer   capacityLimit;
+    private boolean isActive;
+    private Integer capacityLimit;
+    private List<String> benefitLines;
 
     public MembershipSession() {}
 
     public MembershipSession(String sessionId,
                              String sessionName,
-                             LocalDate startMembershipDate,
-                             LocalDate endMembershipDate,
+                             LocalDateTime startMembershipDate,
+                             LocalDateTime endMembershipDate,
                              BigDecimal fee,
-                             String description,
                              boolean isActive,
-                             Integer capacityLimit) {
-        this.sessionId           = sessionId;
-        this.sessionName         = sessionName;
+                             Integer capacityLimit,
+                             List<String> benefitLines) {
+        this.sessionId = sessionId;
+        this.sessionName = sessionName;
         this.startMembershipDate = startMembershipDate;
-        this.endMembershipDate   = endMembershipDate;
-        this.fee                 = fee;
-        this.description         = description;
-        this.isActive            = isActive;
-        this.capacityLimit       = capacityLimit;
+        this.endMembershipDate = endMembershipDate;
+        this.fee = fee;
+        this.isActive = isActive;
+        this.capacityLimit = capacityLimit;
+        this.benefitLines = benefitLines;
     }
 
-    public String getSessionId() { return sessionId; }
-    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
+    public String getSessionId() {
+        return sessionId;
+    }
 
-    public String getSessionName() { return sessionName; }
-    public void setSessionName(String sessionName) { this.sessionName = sessionName; }
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
 
-    public LocalDate getStartMembershipDate() { return startMembershipDate; }
-    public void setStartMembershipDate(LocalDate d) { this.startMembershipDate = d; }
+    public String getSessionName() {
+        return sessionName;
+    }
 
-    public LocalDate getEndMembershipDate() { return endMembershipDate; }
-    public void setEndMembershipDate(LocalDate d) { this.endMembershipDate = d; }
+    public void setSessionName(String sessionName) {
+        this.sessionName = sessionName;
+    }
 
-    public BigDecimal getFee() { return fee; }
-    public void setFee(BigDecimal fee) { this.fee = fee; }
+    public LocalDateTime getStartMembershipDate() {
+        return startMembershipDate;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setStartMembershipDate(LocalDateTime startMembershipDate) {
+        this.startMembershipDate = startMembershipDate;
+    }
 
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
+    public LocalDateTime getEndMembershipDate() {
+        return endMembershipDate;
+    }
 
-    public Integer getCapacityLimit() { return capacityLimit; }
-    public void setCapacityLimit(Integer capacityLimit) { this.capacityLimit = capacityLimit; }
+    public void setEndMembershipDate(LocalDateTime endMembershipDate) {
+        this.endMembershipDate = endMembershipDate;
+    }
+
+    public BigDecimal getFee() {
+        return fee;
+    }
+
+    public void setFee(BigDecimal fee) {
+        this.fee = fee;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public Integer getCapacityLimit() {
+        return capacityLimit;
+    }
+
+    public void setCapacityLimit(Integer capacityLimit) {
+        this.capacityLimit = capacityLimit;
+    }
+
+    public List<String> getBenefitLines() {
+        return benefitLines;
+    }
+
+    public void setBenefitLines(List<String> benefitLines) {
+        this.benefitLines = benefitLines;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -80,9 +120,9 @@ public class MembershipSession {
                ", startMembershipDate=" + startMembershipDate +
                ", endMembershipDate=" + endMembershipDate +
                ", fee=" + fee +
-               ", description='" + description + '\'' +
                ", isActive=" + isActive +
                ", capacityLimit=" + capacityLimit +
+               ", benefitLines=" + benefitLines +
                '}';
     }
 }

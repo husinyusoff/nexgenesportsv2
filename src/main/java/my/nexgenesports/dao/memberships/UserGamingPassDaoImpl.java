@@ -1,4 +1,3 @@
-// src/main/java/my/nexgenesports/dao/memberships/UserGamingPassDaoImpl.java
 package my.nexgenesports.dao.memberships;
 
 import my.nexgenesports.model.PassTier;
@@ -6,6 +5,7 @@ import my.nexgenesports.model.UserGamingPass;
 import my.nexgenesports.util.DBConnection;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class UserGamingPassDaoImpl implements UserGamingPassDao {
     private final PassTierDao tierDao = new PassTierDaoImpl();
@@ -14,16 +14,17 @@ public class UserGamingPassDaoImpl implements UserGamingPassDao {
     public void insert(UserGamingPass p) throws SQLException {
         String sql = """
             INSERT INTO usergamingpasses
-              (userId, tierId, purchaseDate, expiryDate, paymentReference)
-            VALUES (?, ?, ?, ?, ?)
+              (userId, tierId, purchaseDate, expiryDate, status, paymentReference)
+            VALUES (?, ?, ?, ?, ?, ?)
         """;
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, p.getUserId());
-            ps.setInt   (2, p.getTier().getTierId());
-            ps.setDate  (3, Date.valueOf(p.getPurchaseDate()));
-            ps.setDate  (4, Date.valueOf(p.getExpiryDate()));
-            ps.setString(5, p.getPaymentReference()); // assuming your model holds it as String
+            ps.setInt(2, p.getTier().getTierId());
+            ps.setTimestamp(3, Timestamp.valueOf(p.getPurchaseDate()));
+            ps.setTimestamp(4, Timestamp.valueOf(p.getExpiryDate()));
+            ps.setString(5, p.getStatus());
+            ps.setString(6, p.getPaymentReference());
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) {
@@ -36,7 +37,7 @@ public class UserGamingPassDaoImpl implements UserGamingPassDao {
     @Override
     public UserGamingPass findLatestByUser(String userId) throws SQLException {
         String sql = """
-            SELECT id, userId, tierId, purchaseDate, expiryDate, paymentReference
+            SELECT id, userId, tierId, purchaseDate, expiryDate, status, paymentReference
               FROM usergamingpasses
              WHERE userId = ?
              ORDER BY expiryDate DESC
@@ -46,8 +47,7 @@ public class UserGamingPassDaoImpl implements UserGamingPassDao {
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
-                return mapRow(rs);
+                return rs.next() ? mapRow(rs) : null;
             }
         }
     }
@@ -55,7 +55,7 @@ public class UserGamingPassDaoImpl implements UserGamingPassDao {
     @Override
     public UserGamingPass findById(int id) throws SQLException {
         String sql = """
-            SELECT id, userId, tierId, purchaseDate, expiryDate, paymentReference
+            SELECT id, userId, tierId, purchaseDate, expiryDate, status, paymentReference
               FROM usergamingpasses
              WHERE id = ?
         """;
@@ -63,8 +63,7 @@ public class UserGamingPassDaoImpl implements UserGamingPassDao {
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
-                return mapRow(rs);
+                return rs.next() ? mapRow(rs) : null;
             }
         }
     }
@@ -74,14 +73,16 @@ public class UserGamingPassDaoImpl implements UserGamingPassDao {
         String sql = """
             UPDATE usergamingpasses
                SET expiryDate       = ?,
+                   status           = ?,
                    paymentReference = ?
              WHERE id = ?
         """;
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setDate  (1, Date.valueOf(p.getExpiryDate()));
-            ps.setString(2, p.getPaymentReference());
-            ps.setInt   (3, p.getId());
+            ps.setTimestamp(1, Timestamp.valueOf(p.getExpiryDate()));
+            ps.setString(2, p.getStatus());
+            ps.setString(3, p.getPaymentReference());
+            ps.setInt(4, p.getId());
             ps.executeUpdate();
         }
     }
@@ -90,14 +91,12 @@ public class UserGamingPassDaoImpl implements UserGamingPassDao {
         UserGamingPass p = new UserGamingPass();
         p.setId(rs.getInt("id"));
         p.setUserId(rs.getString("userId"));
-
         PassTier tier = tierDao.findById(rs.getInt("tierId"));
         p.setTier(tier);
-
-        p.setPurchaseDate(rs.getDate("purchaseDate").toLocalDate());
-        p.setExpiryDate  (rs.getDate("expiryDate").toLocalDate());
+        p.setPurchaseDate(rs.getTimestamp("purchaseDate").toLocalDateTime());
+        p.setExpiryDate(rs.getTimestamp("expiryDate").toLocalDateTime());
+        p.setStatus(rs.getString("status"));
         p.setPaymentReference(rs.getString("paymentReference"));
-
         return p;
     }
 }

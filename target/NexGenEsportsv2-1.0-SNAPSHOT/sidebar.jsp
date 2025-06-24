@@ -11,7 +11,7 @@
 %>
 <nav>
   <ul>
-    <!-- Dashboard (go through DashboardServlet if you have one, else still to JSP) -->
+    <!-- Dashboard -->
     <li><a href="<%=ctx%>/dashboard">Dashboard</a></li>
 
     <!-- Profile dropdown -->
@@ -38,6 +38,24 @@
         <% } %>
         <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/manageBookings")) { %>
           <li><a href="<%=ctx%>/manageBookings">Manage All Booking</a></li>
+        <% } %>
+      </ul>
+    </li>
+
+    <!-- Program dropdown (added) -->
+    <li class="dropdown">
+      <a href="javascript:void(0)" class="dropdown-btn">Program</a>
+      <ul class="dropdown-content">
+        <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/joinTourProg")) { %>
+          <li><a href="<%=ctx%>/joinTourProg">Join Tournament / Program</a></li>
+        <% } %>
+        <%-- If you have a tournaments listing servlet --%>
+        <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/tournaments")) { %>
+          <li><a href="<%=ctx%>/tournaments">Tournaments</a></li>
+        <% } %>
+        <%-- Game List (read) --%>
+        <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/games")) { %>
+          <li><a href="<%=ctx%>/games">Games</a></li>
         <% } %>
       </ul>
     </li>

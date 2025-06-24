@@ -1,54 +1,91 @@
-// src/main/java/com/nexgenesports/model/UserGamingPass.java
 package my.nexgenesports.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-
 public class UserGamingPass {
-    private int       id;
-    private String    userId;
-    private PassTier  tier;
-    private LocalDate purchaseDate;
-    private LocalDate expiryDate;
-    private String paymentReference;
+    private int            id;
+    private String         userId;
+    private PassTier       tier;
+    private LocalDateTime  purchaseDate;
+    private LocalDateTime  expiryDate;
+    private String         status;
+    private String         paymentReference;
 
     public UserGamingPass() {}
 
     public UserGamingPass(int id,
                           String userId,
                           PassTier tier,
-                          LocalDate purchaseDate,
-                          LocalDate expiryDate,
+                          LocalDateTime purchaseDate,
+                          LocalDateTime expiryDate,
+                          String status,
                           String paymentReference) {
         this.id               = id;
         this.userId           = userId;
         this.tier             = tier;
         this.purchaseDate     = purchaseDate;
         this.expiryDate       = expiryDate;
+        this.status           = status;
         this.paymentReference = paymentReference;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public PassTier getTier() { return tier; }
-    public void setTier(PassTier tier) { this.tier = tier; }
+    public String getUserId() {
+        return userId;
+    }
 
-    public LocalDate getPurchaseDate() { return purchaseDate; }
-    public void setPurchaseDate(LocalDate purchaseDate) { this.purchaseDate = purchaseDate; }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-    public LocalDate getExpiryDate() { return expiryDate; }
-    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
-    
-    public void setPaymentReference(String paymentReference) { this.paymentReference = paymentReference; }
-    
-    public String getPaymentReference() { return paymentReference; }
+    public PassTier getTier() {
+        return tier;
+    }
 
-    
+    public void setTier(PassTier tier) {
+        this.tier = tier;
+    }
+
+    public LocalDateTime getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(LocalDateTime purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
+    public LocalDateTime getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(LocalDateTime expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPaymentReference() {
+        return paymentReference;
+    }
+
+    public void setPaymentReference(String paymentReference) {
+        this.paymentReference = paymentReference;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,6 +107,8 @@ public class UserGamingPass {
                ", tier=" + tier +
                ", purchaseDate=" + purchaseDate +
                ", expiryDate=" + expiryDate +
+               ", status='" + status + '\'' +
+               ", paymentReference='" + paymentReference + '\'' +
                '}';
     }
 }

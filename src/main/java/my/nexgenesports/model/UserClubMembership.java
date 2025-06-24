@@ -1,16 +1,15 @@
-// src/main/java/com/nexgenesports/model/UserClubMembership.java
 package my.nexgenesports.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class UserClubMembership {
     private int                 id;
     private String              userId;
     private MembershipSession   session;
-    private LocalDate           purchaseDate;
-    private LocalDate           expiryDate;
-    private String              status;           // ACTIVE, EXPIRED, CANCELLED
+    private LocalDateTime       purchaseDate;
+    private LocalDateTime       expiryDate;
+    private String              status;
     private String              paymentReference;
 
     public UserClubMembership() {}
@@ -18,8 +17,8 @@ public class UserClubMembership {
     public UserClubMembership(int id,
                               String userId,
                               MembershipSession session,
-                              LocalDate purchaseDate,
-                              LocalDate expiryDate,
+                              LocalDateTime purchaseDate,
+                              LocalDateTime expiryDate,
                               String status,
                               String paymentReference) {
         this.id               = id;
@@ -40,11 +39,11 @@ public class UserClubMembership {
     public MembershipSession getSession() { return session; }
     public void setSession(MembershipSession session) { this.session = session; }
 
-    public LocalDate getPurchaseDate() { return purchaseDate; }
-    public void setPurchaseDate(LocalDate purchaseDate) { this.purchaseDate = purchaseDate; }
+    public LocalDateTime getPurchaseDate() { return purchaseDate; }
+    public void setPurchaseDate(LocalDateTime purchaseDate) { this.purchaseDate = purchaseDate; }
 
-    public LocalDate getExpiryDate() { return expiryDate; }
-    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
+    public LocalDateTime getExpiryDate() { return expiryDate; }
+    public void setExpiryDate(LocalDateTime expiryDate) { this.expiryDate = expiryDate; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

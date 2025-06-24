@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Sign Up – NexGen Esports</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Header -->

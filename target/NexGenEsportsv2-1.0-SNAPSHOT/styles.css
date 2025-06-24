@@ -23,16 +23,26 @@ body {
 .header {
     background: #38b6ff;
     position: fixed;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 20;
 }
-.header .logo { position: absolute; }
-.header .umt-logo { left: 16px; height: 48px; }
-.header .esports-logo { left: 80px; height: 56px; }
+.header .logo {
+    position: absolute;
+}
+.header .umt-logo {
+    left: 16px;
+    height: 48px;
+}
+.header .esports-logo {
+    left: 80px;
+    height: 56px;
+}
 .header h1 {
     color: white;
     font-size: 22px;
@@ -41,12 +51,19 @@ body {
 }
 .header .user-avatar {
     position: absolute;
-    right: 20px; top: 18px;
+    right: 20px;
+    top: 18px;
     display: flex;
     align-items: center;
 }
-.header .user-avatar img { height: 34px; margin-right: 8px; }
-.header .user-avatar span { color: white; font-weight: bold; }
+.header .user-avatar img {
+    height: 34px;
+    margin-right: 8px;
+}
+.header .user-avatar span {
+    color: white;
+    font-weight: bold;
+}
 
 /* Footer */
 .footer {
@@ -54,7 +71,9 @@ body {
     color: white;
     text-align: center;
     position: fixed;
-    bottom: 0; left: 0; right: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     height: 40px;
     line-height: 40px;
     z-index: 20;
@@ -82,8 +101,10 @@ body.sidebar-collapsed .content {
 /* === Sidebar & Collapse Behavior === */
 .sidebar {
     position: fixed;
-    top: 64px; bottom: 40px;
-    left: 0; width: 144px;
+    top: 64px;
+    bottom: 40px;
+    left: 0;
+    width: 144px;
     background: #38b6ff;
     padding-top: 48px;
     transform: translateX(0);
@@ -95,8 +116,15 @@ body.sidebar-collapsed .sidebar {
 }
 
 /* Sidebar Links & Dropdown */
-.sidebar nav ul { list-style: none; margin: 0; padding: 0; }
-.sidebar nav ul li { margin: 0; padding: 0; }
+.sidebar nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.sidebar nav ul li {
+    margin: 0;
+    padding: 0;
+}
 .sidebar nav ul li a,
 .sidebar nav ul li .dropdown-btn,
 .sidebar nav ul li .logout-btn {
@@ -120,14 +148,23 @@ body.sidebar-collapsed .sidebar {
     background: #e62828;
     color: white;
 }
-.sidebar nav ul li .logout-btn:hover { background: #c91f1f; }
+.sidebar nav ul li .logout-btn:hover {
+    background: #c91f1f;
+}
 
-.sidebar nav ul li.dropdown { position: relative; z-index: 0; }
-.sidebar nav ul li.dropdown .dropdown-btn { position: relative; z-index: 101; }
+.sidebar nav ul li.dropdown {
+    position: relative;
+    z-index: 0;
+}
+.sidebar nav ul li.dropdown .dropdown-btn {
+    position: relative;
+    z-index: 101;
+}
 .sidebar nav ul li.dropdown .dropdown-btn::after {
     content: "";
     position: absolute;
-    left: 6px; top: 50%;
+    left: 6px;
+    top: 50%;
     transform: translateY(-50%);
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
@@ -136,30 +173,38 @@ body.sidebar-collapsed .sidebar {
 .sidebar nav ul li.dropdown .dropdown-content {
     display: none;
     position: absolute;
-    top: 100%; margin-top: -16px;
-    left: 8px; right: 8px;
+    top: 100%;
+    margin-top: -16px;
+    left: 8px;
+    right: 8px;
     background: #a8eaff;
     border-radius: 0 0 16px 16px;
     overflow: hidden;
     z-index: 100;
 }
-.sidebar nav ul li.dropdown:hover { z-index: 100; }
+.sidebar nav ul li.dropdown:hover {
+    z-index: 100;
+}
 .sidebar nav ul li.dropdown:hover .dropdown-content {
     display: block;
 }
 .sidebar nav ul li.dropdown .dropdown-content li a {
-    margin: 0; padding: 0;
-    height: 32px; line-height: 32px;
+    margin: 0;
+    padding: 0;
+    height: 32px;
+    line-height: 32px;
     background: #a8eaff;
     color: #333;
     text-decoration: none;
-    font-size: 10px; font-weight: bold;
+    font-size: 10px;
+    font-weight: bold;
     text-align: center;
     border-top: 1px solid #9deaff;
     transition: background .2s;
 }
 .sidebar nav ul li.dropdown .dropdown-content li:first-child a {
-    border-top: none; margin-top: 16px;
+    border-top: none;
+    margin-top: 16px;
 }
 .sidebar nav ul li.dropdown .dropdown-content li a:hover {
     background: #82d4ff;
@@ -168,8 +213,10 @@ body.sidebar-collapsed .sidebar {
 /* Sidebar Toggle Buttons */
 .open-toggle {
     position: fixed;
-    top: 80px; left: 0;
-    width: 32px; height: 32px;
+    top: 80px;
+    left: 0;
+    width: 32px;
+    height: 32px;
     background: #38b6ff;
     color: white;
     border: none;
@@ -186,8 +233,10 @@ body:not(.sidebar-collapsed) .open-toggle {
 }
 .close-toggle {
     position: absolute;
-    top: 21px; left: 4px;
-    width: 24px; height: 24px;
+    top: 21px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
     background: #38b6ff;
     color: white;
     border: none;
@@ -219,7 +268,8 @@ body.sidebar-collapsed .close-toggle {
 .roles-grid {
     display: grid;
     grid-template-columns: max-content max-content;
-    row-gap: 20px; column-gap: 30px;
+    row-gap: 20px;
+    column-gap: 30px;
     margin-bottom: 30px;
 }
 .roles-grid label {
@@ -250,30 +300,37 @@ body.sidebar-collapsed .close-toggle {
 }
 
 /* “Hold to reveal” eye */
-.password-wrapper { position: relative; }
+.password-wrapper {
+    position: relative;
+}
 .password-wrapper .eye-icon {
     position: absolute;
-    right: 8px; top: 50%;
+    right: 8px;
+    top: 50%;
     transform: translateY(-50%);
-    width: 20px; height: 20px;
+    width: 20px;
+    height: 20px;
     background: url('data:image/svg+xml;utf8,\
-<svg fill="%23333" xmlns="http://www.w3.org/2000/svg" \
-viewBox="0 0 64 64"><path d="M32 16c-13.255 0-24 \
-10.745-24 16s10.745 16 24 16 24-10.745 \
-24-16-10.745-16-24-16zm0 28c-6.627 0-12-5.373-12-12s5.373-12 \
-12-12 12 5.373 12 12-5.373 12-12 12zm0-20a8 \
-8 0 100 16 8 8 0 000-16z"/></svg>') no-repeat center;
+        <svg fill="%23333" xmlns="http://www.w3.org/2000/svg" \
+        viewBox="0 0 64 64"><path d="M32 16c-13.255 0-24 \
+        10.745-24 16s10.745 16 24 16 24-10.745 \
+        24-16-10.745-16-24-16zm0 28c-6.627 0-12-5.373-12-12s5.373-12 \
+        12-12 12 5.373 12 12-5.373 12-12 12zm0-20a8 \
+        8 0 100 16 8 8 0 000-16z"/></svg>') no-repeat center;
     cursor: pointer;
     padding: 4px;
     box-sizing: content-box;
 }
 .login-container a.forgot {
-    display: block; margin-top: 4px;
-    font-size: 10px; color: #777;
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    color: #777;
     text-decoration: none;
 }
 .login-container button {
-    display: block; width: 96px;
+    display: block;
+    width: 96px;
     margin: 16px auto 0;
     padding: 8px;
     background: #38b6ff;
@@ -310,11 +367,21 @@ viewBox="0 0 64 64"><path d="M32 16c-13.255 0-24 \
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     position: relative;
 }
-.select-station-box { max-width: 800px; }
-.book-station-container { max-width: 720px; }
-.checkout-box { max-width: 420px; }
-.payment-container { max-width: 450px; }
-.success-container { max-width: 400px; }
+.select-station-box {
+    max-width: 800px;
+}
+.book-station-container {
+    max-width: 720px;
+}
+.checkout-box {
+    max-width: 420px;
+}
+.payment-container {
+    max-width: 450px;
+}
+.success-container {
+    max-width: 400px;
+}
 
 .select-station-box h2,
 .book-station-container h2,
@@ -328,7 +395,8 @@ viewBox="0 0 64 64"><path d="M32 16c-13.255 0-24 \
 .book-station-container .back-link,
 .checkout-box .back-link {
     position: absolute;
-    top: 20px; left: 20px;
+    top: 20px;
+    left: 20px;
     text-decoration: none;
     color: #333;
     font-size: 16px;
@@ -392,15 +460,37 @@ viewBox="0 0 64 64"><path d="M32 16c-13.255 0-24 \
     border: none;
     border-radius: 4px;
 }
-.book-station-container .view-slots-button { background: #8BC34A; }
-.select-station-box .buttons .green-button { background: #8BC34A; }
-.book-station-container .form-actions .green-button { background: #8BC34A; }
-.book-station-container .form-actions .blue-button { background: #00BCD4; }
-.checkout-page .btn-submit { background: #4CAF50; padding:10px 24px; font-size:1rem; }
-.checkout-page .btn-back { background: #00BCD4; margin-left:16px; font-size:0.9rem; }
-.payment-container .btn-submit { background: #4CAF50; }
-.payment-container .btn-back { background: #00BCD4; }
-.success-container .btn-home { background: #00BCD4; }
+.book-station-container .view-slots-button {
+    background: #8BC34A;
+}
+.select-station-box .buttons .green-button {
+    background: #8BC34A;
+}
+.book-station-container .form-actions .green-button {
+    background: #8BC34A;
+}
+.book-station-container .form-actions .blue-button {
+    background: #00BCD4;
+}
+.checkout-page .btn-submit {
+    background: #4CAF50;
+    padding:10px 24px;
+    font-size:1rem;
+}
+.checkout-page .btn-back {
+    background: #00BCD4;
+    margin-left:16px;
+    font-size:0.9rem;
+}
+.payment-container .btn-submit {
+    background: #4CAF50;
+}
+.payment-container .btn-back {
+    background: #00BCD4;
+}
+.success-container .btn-home {
+    background: #00BCD4;
+}
 
 /* ============================================================ */
 /*       Membership & Pass Page Enhancements (new)             */
@@ -534,11 +624,15 @@ button[disabled] {
 /* Remove bottom border on last row of benefits tables */
 .manage-membership-page .benefits-table tbody tr:last-child td {
     border-bottom: none;
+    border-left: none;
+    border-right: none;
 }
 
 /* Center the Renew button in the final club row */
 .manage-membership-page .benefits-table.club tbody tr:last-child td {
     text-align: center;
+    border-left: none;
+    border-right: none;
 }
 
 /* ============================================================ */
