@@ -3,61 +3,85 @@ package my.nexgenesports.controller.general;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.*;
-import java.io.IOException;
+import javax.servlet.http.Part;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.UUID;
 
 /**
- * CSRF protection filter.
+ * CSRF protection filter that supports multipart/form-data.
  */
 @WebFilter("/*")
 public class CsrfFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // No initialization needed
+        // no‐op
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+    public void doFilter(ServletRequest rq, ServletResponse rs, FilterChain chain)
             throws IOException, ServletException {
-        HttpServletRequest  request  = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
-        String path   = request.getRequestURI()
-                               .substring(request.getContextPath().length());
-        String method = request.getMethod();
+        HttpServletRequest  req  = (HttpServletRequest) rq;
+        HttpServletResponse res  = (HttpServletResponse) rs;
+        String path   = req.getRequestURI()
+                           .substring(req.getContextPath().length());
+        String method = req.getMethod();
 
-        // Ensure we always have a CSRF token in session
-        HttpSession session = request.getSession(true);
+        // Ensure session has a CSRF token
+        HttpSession session = req.getSession(true);
         if (session.getAttribute("csrfToken") == null) {
             session.setAttribute("csrfToken", UUID.randomUUID().toString());
         }
 
-        // Skip CSRF check on GETs and on login/register endpoints
-        boolean isPost = "POST".equalsIgnoreCase(method);
-        if (!isPost
+        // Skip non‐POSTs and login/register
+        if (!"POST".equalsIgnoreCase(method)
          || path.equals("/LoginServlet")
          || path.equals("/RegisterServlet")
          || path.equals("/login.jsp")
          || path.equals("/register.jsp")) {
-            chain.doFilter(req, res);
+            chain.doFilter(rq, rs);
             return;
         }
 
-        // Validate submitted token
-        String submitted  = request.getParameter("csrfToken");
+        // Extract submitted token
+        String submitted;
+        String contentType = req.getContentType();
+        if (contentType != null
+         && contentType.toLowerCase().startsWith("multipart/")) {
+            submitted = extractPartValue(req, "csrfToken");
+        } else {
+            submitted = req.getParameter("csrfToken");
+        }
+
         String sessionTok = (String) session.getAttribute("csrfToken");
         if (sessionTok == null
          || submitted == null
          || !sessionTok.equals(submitted)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token");
+            res.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token");
             return;
         }
 
-        chain.doFilter(req, res);
+        chain.doFilter(rq, rs);
     }
 
     @Override
     public void destroy() {
-        // No cleanup needed
+        // no‐op
+    }
+
+    private String extractPartValue(HttpServletRequest req, String name)
+            throws IOException, ServletException {
+        Collection<Part> parts = req.getParts();
+        for (Part part : parts) {
+            if (name.equals(part.getName())) {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(part.getInputStream(), StandardCharsets.UTF_8))) {
+                    return reader.readLine();
+                }
+            }
+        }
+        return null;
     }
 }

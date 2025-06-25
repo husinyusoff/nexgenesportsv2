@@ -20,10 +20,6 @@
       <div class="dashboard-container">
         <h2>Welcome, <c:out value="${sessionScope.username}"/>!</h2>
         <p>Your role: <c:out value="${sessionScope.role}"/></p>
-        <p>Accessible pages:</p>
-        <ul>
-          <!-- Example: you could query rp_permissions_full view for their perms -->
-        </ul>
       </div>
     </div>
   </div>
