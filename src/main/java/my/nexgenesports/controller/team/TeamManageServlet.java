@@ -28,29 +28,38 @@ public class TeamManageServlet extends HttpServlet {
         // 2) build helper maps
         Map<Integer, Integer> membersCountMap = new HashMap<>();
         Map<Integer, List<TeamMember>> membersByTeam = new HashMap<>();
-        // stub out achievements until the feature is implemented
         Map<Integer, List<?>> achievementsByTeam = new HashMap<>();
 
-        for (Team t : teams) {
-            int teamID = t.getTeamID();
-
+        // populate counts, members & (empty) achievements
+        for (Team team : teams) {
+            int teamID = team.getTeamID();
             List<TeamMember> membs = teamService.listMembers(teamID);
             membersCountMap.put(teamID, membs.size());
             membersByTeam.put(teamID, membs);
-
-            // no achievements yet → empty list
             achievementsByTeam.put(teamID, Collections.emptyList());
         }
 
-        // 3) stash into request
+        // 3) build a map of <teamID -> this user’s current role>
+        Map<Integer, String> userRoleMap = new HashMap<>();
+        for (Team team : teams) {
+            int teamID = team.getTeamID();
+            for (TeamMember m : membersByTeam.get(teamID)) {
+                if (m.getUserID().equals(userID) && "Active".equals(m.getStatus())) {
+                    userRoleMap.put(teamID, m.getTeamRole());
+                    break;
+                }
+            }
+        }
+
+        // 4) stash everything into request
         req.setAttribute("teams", teams);
         req.setAttribute("membersCountMap", membersCountMap);
         req.setAttribute("membersByTeam", membersByTeam);
         req.setAttribute("achievementsByTeam", achievementsByTeam);
+        req.setAttribute("userRoleMap", userRoleMap);
 
-        // 4) forward to your JSP
-        req.getRequestDispatcher("/manageTeam.jsp")
-                .forward(req, resp);
+        // 5) forward to JSP
+        req.getRequestDispatcher("/manageTeam.jsp").forward(req, resp);
     }
 
     @Override

@@ -10,6 +10,7 @@ public class TeamMember {
     private String teamRole;   // "Leader","Co-Leader","Member"
     private LocalDateTime joinedAt;
     private LocalDateTime roleAssignedAt;
+    private User user;
 
     public TeamMember() {}
 
@@ -42,6 +43,20 @@ public class TeamMember {
     public LocalDateTime getRoleAssignedAt() { return roleAssignedAt; }
     public void setRoleAssignedAt(LocalDateTime roleAssignedAt) { this.roleAssignedAt = roleAssignedAt; }
 
+        public User getUser() {
+      return user;
+    }
+    public void setUser(User user) {
+      this.user = user;
+    }
+    
+        // NEW: convenience method so JSP can do ${member.userName}
+    public String getUserName() {
+      return user != null 
+          ? user.getName()  
+          : userID;   
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

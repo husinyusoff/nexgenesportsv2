@@ -73,4 +73,6 @@ public interface TeamMemberDao {
     List<TeamMember> listByUser(String userID) throws SQLException;
 
     void removeMember(int teamID, String userID) throws SQLException;
+
+    void updateLeader(int teamID, String newLeader) throws SQLException;
 }

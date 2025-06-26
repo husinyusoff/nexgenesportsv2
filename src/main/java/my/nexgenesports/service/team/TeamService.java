@@ -12,25 +12,25 @@ import java.util.stream.Collectors;
 
 public class TeamService {
 
-    private final TeamDao teamDao;
-    private final ArchivedTeamDao archivedDao;
-    private final TeamMemberDao memberDao;
-    private final JoinRequestDao joinRequestDao;
-    private final AuditLogDao auditDao;
+    private final TeamDao          teamDao;
+    private final ArchivedTeamDao  archivedDao;
+    private final TeamMemberDao    memberDao;
+    private final JoinRequestDao   joinRequestDao;
+    private final AuditLogDao      auditDao;
 
     public TeamService() {
-        this.teamDao = new TeamDaoImpl();
-        this.archivedDao = new ArchivedTeamDaoImpl();
-        this.memberDao = new TeamMemberDaoImpl();
+        this.teamDao        = new TeamDaoImpl();
+        this.archivedDao    = new ArchivedTeamDaoImpl();
+        this.memberDao      = new TeamMemberDaoImpl();
         this.joinRequestDao = new JoinRequestDaoImpl();
-        this.auditDao = new AuditLogDaoImpl();
+        this.auditDao       = new AuditLogDaoImpl();
     }
 
     public Team createTeam(String name,
-            String description,
-            String logoURL,
-            String creatorUserID,
-            int capacity) {
+                           String description,
+                           String logoURL,
+                           String newLeader,
+                           int capacity) {
         if (capacity < 2) {
             throw new ServiceException("Capacity must be at least 2.");
         }
@@ -39,32 +39,36 @@ public class TeamService {
             t.setTeamName(name);
             t.setDescription(description);
             t.setLogoURL(logoURL);
-            t.setCreatedBy(creatorUserID);
+            t.setLeader(newLeader);
             t.setCreatedAt(LocalDateTime.now());
             t.setStatus("Active");
             t.setCapacity(capacity);
 
+            // insert team → gets generated teamID
             Team inserted = teamDao.insert(t);
 
+            // insert leader as first member
             TeamMember leader = new TeamMember();
             leader.setTeamID(inserted.getTeamID());
-            leader.setUserID(creatorUserID);
+            leader.setUserID(newLeader);
             leader.setStatus("Active");
             leader.setTeamRole("Leader");
             leader.setJoinedAt(LocalDateTime.now());
             leader.setRoleAssignedAt(LocalDateTime.now());
             memberDao.insert(leader);
 
+            // audit
             AuditLog log = new AuditLog();
             log.setEntityType("Team");
             log.setEntityID(String.valueOf(inserted.getTeamID()));
             log.setActionType("Created");
-            log.setPerformedBy(creatorUserID);
+            log.setPerformedBy(newLeader);
             log.setTs(LocalDateTime.now());
             log.setDetails("{\"teamName\":\"" + name + "\",\"capacity\":" + capacity + "}");
             auditDao.insert(log);
 
             return inserted;
+
         } catch (SQLException e) {
             if (e.getMessage().contains("Duplicate entry")) {
                 throw new ServiceException("Team name already in use.");
@@ -74,47 +78,59 @@ public class TeamService {
     }
 
     public void changeRole(int teamID,
-            String targetUserID,
-            String newRole,
-            String performedBy) {
+                           String targetUserID,
+                           String newRole,
+                           String performedBy) {
         try {
-            // 1) Only the active Leader may change roles
-            List<TeamMember> members = memberDao.listByTeam(teamID);
-            boolean isLeader = members.stream().anyMatch(m
-                    -> m.getUserID().equals(performedBy)
-                    && m.getStatus().equals("Active")
-                    && m.getTeamRole().equals("Leader")
+            // load all active members
+            List<TeamMember> members = memberDao.listByTeam(teamID)
+                                                .stream()
+                                                .filter(m -> "Active".equals(m.getStatus()))
+                                                .collect(Collectors.toList());
+
+            // only active Leader may change roles
+            boolean isLeader = members.stream().anyMatch(m ->
+                m.getUserID().equals(performedBy)
+             && m.getTeamRole().equals("Leader")
             );
             if (!isLeader) {
                 throw new ServiceException("Only the Active Leader may change roles.");
             }
 
-            // 2) Enforce at most one Co-Leader
+            // enforce a single Co-Leader
             if ("Co-Leader".equals(newRole)) {
-                int coCount = memberDao.countActiveRole(teamID, "Co-Leader");
-                boolean alreadyCo = members.stream().anyMatch(m
-                        -> m.getUserID().equals(targetUserID)
-                        && "Co-Leader".equals(m.getTeamRole())
+                long coCount = members.stream()
+                                      .filter(m -> "Co-Leader".equals(m.getTeamRole()))
+                                      .count();
+                boolean alreadyCo = members.stream().anyMatch(m ->
+                    m.getUserID().equals(targetUserID)
+                 && "Co-Leader".equals(m.getTeamRole())
                 );
                 if (coCount >= 1 && !alreadyCo) {
                     throw new ServiceException("There is already an Active Co-Leader.");
                 }
             }
 
-            // 3) If promoting to Leader, demote the old one
+            // if promoting to Leader → demote old Leader to Co-Leader
             if ("Leader".equals(newRole)) {
                 for (TeamMember m : members) {
-                    if ("Leader".equals(m.getTeamRole()) && "Active".equals(m.getStatus())) {
-                        memberDao.updateRole(teamID, m.getUserID(), "Member");
+                    if ("Leader".equals(m.getTeamRole())) {
+                        // demote former Leader
+                        memberDao.updateRole(teamID, m.getUserID(), "Co-Leader");
                         break;
                     }
                 }
             }
 
-            // 4) Apply the requested change
+            // apply the requested change
             memberDao.updateRole(teamID, targetUserID, newRole);
 
-            // 5) Audit the change
+            // if they became Leader, update the team table
+            if ("Leader".equals(newRole)) {
+                teamDao.updateLeader(teamID, targetUserID);
+            }
+
+            // audit
             AuditLog log = new AuditLog();
             log.setEntityType("TeamMember");
             log.setEntityID(teamID + ":" + targetUserID);
@@ -342,7 +358,7 @@ public class TeamService {
             at.setTeamName(t.getTeamName());
             at.setDescription(t.getDescription());
             at.setLogoURL(t.getLogoURL());
-            at.setCreatedBy(t.getCreatedBy());
+            at.setLeader(t.getLeader());
             at.setCreatedAt(t.getCreatedAt());
             at.setDisbandedAt(LocalDateTime.now());
             at.setStatus("Disbanded");

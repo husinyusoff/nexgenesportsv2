@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TeamMemberDaoImpl implements TeamMemberDao {
+
     @Override
     public void insert(TeamMember m) throws SQLException {
         String sql = """
@@ -16,8 +17,7 @@ public class TeamMemberDaoImpl implements TeamMemberDao {
               (teamID, userID, status, teamRole, joinedAt, roleAssignedAt)
             VALUES (?, ?, ?, ?, ?, ?)
             """;
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, m.getTeamID());
             ps.setString(2, m.getUserID());
             ps.setString(3, m.getStatus());
@@ -35,8 +35,7 @@ public class TeamMemberDaoImpl implements TeamMemberDao {
                SET status = ?
              WHERE teamID = ? AND userID = ?
             """;
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setInt(2, teamID);
             ps.setString(3, userID);
@@ -51,8 +50,7 @@ public class TeamMemberDaoImpl implements TeamMemberDao {
                SET teamRole = ?, roleAssignedAt = ?
              WHERE teamID = ? AND userID = ?
             """;
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, newRole);
             ps.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             ps.setInt(3, teamID);
@@ -69,8 +67,7 @@ public class TeamMemberDaoImpl implements TeamMemberDao {
              WHERE teamID = ?
                AND status = 'Active'
             """;
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, teamID);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getInt("cnt") : 0;
@@ -87,8 +84,7 @@ public class TeamMemberDaoImpl implements TeamMemberDao {
                AND status   = 'Active'
                AND teamRole = ?
             """;
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, teamID);
             ps.setString(2, role);
             try (ResultSet rs = ps.executeQuery()) {
@@ -100,12 +96,13 @@ public class TeamMemberDaoImpl implements TeamMemberDao {
     @Override
     public List<TeamMember> listByTeam(int teamID) throws SQLException {
         String sql = "SELECT * FROM teammember WHERE teamID = ?";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, teamID);
             try (ResultSet rs = ps.executeQuery()) {
                 List<TeamMember> list = new ArrayList<>();
-                while (rs.next()) list.add(mapRow(rs));
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
                 return list;
             }
         }
@@ -114,26 +111,29 @@ public class TeamMemberDaoImpl implements TeamMemberDao {
     @Override
     public List<TeamMember> listByUser(String userID) throws SQLException {
         String sql = "SELECT * FROM teammember WHERE userID = ?";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, userID);
             try (ResultSet rs = ps.executeQuery()) {
                 List<TeamMember> list = new ArrayList<>();
-                while (rs.next()) list.add(mapRow(rs));
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
                 return list;
             }
         }
     }
 
-    /** ← NEW
+    /**
+     * ← NEW
+     *
      * @param teamID
      * @param userID
-     * @throws java.sql.SQLException */
+     * @throws java.sql.SQLException
+     */
     @Override
     public void removeMember(int teamID, String userID) throws SQLException {
         String sql = "DELETE FROM teammember WHERE teamID = ? AND userID = ?";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, teamID);
             ps.setString(2, userID);
             ps.executeUpdate();
@@ -149,5 +149,15 @@ public class TeamMemberDaoImpl implements TeamMemberDao {
         m.setJoinedAt(rs.getTimestamp("joinedAt").toLocalDateTime());
         m.setRoleAssignedAt(rs.getTimestamp("roleAssignedAt").toLocalDateTime());
         return m;
+    }
+
+    @Override
+    public void updateLeader(int teamID, String newLeader) throws SQLException {
+        String sql = "UPDATE team SET leader = ? WHERE teamID = ?";
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, newLeader);
+            ps.setInt(2, teamID);
+            ps.executeUpdate();
+        }
     }
 }

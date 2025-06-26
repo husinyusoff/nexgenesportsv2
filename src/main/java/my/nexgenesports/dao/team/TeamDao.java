@@ -13,4 +13,5 @@ public interface TeamDao {
     void delete(int teamID) throws SQLException;  // used when disbanding
     void updateCapacity(int teamID, int capacity) throws SQLException;
     List<Team> findAllActiveSorted(String sortBy, String direction) throws SQLException;
+    void updateLeader(int teamID, String newLeader) throws SQLException;
 }

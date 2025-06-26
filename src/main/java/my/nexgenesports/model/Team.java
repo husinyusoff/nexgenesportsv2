@@ -9,7 +9,7 @@ public class Team {
     private String teamName;
     private String description;
     private String logoURL;
-    private String createdBy;
+    private String leader;
     private LocalDateTime createdAt;
     private LocalDateTime disbandedAt;
     private String status; // "Active" or "Disbanded"
@@ -27,7 +27,7 @@ public class Team {
         this.teamName = teamName;
         this.description = description;
         this.logoURL = logoURL;
-        this.createdBy = createdBy;
+        this.leader = leader;
         this.createdAt = createdAt;
         this.disbandedAt = disbandedAt;
         this.status = status;
@@ -66,12 +66,12 @@ public class Team {
         this.logoURL = logoURL;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
+    public String getLeader() {
+        return leader;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+    public void setLeader(String leader) {
+        this.leader = leader;
     }
 
     public LocalDateTime getCreatedAt() {

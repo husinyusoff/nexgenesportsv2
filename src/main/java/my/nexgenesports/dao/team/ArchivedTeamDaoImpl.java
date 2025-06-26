@@ -22,7 +22,7 @@ public class ArchivedTeamDaoImpl implements ArchivedTeamDao {
             ps.setString (2, at.getTeamName());
             ps.setString (3, at.getDescription());
             ps.setString (4, at.getLogoURL());
-            ps.setString (5, at.getCreatedBy());
+            ps.setString (5, at.getLeader());
             ps.setTimestamp(6, Timestamp.valueOf(at.getCreatedAt()));
             if (at.getDisbandedAt() != null) {
                 ps.setTimestamp(7, Timestamp.valueOf(at.getDisbandedAt()));

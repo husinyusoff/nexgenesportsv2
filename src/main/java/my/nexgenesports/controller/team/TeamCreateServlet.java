@@ -1,6 +1,5 @@
 package my.nexgenesports.controller.team;
 
-import my.nexgenesports.model.Team;
 import my.nexgenesports.service.general.ServiceException;
 import my.nexgenesports.service.team.TeamService;
 
@@ -14,13 +13,15 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @WebServlet("/team/create")
-@MultipartConfig(maxFileSize=5_000_000, fileSizeThreshold=1_000_000)
+@MultipartConfig(maxFileSize = 5_000_000, fileSizeThreshold = 1_000_000)
 public class TeamCreateServlet extends HttpServlet {
+
     private final TeamService teamService = new TeamService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        req.setAttribute("capacity", 2);
         req.getRequestDispatcher("/teamCreate.jsp").forward(req, resp);
     }
 
@@ -28,19 +29,21 @@ public class TeamCreateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         HttpSession session = req.getSession(false);
-        String creator = (String) session.getAttribute("username");
+        String leader = (String) session.getAttribute("username");
 
-        String name        = req.getParameter("teamName");
+        String name = req.getParameter("teamName");
         String description = req.getParameter("description");
-        int capacity       = Integer.parseInt(req.getParameter("capacity"));
+        int capacity = Integer.parseInt(req.getParameter("capacity"));
 
         Part logoPart = req.getPart("logoFile");
         String logoUrl = null;
         if (logoPart != null && logoPart.getSize() > 0) {
             String fileName = Paths.get(logoPart.getSubmittedFileName())
-                                   .getFileName().toString();
+                    .getFileName().toString();
             File uploads = new File(getServletContext().getRealPath("/uploads"));
-            if (!uploads.exists()) uploads.mkdirs();
+            if (!uploads.exists()) {
+                uploads.mkdirs();
+            }
             File file = new File(uploads, fileName);
             try (InputStream in = logoPart.getInputStream()) {
                 Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -49,8 +52,8 @@ public class TeamCreateServlet extends HttpServlet {
         }
 
         try {
-            Team team = teamService.createTeam(name, description, logoUrl, creator, capacity);
-            resp.sendRedirect(req.getContextPath() + "/team/detail?teamID=" + team.getTeamID());
+            teamService.createTeam(name, description, logoUrl, leader, capacity);
+            resp.sendRedirect(req.getContextPath() + "/team/manage");
         } catch (ServiceException e) {
             req.setAttribute("error", e.getMessage());
             req.setAttribute("teamName", name);
