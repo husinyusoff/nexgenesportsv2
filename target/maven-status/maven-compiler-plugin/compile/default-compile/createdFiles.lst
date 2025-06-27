@@ -25,6 +25,7 @@ my\nexgenesports\dao\booking\BookingDao.class
 my\nexgenesports\service\booking\StationService.class
 my\nexgenesports\model\Game.class
 my\nexgenesports\model\PassTier.class
+my\nexgenesports\dao\booking\BusinessConfigDaoImpl.class
 my\nexgenesports\service\booking\BookingService.class
 my\nexgenesports\dao\booking\BusinessConfigDao.class
 my\nexgenesports\controller\booking\UpdateBookingServlet.class
@@ -73,6 +74,7 @@ my\nexgenesports\service\booking\BusinessConfigService.class
 my\nexgenesports\model\TeamMember.class
 my\nexgenesports\dao\memberships\PassTierDaoImpl.class
 my\nexgenesports\controller\booking\ManageBookingServlet.class
+my\nexgenesports\controller\team\JoinRequestListServlet.class
 my\nexgenesports\service\team\TeamService.class
 my\nexgenesports\controller\booking\BusinessConfigServlet.class
 my\nexgenesports\controller\user\RegisterServlet.class

@@ -1,3 +1,4 @@
+// File: src/main/java/my/nexgenesports/service/team/TeamService.java
 package my.nexgenesports.service.team;
 
 import my.nexgenesports.dao.team.*;
@@ -6,31 +7,33 @@ import my.nexgenesports.service.general.ServiceException;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TeamService {
 
-    private final TeamDao          teamDao;
-    private final ArchivedTeamDao  archivedDao;
-    private final TeamMemberDao    memberDao;
-    private final JoinRequestDao   joinRequestDao;
-    private final AuditLogDao      auditDao;
+    private final TeamDao teamDao;
+    private final ArchivedTeamDao archivedDao;
+    private final TeamMemberDao memberDao;
+    private final JoinRequestDao joinRequestDao;
+    private final AuditLogDao auditDao;
 
     public TeamService() {
-        this.teamDao        = new TeamDaoImpl();
-        this.archivedDao    = new ArchivedTeamDaoImpl();
-        this.memberDao      = new TeamMemberDaoImpl();
+        this.teamDao = new TeamDaoImpl();
+        this.archivedDao = new ArchivedTeamDaoImpl();
+        this.memberDao = new TeamMemberDaoImpl();
         this.joinRequestDao = new JoinRequestDaoImpl();
-        this.auditDao       = new AuditLogDaoImpl();
+        this.auditDao = new AuditLogDaoImpl();
     }
 
     public Team createTeam(String name,
-                           String description,
-                           String logoURL,
-                           String newLeader,
-                           int capacity) {
+            String description,
+            String logoURL,
+            String newLeader,
+            int capacity) {
         if (capacity < 2) {
             throw new ServiceException("Capacity must be at least 2.");
         }
@@ -44,10 +47,8 @@ public class TeamService {
             t.setStatus("Active");
             t.setCapacity(capacity);
 
-            // insert team → gets generated teamID
             Team inserted = teamDao.insert(t);
 
-            // insert leader as first member
             TeamMember leader = new TeamMember();
             leader.setTeamID(inserted.getTeamID());
             leader.setUserID(newLeader);
@@ -57,7 +58,6 @@ public class TeamService {
             leader.setRoleAssignedAt(LocalDateTime.now());
             memberDao.insert(leader);
 
-            // audit
             AuditLog log = new AuditLog();
             log.setEntityType("Team");
             log.setEntityID(String.valueOf(inserted.getTeamID()));
@@ -68,7 +68,6 @@ public class TeamService {
             auditDao.insert(log);
 
             return inserted;
-
         } catch (SQLException e) {
             if (e.getMessage().contains("Duplicate entry")) {
                 throw new ServiceException("Team name already in use.");
@@ -78,59 +77,57 @@ public class TeamService {
     }
 
     public void changeRole(int teamID,
-                           String targetUserID,
-                           String newRole,
-                           String performedBy) {
+            String targetUserID,
+            String newRole,
+            String performedBy) {
         try {
-            // load all active members
-            List<TeamMember> members = memberDao.listByTeam(teamID)
-                                                .stream()
-                                                .filter(m -> "Active".equals(m.getStatus()))
-                                                .collect(Collectors.toList());
+            List<TeamMember> active = memberDao.listByTeam(teamID).stream()
+                    .filter(m -> "Active".equals(m.getStatus()))
+                    .collect(Collectors.toList());
 
-            // only active Leader may change roles
-            boolean isLeader = members.stream().anyMatch(m ->
-                m.getUserID().equals(performedBy)
-             && m.getTeamRole().equals("Leader")
+            boolean isLeader = active.stream().anyMatch(m
+                    -> m.getUserID().equals(performedBy) && "Leader".equals(m.getTeamRole())
             );
             if (!isLeader) {
                 throw new ServiceException("Only the Active Leader may change roles.");
             }
 
-            // enforce a single Co-Leader
             if ("Co-Leader".equals(newRole)) {
-                long coCount = members.stream()
-                                      .filter(m -> "Co-Leader".equals(m.getTeamRole()))
-                                      .count();
-                boolean alreadyCo = members.stream().anyMatch(m ->
-                    m.getUserID().equals(targetUserID)
-                 && "Co-Leader".equals(m.getTeamRole())
-                );
-                if (coCount >= 1 && !alreadyCo) {
-                    throw new ServiceException("There is already an Active Co-Leader.");
-                }
-            }
-
-            // if promoting to Leader → demote old Leader to Co-Leader
-            if ("Leader".equals(newRole)) {
-                for (TeamMember m : members) {
-                    if ("Leader".equals(m.getTeamRole())) {
-                        // demote former Leader
-                        memberDao.updateRole(teamID, m.getUserID(), "Co-Leader");
+                for (TeamMember m : active) {
+                    if ("Co-Leader".equals(m.getTeamRole())
+                            && !m.getUserID().equals(targetUserID)) {
+                        memberDao.updateRole(teamID, m.getUserID(), "Member");
                         break;
                     }
                 }
             }
 
-            // apply the requested change
+            if ("Leader".equals(newRole)) {
+                Optional<TeamMember> oldLeader = active.stream()
+                        .filter(m -> "Leader".equals(m.getTeamRole()))
+                        .findFirst();
+                Optional<TeamMember> oldCo = active.stream()
+                        .filter(m -> "Co-Leader".equals(m.getTeamRole()))
+                        .findFirst();
+
+                if (oldLeader.isPresent()
+                        && !oldLeader.get().getUserID().equals(targetUserID)) {
+                    memberDao.updateRole(teamID, oldLeader.get().getUserID(), "Co-Leader");
+                }
+                if (oldCo.isPresent()
+                        && !oldCo.get().getUserID().equals(targetUserID)
+                        && oldLeader.map(l -> !l.getUserID().equals(oldCo.get().getUserID()))
+                                .orElse(true)) {
+                    memberDao.updateRole(teamID, oldCo.get().getUserID(), "Member");
+                }
+            }
+
             memberDao.updateRole(teamID, targetUserID, newRole);
 
-            // if they became Leader, update the team table
             if ("Leader".equals(newRole)) {
                 teamDao.updateLeader(teamID, targetUserID);
             }
 
-            // audit
             AuditLog log = new AuditLog();
             log.setEntityType("TeamMember");
             log.setEntityID(teamID + ":" + targetUserID);
@@ -139,7 +136,6 @@ public class TeamService {
             log.setTs(LocalDateTime.now());
             log.setDetails("{\"newRole\":\"" + newRole + "\"}");
             auditDao.insert(log);
-
         } catch (SQLException e) {
             throw new ServiceException("Failed to change role", e);
         }
@@ -179,7 +175,6 @@ public class TeamService {
             log.setPerformedBy(userID);
             log.setTs(LocalDateTime.now());
             auditDao.insert(log);
-
         } catch (SQLException e) {
             throw new ServiceException("Failed to submit join request", e);
         }
@@ -205,7 +200,7 @@ public class TeamService {
             if (jr == null || jr.getTeamID() != teamID) {
                 throw new ServiceException("Join request not found.");
             }
-            if (!jr.getStatus().equals("Pending")) {
+            if (!"Pending".equals(jr.getStatus())) {
                 throw new ServiceException("Request already handled.");
             }
 
@@ -237,10 +232,14 @@ public class TeamService {
             log.setPerformedBy(performedBy);
             log.setTs(LocalDateTime.now());
             auditDao.insert(log);
-
         } catch (SQLException e) {
             throw new ServiceException("Failed to process join request", e);
         }
+        
+        System.out.println(">>> responding to join req " + requestID 
+                   + " for team " + teamID 
+                   + ", accept=" + accept);
+
     }
 
     public void removeMember(int teamID, String targetUserID, String performedBy) {
@@ -256,7 +255,8 @@ public class TeamService {
                 throw new ServiceException("No permission to remove members.");
             }
             Optional<TeamMember> victim = actives.stream()
-                    .filter(m -> m.getUserID().equals(targetUserID)).findFirst();
+                    .filter(m -> m.getUserID().equals(targetUserID))
+                    .findFirst();
             if (victim.isEmpty()) {
                 throw new ServiceException("User is not an active member.");
             }
@@ -273,7 +273,6 @@ public class TeamService {
             log.setPerformedBy(performedBy);
             log.setTs(LocalDateTime.now());
             auditDao.insert(log);
-
         } catch (SQLException e) {
             throw new ServiceException("Failed to remove member", e);
         }
@@ -286,7 +285,8 @@ public class TeamService {
         try {
             TeamMember me = memberDao.listByTeam(teamID).stream()
                     .filter(m -> m.getUserID().equals(performedBy) && "Active".equals(m.getStatus()))
-                    .findFirst().orElseThrow(() -> new ServiceException("Not a member."));
+                    .findFirst()
+                    .orElseThrow(() -> new ServiceException("Not a member."));
             if (!"Leader".equals(me.getTeamRole())) {
                 throw new ServiceException("Only Leader can change capacity.");
             }
@@ -305,7 +305,6 @@ public class TeamService {
             log.setTs(LocalDateTime.now());
             log.setDetails("{\"newCapacity\":" + capacity + "}");
             auditDao.insert(log);
-
         } catch (SQLException e) {
             throw new ServiceException("Failed to set capacity", e);
         }
@@ -313,16 +312,65 @@ public class TeamService {
 
     public void leaveTeam(int teamID, String userID) {
         try {
-            List<TeamMember> members = memberDao.listByTeam(teamID);
-            TeamMember me = members.stream()
+            // 1) load everybody and find “me”
+            List<TeamMember> all = memberDao.listByTeam(teamID);
+            TeamMember me = all.stream()
                     .filter(m -> m.getUserID().equals(userID))
-                    .findFirst().orElseThrow(() -> new ServiceException("Not a member."));
-            if ("Leader".equals(me.getTeamRole()) && "Active".equals(me.getStatus())) {
-                throw new ServiceException("Leader must transfer leadership before leaving.");
+                    .findFirst()
+                    .orElseThrow(() -> new ServiceException("Not a member."));
+            if (!"Active".equals(me.getStatus())) {
+                throw new ServiceException("Cannot leave when not Active.");
             }
 
-            memberDao.updateStatus(teamID, userID, "Declined");
+            // remember if I was leader
+            boolean wasLeader = "Leader".equals(me.getTeamRole());
 
+            // 2) archive me first (I get archived in whatever role I truly held)
+            memberDao.archive(teamID, userID);
+            // 3) remove me from the live table
+            memberDao.removeMember(teamID, userID);
+
+            // 4) if I was leader, pick a successor and promote *them* directly
+            if (wasLeader) {
+                // reload current active members
+                List<TeamMember> remain = memberDao.listByTeam(teamID).stream()
+                        .filter(m -> "Active".equals(m.getStatus()))
+                        .collect(Collectors.toList());
+
+                if (remain.isEmpty()) {
+                    // nobody left → disband
+                    disbandTeam(teamID, userID);
+                } else {
+                    // prefer an existing Co-Leader
+                    Optional<TeamMember> co = remain.stream()
+                            .filter(m -> "Co-Leader".equals(m.getTeamRole()))
+                            .findFirst();
+
+                    TeamMember successor = co.orElseGet(()
+                            -> remain.stream()
+                                    .min(Comparator.comparing(TeamMember::getJoinedAt))
+                                    .get()
+                    );
+
+                    // promote them
+                    memberDao.updateRole(teamID,
+                            successor.getUserID(),
+                            "Leader");
+                    teamDao.updateLeader(teamID, successor.getUserID());
+
+                    // audit that role change
+                    AuditLog handoff = new AuditLog();
+                    handoff.setEntityType("TeamMember");
+                    handoff.setEntityID(teamID + ":" + successor.getUserID());
+                    handoff.setActionType("RoleChanged");
+                    handoff.setPerformedBy(userID);
+                    handoff.setTs(LocalDateTime.now());
+                    handoff.setDetails("{\"newRole\":\"Leader\"}");
+                    auditDao.insert(handoff);
+                }
+            }
+
+            // 5) finally, audit the leave
             AuditLog log = new AuditLog();
             log.setEntityType("TeamMember");
             log.setEntityID(teamID + ":" + userID);
@@ -338,21 +386,25 @@ public class TeamService {
 
     public void disbandTeam(int teamID, String performedBy) {
         try {
-            List<TeamMember> members = memberDao.listByTeam(teamID);
-            boolean isLeader = members.stream().anyMatch(m
+            List<TeamMember> all = memberDao.listByTeam(teamID);
+            boolean canDisband = all.stream().anyMatch(m
                     -> m.getUserID().equals(performedBy)
                     && "Active".equals(m.getStatus())
                     && "Leader".equals(m.getTeamRole())
             );
-            if (!isLeader) {
-                throw new ServiceException("Only Leader may disband the team.");
+            if (!canDisband) {
+                throw new ServiceException("Only Active Leader may disband.");
             }
+
+            for (TeamMember m : all) {
+                memberDao.archive(teamID, m.getUserID());
+            }
+            memberDao.removeAll(teamID);
 
             Team t = teamDao.findById(teamID);
             if (t == null) {
                 throw new ServiceException("Team not found.");
             }
-
             ArchivedTeam at = new ArchivedTeam();
             at.setTeamID(t.getTeamID());
             at.setTeamName(t.getTeamName());
@@ -374,7 +426,6 @@ public class TeamService {
             log.setPerformedBy(performedBy);
             log.setTs(LocalDateTime.now());
             auditDao.insert(log);
-
         } catch (SQLException e) {
             throw new ServiceException("Failed to disband team", e);
         }
@@ -413,7 +464,6 @@ public class TeamService {
     public List<Team> listAllTeamsSorted(String sortBy, String direction) {
         try {
             List<Team> teams = teamDao.findAllActiveSorted(sortBy, direction);
-            // for each team, count its active members and set it on the model
             for (Team t : teams) {
                 int cnt = memberDao.countActiveMembers(t.getTeamID());
                 t.setActiveCount(cnt);
@@ -427,6 +477,34 @@ public class TeamService {
     public List<Team> listTeamsForUser(String userID) {
         try {
             return teamDao.findByMember(userID);
+        } catch (SQLException e) {
+            throw new ServiceException("Failed to list teams", e);
+        }
+    }
+    
+     /**
+     * Fetch all active teams sorted by the given column/direction, then apply a simple
+     * case‐insensitive substring filter on teamName if q is nonempty.
+     * @param q
+     * @param sortBy
+     * @param dir
+     * @return 
+     */
+    public List<Team> searchAndSort(String q, String sortBy, String dir) {
+        try {
+            List<Team> teams = teamDao.findAllActiveSorted(sortBy, dir);
+            // count members for each
+            for (Team t : teams) {
+                int cnt = memberDao.countActiveMembers(t.getTeamID());
+                t.setActiveCount(cnt);
+            }
+            if (q != null && !q.trim().isEmpty()) {
+                String lower = q.toLowerCase(Locale.ROOT);
+                teams = teams.stream()
+                             .filter(t -> t.getTeamName().toLowerCase(Locale.ROOT).contains(lower))
+                             .collect(Collectors.toList());
+            }
+            return teams;
         } catch (SQLException e) {
             throw new ServiceException("Failed to list teams", e);
         }

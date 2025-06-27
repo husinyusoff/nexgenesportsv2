@@ -7,6 +7,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class JoinRequestDaoImpl implements JoinRequestDao {
 
@@ -17,13 +18,12 @@ public class JoinRequestDaoImpl implements JoinRequestDao {
               (teamID, userID, requestedAt, status, respondedAt)
             VALUES (?, ?, ?, ?, ?)
             """;
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setInt   (1, jr.getTeamID());
+            ps.setInt(1, jr.getTeamID());
             ps.setString(2, jr.getUserID());
             ps.setTimestamp(3, Timestamp.valueOf(jr.getRequestedAt()));
-            ps.setString   (4, jr.getStatus());
+            ps.setString(4, jr.getStatus());
             if (jr.getRespondedAt() != null) {
                 ps.setTimestamp(5, Timestamp.valueOf(jr.getRespondedAt()));
             } else {
@@ -41,30 +41,32 @@ public class JoinRequestDaoImpl implements JoinRequestDao {
     }
 
     @Override
-    public void updateStatus(int requestID, String status, LocalDateTime respondedAt) 
+    public void updateStatus(int requestID, String status, LocalDateTime respondedAt)
             throws SQLException {
         String sql = """
             UPDATE join_request
                SET status = ?, respondedAt = ?
              WHERE requestID = ?
             """;
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
 
-            ps.setString   (1, status);
-            ps.setTimestamp(2, respondedAt != null 
-                            ? Timestamp.valueOf(respondedAt) 
-                            : null);
-            ps.setInt      (3, requestID);
+            ps.setString(1, status);
+            ps.setTimestamp(2, respondedAt != null
+                    ? Timestamp.valueOf(respondedAt)
+                    : null);
+            ps.setInt(3, requestID);
             ps.executeUpdate();
         }
+        
+        System.out.println(">>> JoinRequestDaoImpl.updateStatus: setting status="
+    + status + " for requestID=" + requestID);
+
     }
 
     @Override
     public JoinRequest findById(int requestID) throws SQLException {
         String sql = "SELECT * FROM join_request WHERE requestID = ?";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, requestID);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? mapRow(rs) : null;
@@ -73,14 +75,13 @@ public class JoinRequestDaoImpl implements JoinRequestDao {
     }
 
     @Override
-    public JoinRequest findPendingByTeamAndUser(int teamID, String userID) 
+    public JoinRequest findPendingByTeamAndUser(int teamID, String userID)
             throws SQLException {
         String sql = """
             SELECT * FROM join_request
              WHERE teamID = ? AND userID = ? AND status = 'Pending'
             """;
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, teamID);
             ps.setString(2, userID);
             try (ResultSet rs = ps.executeQuery()) {
@@ -92,12 +93,13 @@ public class JoinRequestDaoImpl implements JoinRequestDao {
     @Override
     public List<JoinRequest> listPendingByTeam(int teamID) throws SQLException {
         String sql = "SELECT * FROM join_request WHERE teamID = ? AND status = 'Pending'";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, teamID);
             try (ResultSet rs = ps.executeQuery()) {
                 List<JoinRequest> list = new ArrayList<>();
-                while (rs.next()) list.add(mapRow(rs));
+                while (rs.next()) {
+                    list.add(mapRow(rs));
+                }
                 return list;
             }
         }
@@ -105,13 +107,44 @@ public class JoinRequestDaoImpl implements JoinRequestDao {
 
     private JoinRequest mapRow(ResultSet rs) throws SQLException {
         JoinRequest jr = new JoinRequest();
-        jr.setRequestID  (rs.getInt("requestID"));
-        jr.setTeamID     (rs.getInt("teamID"));
-        jr.setUserID     (rs.getString("userID"));
+        jr.setRequestID(rs.getInt("requestID"));
+        jr.setTeamID(rs.getInt("teamID"));
+        jr.setUserID(rs.getString("userID"));
         jr.setRequestedAt(rs.getTimestamp("requestedAt").toLocalDateTime());
-        jr.setStatus     (rs.getString("status"));
-        Timestamp rts    = rs.getTimestamp("respondedAt");
-        if (rts != null) jr.setRespondedAt(rts.toLocalDateTime());
+        jr.setStatus(rs.getString("status"));
+        Timestamp rts = rs.getTimestamp("respondedAt");
+        if (rts != null) {
+            jr.setRespondedAt(rts.toLocalDateTime());
+        }
         return jr;
+    }
+
+    public List<JoinRequest> listPendingByUser(String userID) throws SQLException {
+        String sql = """
+      SELECT requestID, teamID, userID, requestedAt, status, respondedAt
+        FROM join_request
+       WHERE userID = ? AND status = 'Pending'
+    """;
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, userID);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<JoinRequest> out = new ArrayList<>();
+                while (rs.next()) {
+                    JoinRequest jr = new JoinRequest();
+                    jr.setRequestID(rs.getInt("requestID"));
+                    jr.setTeamID(rs.getInt("teamID"));
+                    jr.setUserID(rs.getString("userID"));
+                    jr.setRequestedAt(rs.getTimestamp("requestedAt")
+                            .toLocalDateTime());
+                    jr.setStatus(rs.getString("status"));
+                    jr.setRespondedAt(Optional.ofNullable(rs.getTimestamp("respondedAt"))
+                            .map(ts -> ts.toLocalDateTime())
+                            .orElse(null)
+                    );
+                    out.add(jr);
+                }
+                return out;
+            }
+        }
     }
 }

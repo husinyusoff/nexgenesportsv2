@@ -1,6 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" %>
 <%@ page import="java.util.List" %>
 <%@ page import="my.nexgenesports.util.PermissionChecker" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="ctx"      value="${pageContext.request.contextPath}" />
+<c:set var="csrfToken" value="${sessionScope.csrfToken}" />
+
 
 <%
     @SuppressWarnings(
@@ -69,8 +73,8 @@
                 <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/team/manage")) { %>
                 <li><a href="<%=ctx%>/team/manage">My Teams</a></li>
                     <% } %>
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/team")) { %>
-                <li><a href="<%=ctx%>/team">Team List</a></li>
+                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/team/list")) { %>
+                <li><a href="<%=ctx%>/team/list">Team List</a></li>
                     <% } %>
             </ul>
         </li>

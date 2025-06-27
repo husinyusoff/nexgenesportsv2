@@ -1,33 +1,31 @@
-// src/main/java/my/nexgenesports/dao/BusinessConfigDao.java
+// File: src/main/java/my/nexgenesports/dao/booking/BusinessConfigDao.java
 package my.nexgenesports.dao.booking;
 
-import my.nexgenesports.util.DBConnection;
-import java.sql.*;
-import java.util.HashMap;
+import java.sql.SQLException;
 import java.util.Map;
 
-public class BusinessConfigDao {
-  public Map<String,Integer> findAll() throws SQLException {
-    String sql = "SELECT config_key, config_value FROM business_config";
-    try (Connection c = DBConnection.getConnection();
-         PreparedStatement ps = c.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-      Map<String,Integer> m = new HashMap<>();
-      while (rs.next()) {
-        m.put(rs.getString("config_key"),
-              rs.getInt   ("config_value"));
-      }
-      return m;
-    }
-  }
+public interface BusinessConfigDao {
+    /**
+     * Load all config keys and values.
+     * @return 
+     * @throws java.sql.SQLException
+     */
+    Map<String,Integer> findAll() throws SQLException;
 
-  public void update(String key, int value) throws SQLException {
-    String sql = "UPDATE business_config SET config_value = ? WHERE config_key = ?";
-    try (Connection c = DBConnection.getConnection();
-         PreparedStatement ps = c.prepareStatement(sql)) {
-      ps.setInt   (1, value);
-      ps.setString(2, key);
-      ps.executeUpdate();
-    }
-  }
+    /**
+     * Update a single config value.
+     * @param key
+     * @param value
+     * @throws java.sql.SQLException
+     */
+    void update(String key, int value) throws SQLException;
+
+    /**
+     * Read one integer config, returning defaultValue if not present.
+     * @param key
+     * @param defaultValue
+     * @return 
+     * @throws java.sql.SQLException
+     */
+    int getInt(String key, int defaultValue) throws SQLException;
 }
