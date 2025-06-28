@@ -1,18 +1,18 @@
+// File: src/main/java/my/nexgenesports/model/ProgramTournament.java
 package my.nexgenesports.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Objects;
 
 public class ProgramTournament {
-
-    private String progID;
+    private String progId;
     private String creatorId;
-    private String gameID;
+    private Integer gameId;
     private String programName;
-    private String meritLevel;
+    private String programType;
+    private Integer meritId;
     private String place;
     private String description;
     private BigDecimal progFee;
@@ -21,229 +21,131 @@ public class ProgramTournament {
     private LocalTime startTime;
     private LocalTime endTime;
     private BigDecimal prizePool;
-    private int capacity;
-    private TournamentMode tournamentMode;   // SOLO / TEAM
-    private int maxTeamMember;
-    private TournamentStatus status;        // PENDING_APPROVAL / ACTIVE / COMPLETED / CANCELLED
+    private int maxCapacity;
+    private Integer maxTeamMember;
+    private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private boolean deletedFlag;
-    private int version;
-    private String tournamentType;          // single_elimination, swiss, etc.
-    private boolean openSignup;
-    private LocalDateTime startAt;
-    private LocalDateTime endAt;
-    private ProgramType programType;
 
-    public ProgramTournament() {
+    public String getProgId() {
+        return progId;
     }
-
-    // >>> Getters & setters omitted for brevity, generate via IDE <<<
-    // For example:
-    public String getProgID() {
-        return progID;
+    public void setProgId(String progId) {
+        this.progId = progId;
     }
-
-    public void setProgID(String progID) {
-        this.progID = progID;
-    }
-    // … all other getters/setters …
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ProgramTournament)) {
-            return false;
-        }
-        return Objects.equals(progID, ((ProgramTournament) o).progID);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(progID);
-    }
-
     public String getCreatorId() {
         return creatorId;
     }
-
-    public String getGameID() {
-        return gameID;
-    }
-
-    public String getProgramName() {
-        return programName;
-    }
-
-    public String getMeritLevel() {
-        return meritLevel;
-    }
-
-    public String getPlace() {
-        return place;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public BigDecimal getProgFee() {
-        return progFee;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public BigDecimal getPrizePool() {
-        return prizePool;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public TournamentMode getTournamentMode() {
-        return tournamentMode;
-    }
-
-    public int getMaxTeamMember() {
-        return maxTeamMember;
-    }
-
-    public TournamentStatus getStatus() {
-        return status;
-    }
-
-    public boolean isDeletedFlag() {
-        return deletedFlag;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public String getTournamentType() {
-        return tournamentType;
-    }
-
-    public boolean isOpenSignup() {
-        return openSignup;
-    }
-
-    public LocalDateTime getStartAt() {
-        return startAt;
-    }
-
-    public LocalDateTime getEndAt() {
-        return endAt;
-    }
-
     public void setCreatorId(String creatorId) {
         this.creatorId = creatorId;
     }
-
-    public void setGameID(String gameID) {
-        this.gameID = gameID;
+    public Integer getGameId() {
+        return gameId;
     }
-
+    public void setGameId(Integer gameId) {
+        this.gameId = gameId;
+    }
+    public String getProgramName() {
+        return programName;
+    }
     public void setProgramName(String programName) {
         this.programName = programName;
     }
-
-    public void setMeritLevel(String meritLevel) {
-        this.meritLevel = meritLevel;
+    public String getProgramType() {
+        return programType;
     }
-
+    public void setProgramType(String programType) {
+        this.programType = programType;
+    }
+    public Integer getMeritId() {
+        return meritId;
+    }
+    public void setMeritId(Integer meritId) {
+        this.meritId = meritId;
+    }
+    public String getPlace() {
+        return place;
+    }
     public void setPlace(String place) {
         this.place = place;
     }
-
+    public String getDescription() {
+        return description;
+    }
     public void setDescription(String description) {
         this.description = description;
     }
-
+    public BigDecimal getProgFee() {
+        return progFee;
+    }
     public void setProgFee(BigDecimal progFee) {
         this.progFee = progFee;
     }
-
+    public LocalDate getStartDate() {
+        return startDate;
+    }
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
-
+    public LocalDate getEndDate() {
+        return endDate;
+    }
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
-
+    public LocalTime getStartTime() {
+        return startTime;
+    }
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
-
+    public LocalTime getEndTime() {
+        return endTime;
+    }
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
-
+    public BigDecimal getPrizePool() {
+        return prizePool;
+    }
     public void setPrizePool(BigDecimal prizePool) {
         this.prizePool = prizePool;
     }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public int getMaxCapacity() {
+        return maxCapacity;
     }
-
-    public void setTournamentMode(TournamentMode tournamentMode) {
-        this.tournamentMode = tournamentMode;
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
-
-    public void setMaxTeamMember(int maxTeamMember) {
+    public Integer getMaxTeamMember() {
+        return maxTeamMember;
+    }
+    public void setMaxTeamMember(Integer maxTeamMember) {
         this.maxTeamMember = maxTeamMember;
     }
-
-    public void setStatus(TournamentStatus status) {
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
         this.status = status;
     }
-
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+    public boolean isDeletedFlag() {
+        return deletedFlag;
+    }
     public void setDeletedFlag(boolean deletedFlag) {
         this.deletedFlag = deletedFlag;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    public void setTournamentType(String tournamentType) {
-        this.tournamentType = tournamentType;
-    }
-
-    public void setOpenSignup(boolean openSignup) {
-        this.openSignup = openSignup;
-    }
-
-    public void setStartAt(LocalDateTime startAt) {
-        this.startAt = startAt;
-    }
-
-    public void setEndAt(LocalDateTime endAt) {
-        this.endAt = endAt;
-    }
-
-    public ProgramType getProgramType() {
-        return programType;
-    }
-
-    public void setProgramType(ProgramType programType) {
-        this.programType = programType;
     }
 }

@@ -1,107 +1,115 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<html>
-<head>
-  <title>Program: ${program.programName}</title>
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main.css"/>
-</head>
-<body>
-  <h1>${program.programName}</h1>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
-  <section>
-    <h2>Core Info</h2>
-    <p><strong>ID:</strong> ${program.progID}</p>
-    <p><strong>Type:</strong> ${program.programType}</p>
-    <p><strong>Description:</strong> ${program.description}</p>
-    <p><strong>Schedule:</strong> ${program.startDate} → ${program.endDate}</p>
-    <c:if test="${program.startAt != null}">
-      <p><strong>Override Start:</strong> ${program.startAt}</p>
-    </c:if>
-    <c:if test="${program.endAt != null}">
-      <p><strong>Override End:</strong> ${program.endAt}</p>
-    </c:if>
-  </section>
+<jsp:include page="/header.jsp"/>
+<div class="container" style="display:flex;">
+  <div class="sidebar">
+    <jsp:include page="/sidebar.jsp"/>
+  </div>
+  <div class="content">
+    <h2>Details: ${program.programName}</h2>
 
-  <c:if test="${program.programType=='TOURNAMENT'}">
-    <section>
-      <h2>Tournament Settings</h2>
-      <p><strong>Game:</strong> ${program.gameID}</p>
-      <p><strong>Mode:</strong> ${program.tournamentMode}</p>
-      <p><strong>Capacity:</strong> ${program.capacity}
-        <c:if test="${program.tournamentMode=='TEAM'}">
-          (max ${program.maxTeamMember} per team)
-        </c:if>
-      </p>
-      <p><strong>Fee:</strong> ${program.progFee}</p>
-      <p><strong>Prize Pool:</strong> ${program.prizePool}</p>
-      <p><strong>Open Signup:</strong>
-        <c:choose>
-          <c:when test="${program.openSignup}">Yes</c:when>
-          <c:otherwise>No</c:otherwise>
-        </c:choose>
-      </p>
-      <p><strong>Status:</strong> ${program.status}</p>
-    </section>
+    <table>
+      <tr><th>Type:</th><td>${program.programType}</td></tr>
+      <tr><th>Status:</th><td>${program.status}</td></tr>
+      <tr>
+        <th>Dates:</th>
+        <td>
+          <fmt:formatDate value="${program.startDate}" pattern="yyyy-MM-dd"/> –
+          <fmt:formatDate value="${program.endDate}"   pattern="yyyy-MM-dd"/>
+        </td>
+      </tr>
+      <tr><th>Time:</th>
+        <td>${program.startTime} – ${program.endTime}</td></tr>
+      <tr><th>Place:</th><td>${program.place}</td></tr>
+      <tr><th>Fee:</th>  <td>${program.progFee}</td></tr>
+      <tr><th>Prize:</th><td>${program.prizePool}</td></tr>
+      <tr><th>Capacity:</th>
+        <td>${program.maxCapacity}</td></tr>
+      <tr><th>Description:</th>
+        <td>${program.description}</td></tr>
+    </table>
+    <br/>
 
-    <c:if test="${sync != null}">
-      <section>
-        <h2>External Sync (Challonge)</h2>
-        <p><strong>URL:</strong>
-          <a href="${sync.challongeUrl}" target="_blank">${sync.challongeUrl}</a>
-        </p>
-        <p><strong>State:</strong> ${sync.challongeState}</p>
-        <p><strong>Created:</strong> ${sync.challongeCreatedAt}</p>
-        <p><strong>Last Synced:</strong> ${sync.challongeLastSyncAt}</p>
-        <c:if test="${sessionScope.roles.contains('high_council')}">
-          <form action="${pageContext.request.contextPath}/programs/${program.progID}/sync"
-                method="post" style="margin-top:0.5em;">
-            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
-            <button type="submit">Sync Now</button>
-          </form>
-        </c:if>
-      </section>
-    </c:if>
-
-    <section>
-      <h3>Participants</h3>
-      <ul>
-        <c:forEach var="pt" items="${participants}">
-          <li>${pt.userId} <small>joined at ${pt.joinedAt}</small></li>
+    <h3>Participants</h3>
+    <table class="summary-table">
+      <thead><tr>
+        <th>#</th><th>User/Team</th><th>Status</th><th>Joined</th>
+      </tr></thead>
+      <tbody>
+        <c:forEach var="p" items="${participants}" varStatus="st">
+          <tr>
+            <td>${st.index + 1}</td>
+            <td>
+              <c:choose>
+                <c:when test="${not empty p.teamId}">
+                  Team ${p.teamId}
+                </c:when>
+                <c:otherwise>
+                  ${p.userId}
+                </c:otherwise>
+              </c:choose>
+            </td>
+            <td>${p.status}</td>
+            <td><fmt:formatDate value="${p.joinedAt}" pattern="yyyy-MM-dd HH:mm"/></td>
+          </tr>
         </c:forEach>
-      </ul>
+      </tbody>
+    </table>
 
-      <c:if test="
-        ${program.status=='ACTIVE'
-          && !joinedProgIds.contains(program.progID)
-          && sessionScope.roles.contains('athlete')}">
-        <form action="${pageContext.request.contextPath}/programs/${program.progID}/join"
-              method="post">
-          <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
-          <button type="submit">Join Tournament</button>
-        </form>
-      </c:if>
-      <c:if test="${joinedProgIds.contains(program.progID)}">
-        <p><em>You have joined this tournament.</em></p>
-      </c:if>
-    </section>
+    <c:if test="${program.programType == 'TOURNAMENT'}">
+      <h3>Brackets</h3>
+      <a href="${ctx}/brackets/create?progId=${program.progId}"
+         class="btn blue-btn">New Bracket</a>
+      <table class="summary-table">
+        <thead><tr>
+          <th>#</th><th>Name</th><th>Format</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          <c:forEach var="b" items="${brackets}" varStatus="bst">
+            <tr>
+              <td>${bst.index + 1}</td>
+              <td>${b.name}</td>
+              <td>${b.format}</td>
+              <td>
+                <a href="${ctx}/brackets/view?bracketId=${b.bracketId}"
+                   class="btn green-btn">View</a>
+              </td>
+            </tr>
+          </c:forEach>
+        </tbody>
+      </table>
+    </c:if>
 
-    <section>
-      <h3>Raw Challonge Metadata</h3>
-      <pre style="background:#f9f9f9; padding:1em; border:1px solid #ddd;">
-${sync.challongeMetadata}
-      </pre>
-    </section>
-  </c:if>
+    <br/>
+    <c:if test="${program.status == 'OPEN'}">
+      <form action="${ctx}/programs/join" method="post">
+        <input type="hidden" name="progId" value="${program.progId}"/>
+        <input type="hidden" name="csrfToken"
+               value="${sessionScope.csrfToken}"/>
+        <c:if test="${program.programType=='TOURNAMENT'}">
+          Team ID:
+          <input type="text" name="teamId"/>
+        </c:if>
+        <button type="submit" class="btn green-btn">REGISTER</button>
+      </form>
+    </c:if>
 
-  <c:if test="${program.programType=='EVENT'}">
-    <section>
-      <h2>Event Details</h2>
-      <p>This is a non-tournament event; no external bracket is created.</p>
-    </section>
-  </c:if>
+    <br/>
+    <a href="${ctx}/programs/edit?progId=${program.progId}"
+       class="btn blue-btn">EDIT</a>
+    <form action="${ctx}/programs/delete" method="post" style="display:inline">
+      <input type="hidden" name="progId" value="${program.progId}"/>
+      <input type="hidden" name="csrfToken"
+             value="${sessionScope.csrfToken}"/>
+      <button type="submit" class="btn red-btn"
+              onclick="return confirm('Delete this item?')">
+        DELETE
+      </button>
+    </form>
 
-  <p style="margin-top:1em;">
-    <a href="${pageContext.request.contextPath}/programs">← Back to Programs</a>
-  </p>
-</body>
-</html>
+  </div>
+</div>
+<jsp:include page="/footer.jsp"/>

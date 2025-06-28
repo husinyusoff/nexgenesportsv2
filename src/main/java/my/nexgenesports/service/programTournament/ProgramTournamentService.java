@@ -1,142 +1,167 @@
-// src/main/java/my/nexgenesports/service/programTournament/ProgramTournamentService.java
 package my.nexgenesports.service.programTournament;
 
-import my.nexgenesports.dao.programTournament.ProgramParticipantDao;
-import my.nexgenesports.dao.programTournament.ProgramParticipantDaoImpl;
-import my.nexgenesports.dao.programTournament.ProgramTournamentDao;
-import my.nexgenesports.dao.programTournament.ProgramTournamentDaoImpl;
-import my.nexgenesports.model.ProgramParticipant;
-import my.nexgenesports.model.ProgramTournament;
-import my.nexgenesports.model.ProgramType;
-import my.nexgenesports.model.TournamentStatus;
+import java.io.IOException;
+import java.sql.SQLException;
+import my.nexgenesports.dao.programTournament.*;
+import my.nexgenesports.model.*;
 import my.nexgenesports.service.general.ServiceException;
 
-import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class ProgramTournamentService {
-    private final ProgramTournamentDao        dao         = new ProgramTournamentDaoImpl();
-    private final ProgramTournamentSyncService syncSvc    = new ProgramTournamentSyncService();
-    private final ProgramParticipantDao       partDao     = new ProgramParticipantDaoImpl();
+    private final ProgramTournamentDao ptDao =
+            new ProgramTournamentDaoImpl();
+    private final TournamentParticipantDao tpDao =
+            new TournamentParticipantDaoImpl();
+    private final BracketDao bracketDao =
+            new BracketDaoImpl();
+    private final ChallongeTournamentDao challongeDao =
+            new ChallongeTournamentDaoImpl();
+    private final GameDao gameDao =
+            new GameDaoImpl();
+    private final MeritLevelDao meritDao =
+            new MeritLevelDaoImpl();
 
-    public ProgramTournament createProgram(ProgramTournament t)
-            throws SQLException, ServiceException {
-        t.setStatus(TournamentStatus.PENDING_APPROVAL);
-        dao.insert(t);
-        return dao.findById(t.getProgID());
-    }
-
-    public ProgramTournament findById(String progID)
-            throws SQLException, ServiceException {
-        ProgramTournament t = dao.findById(progID);
-        if (t == null) {
-            throw new ServiceException("Program not found: " + progID);
-        }
-        return t;
-    }
-
-    public void updateTournament(ProgramTournament t)
-            throws SQLException, ServiceException {
-        // you can add any business-rule checks here
-        dao.update(t);
-    }
-
-    public void softDeleteTournament(String progID)
-            throws SQLException, ServiceException {
-        ProgramTournament t = dao.findById(progID);
-        if (t == null) {
-            throw new ServiceException("Program not found: " + progID);
-        }
-        // only allow delete in PENDING_APPROVAL
-        if (t.getStatus() != TournamentStatus.PENDING_APPROVAL) {
-            throw new ServiceException("Only PENDING_APPROVAL items can be deleted.");
-        }
-        dao.softDelete(progID);
-        // also clean up sync & participants if needed...
-    }
-
-    public void approve(String progID)
-            throws SQLException, ServiceException {
-        ProgramTournament t = findById(progID);
-        if (t.getStatus() != TournamentStatus.PENDING_APPROVAL) {
-            throw new ServiceException("Only PENDING_APPROVAL items can be approved.");
-        }
-        t.setStatus(TournamentStatus.ACTIVE);
-        dao.update(t);
-        if (t.getProgramType() == ProgramType.TOURNAMENT) {
-            syncSvc.createInChallonge(progID);
+    /** CREATE
+     * @param pt */
+    public void createProgramTournament(ProgramTournament pt) {
+        try {
+            ptDao.insert(pt);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to create", e);
         }
     }
 
-    public void cancel(String progID)
-            throws SQLException, ServiceException {
-        ProgramTournament t = findById(progID);
-        if (t.getStatus() == TournamentStatus.COMPLETED) {
-            throw new ServiceException("Cannot cancel a COMPLETED item.");
-        }
-        t.setStatus(TournamentStatus.CANCELLED);
-        dao.update(t);
-        if (t.getProgramType() == ProgramType.TOURNAMENT) {
-            syncSvc.cancelInChallonge(progID);
+    /** LIST PUBLIC (approved/open)
+     * @return  */
+    public List<ProgramTournament> listPublicProgramsAndTournaments() {
+        try {
+            return ptDao.findByStatusIn(List.of("OPEN","ACTIVE"));
+        } catch (Exception e) {
+            throw new ServiceException("Failed to list public", e);
         }
     }
 
-    public List<ProgramTournament> listByCreator(String creatorId) throws SQLException {
-        return dao.listByCreator(creatorId);
+    /** FIND DETAIL
+     * @param progId
+     * @return  */
+    public ProgramTournament findById(String progId) {
+        try {
+            return ptDao.findById(progId);
+        } catch (Exception e) {
+            throw new ServiceException("Not found: "+progId, e);
+        }
     }
 
-    public List<ProgramTournament> listPendingApproval() throws SQLException {
-        return dao.listByStatus(TournamentStatus.PENDING_APPROVAL.name());
+    /** UPDATE
+     * @param pt */
+    public void updateProgramTournament(ProgramTournament pt) {
+        try {
+            ptDao.update(pt);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to update", e);
+        }
     }
 
-    public List<ProgramTournament> listActive() throws SQLException {
-        return dao.listByStatus(TournamentStatus.ACTIVE.name());
+    /** SOFT DELETE
+     * @param progId */
+    public void deleteProgramTournament(String progId) {
+        try {
+            ptDao.softDelete(progId);
+        } catch (Exception e) {
+            throw new ServiceException("Failed to delete", e);
+        }
     }
 
-    /**
-     * Join a program/tournament.For SOLO, just one record; for TEAM you must
- handle team-selection yourself (not implemented here).
-     * @param progID
+    /** APPROVE → OPEN
+     * @param progId
+     * @param by */
+    public void approveProgramTournament(String progId, String by) {
+        try {
+            ptDao.updateStatus(progId, "OPEN");
+        } catch (Exception e) {
+            throw new ServiceException("Failed to approve", e);
+        }
+    }
+
+    /** REGISTER PARTICIPANT
+     * @param progId
      * @param userId
-     * @throws java.sql.SQLException
-     */
-    public void joinTournament(String progID, String userId)
-            throws SQLException, ServiceException {
-        ProgramTournament t = findById(progID);
-
-        if (t.getStatus() != TournamentStatus.ACTIVE) {
-            throw new ServiceException("Can only join ACTIVE items.");
+     * @param teamId */
+    public void registerParticipant(String progId, String userId, String teamId) {
+        try {
+            TournamentParticipant tp = new TournamentParticipant();
+            tp.setProgId(progId);
+            tp.setUserId(userId);
+            tp.setTeamId(teamId);
+            tpDao.insert(tp);
+        } catch (SQLException e) {
+            throw new ServiceException("Failed to register", e);
         }
-
-        // prevent double-join
-        if (partDao.exists(progID, userId)) {
-            throw new ServiceException("User already joined.");
-        }
-
-        // capacity check
-        int count = partDao.countByProgId(progID);
-        if (count >= t.getCapacity()) {
-            throw new ServiceException("This program is full.");
-        }
-
-        // all good, create participant record
-        ProgramParticipant p = new ProgramParticipant();
-        p.setProgID(progID);
-        p.setUserId(userId);
-        p.setTeamId(null);
-        p.setJoinedAt(LocalDateTime.now());
-        partDao.insert(p);
     }
-    
-    // in ProgramTournamentService.java
-/**
- * Lookup by arbitrary status string.
-     * @param status
-     * @return 
-     * @throws java.sql.SQLException
- */
-public List<ProgramTournament> listByStatus(String status) throws SQLException {
-    return dao.listByStatus(status);
-}
+
+    /** LIST PARTICIPANTS
+     * @param progId
+     * @return  */
+    public List<TournamentParticipant> listParticipants(String progId) {
+        try {
+            return tpDao.findByProgId(progId);
+        } catch (SQLException e) {
+            throw new ServiceException("Failed to list participants", e);
+        }
+    }
+
+    /** LIST BRACKETS
+     * @param progId
+     * @return  */
+    public List<Bracket> listBrackets(String progId) {
+        try {
+            return bracketDao.findByProg(progId);
+        } catch (SQLException e) {
+            throw new ServiceException("Failed to list brackets", e);
+        }
+    }
+
+    /** GET CHALLONGE RECORD
+     * @param progId
+     * @return  */
+    public ChallongeTournament getChallonge(String progId) {
+        try {
+            return challongeDao.findByProg(progId);
+        } catch (SQLException e) {
+            throw new ServiceException("Failed to load bracket sync info", e);
+        }
+    }
+
+    /** SYNC WITH CHALLONGE (stubbed)
+     * @param progId */
+    public void syncWithChallonge(String progId) {
+        try {
+            ProgramTournament pt = ptDao.findById(progId);
+            ChallongeClient client = new ChallongeClient();
+            ChallongeTournament out;
+            ChallongeTournament existing = challongeDao.findByProg(progId);
+            if (existing == null) {
+                out = client.createTournament(pt);
+                challongeDao.insert(out);
+            } else {
+                out = client.syncTournament(existing);
+                challongeDao.update(out);
+            }
+        } catch (IOException | SQLException e) {
+            throw new ServiceException("Challonge sync failed", e);
+        }
+    }
+
+    /** FOR DROPDOWNS
+     * @return  */
+    public List<Game> listAllGames() {
+        try { return gameDao.listAll(); }
+        catch(SQLException e){ throw new ServiceException("Failed games",e); }
+    }
+
+    public List<MeritLevel> listAllMeritLevels() {
+        try { return meritDao.findAll(); }
+        catch(SQLException e){ throw new ServiceException("Failed merits",e); }
+    }
 }
