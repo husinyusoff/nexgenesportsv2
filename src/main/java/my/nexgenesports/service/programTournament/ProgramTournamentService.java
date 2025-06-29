@@ -208,6 +208,17 @@ public class ProgramTournamentService {
         }
     }
 
+    public Integer resolveMeritId(String programType, String scope) {
+        String category = "PROGRAM".equalsIgnoreCase(programType)
+                ? "Program" : "Tournament";
+        try {
+            MeritLevel ml = meritDao.findByCategoryAndScope(category, scope);
+            return ml != null ? ml.getMeritId() : null;
+        } catch (SQLException e) {
+            throw new ServiceException("Failed merits", e);
+        }
+    }
+
     /**
      * LIST ALL (any status)
      *
