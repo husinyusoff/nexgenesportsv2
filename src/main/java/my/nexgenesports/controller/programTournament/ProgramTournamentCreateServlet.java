@@ -29,13 +29,18 @@ public class ProgramTournamentCreateServlet extends HttpServlet {
         var games = new GameService().listGames();
         req.setAttribute("games", games);
 
-        List<String> scopes = null;
+        List<String> scopes;
         try {
             scopes = new ProgramTournamentDaoImpl().findAllScopes();
+            if (scopes == null || scopes.isEmpty()) {
+                scopes = List.of("Club", "University", "State", "National", "International");
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ProgramTournamentCreateServlet.class.getName()).log(Level.SEVERE, null, ex);
+            scopes = List.of("Club", "University", "State", "National", "International");
         }
         req.setAttribute("scopes", scopes);
+        req.setAttribute("scopesJson", new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(scopes));
 
         req.getRequestDispatcher("/programCreate.jsp")
                 .forward(req, resp);
