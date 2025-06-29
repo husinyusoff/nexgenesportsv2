@@ -10,8 +10,10 @@ public interface ProgramTournamentDao {
     void insert(ProgramTournament pt);
     ProgramTournament findById(String progId);
     List<ProgramTournament> findByStatusIn(List<String> statuses);
+    List<ProgramTournament> findAll();
     void update(ProgramTournament pt);
     void softDelete(String progId);
     void updateStatus(String progId, String status);
     List<TournamentParticipant> listParticipants(String progId) throws SQLException;
+    public List<String> findAllScopes() throws SQLException;
 }

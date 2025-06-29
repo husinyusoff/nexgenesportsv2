@@ -4,7 +4,7 @@ package my.nexgenesports.model;
 import java.time.LocalDateTime;
 
 public class ChallongeTournament {
-    private String progId;
+    private int progId;
     private String challongeTournamentId;
     private String challongeUrl;
     private String challongeState;
@@ -13,8 +13,8 @@ public class ChallongeTournament {
     private String challongeMetadata;
 
     // getters + setters
-    public String getProgId() { return progId; }
-    public void setProgId(String progId) { this.progId = progId; }
+    public int getProgId() { return progId; }
+    public void setProgId(int progId) { this.progId = progId; }
     public String getChallongeTournamentId() { return challongeTournamentId; }
     public void setChallongeTournamentId(String id) { this.challongeTournamentId = id; }
     public String getChallongeUrl() { return challongeUrl; }

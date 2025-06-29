@@ -18,8 +18,7 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
     public void insert(ProgramTournament pt) {
         String sql = """
             INSERT INTO program_tournament
-              (prog_id,
-               creator_id,
+              (creator_id,
                game_id,
                program_name,
                program_type,
@@ -41,65 +40,70 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
 
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
 
-            ps.setString(1, pt.getProgId());
-            ps.setString(2, pt.getCreatorId());
+            ps.setString(1, pt.getCreatorId());
 
             if (pt.getGameId() != null) {
-                ps.setInt(3, pt.getGameId());
+                ps.setInt(2, pt.getGameId());
             } else {
-                ps.setNull(3, Types.INTEGER);
+                ps.setNull(2, Types.INTEGER);
             }
 
-            ps.setString(4, pt.getProgramName());
-            ps.setString(5, pt.getProgramType());
+            ps.setString(3, pt.getProgramName());
+            ps.setString(4, pt.getProgramType());
 
             if (pt.getMeritId() != null) {
-                ps.setInt(6, pt.getMeritId());
+                ps.setInt(5, pt.getMeritId());
             } else {
-                ps.setNull(6, Types.INTEGER);
+                ps.setNull(5, Types.INTEGER);
             }
 
-            ps.setString(7, pt.getPlace());
-            ps.setString(8, pt.getDescription());
+            ps.setString(6, pt.getPlace());
+            ps.setString(7, pt.getDescription());
 
             if (pt.getProgFee() != null) {
-                ps.setBigDecimal(9, pt.getProgFee());
+                ps.setBigDecimal(8, pt.getProgFee());
             } else {
-                ps.setNull(9, Types.DECIMAL);
+                ps.setNull(8, Types.DECIMAL);
             }
 
-            ps.setDate(10, Date.valueOf(pt.getStartDate()));
-            ps.setDate(11, Date.valueOf(pt.getEndDate()));
+            ps.setDate(9, Date.valueOf(pt.getStartDate()));
+            ps.setDate(10, Date.valueOf(pt.getEndDate()));
 
             if (pt.getStartTime() != null) {
-                ps.setTime(12, Time.valueOf(pt.getStartTime()));
+                ps.setTime(11, Time.valueOf(pt.getStartTime()));
+            } else {
+                ps.setNull(11, Types.TIME);
+            }
+
+            if (pt.getEndTime() != null) {
+                ps.setTime(12, Time.valueOf(pt.getEndTime()));
             } else {
                 ps.setNull(12, Types.TIME);
             }
 
-            if (pt.getEndTime() != null) {
-                ps.setTime(13, Time.valueOf(pt.getEndTime()));
-            } else {
-                ps.setNull(13, Types.TIME);
-            }
-
             if (pt.getPrizePool() != null) {
-                ps.setBigDecimal(14, pt.getPrizePool());
+                ps.setBigDecimal(13, pt.getPrizePool());
             } else {
-                ps.setNull(14, Types.DECIMAL);
+                ps.setNull(13, Types.DECIMAL);
             }
 
-            ps.setInt(15, pt.getMaxCapacity());
+            ps.setInt(14, pt.getMaxCapacity());
 
             if (pt.getMaxTeamMember() != null) {
-                ps.setInt(16, pt.getMaxTeamMember());
+                ps.setInt(15, pt.getMaxTeamMember());
             } else {
-                ps.setNull(16, Types.INTEGER);
+                ps.setNull(15, Types.INTEGER);
             }
 
-            ps.setString(17, pt.getStatus());
+            ps.setString(16, pt.getStatus());
 
             ps.executeUpdate();
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    pt.setProgId(keys.getInt(1));
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Error inserting ProgramTournament", e);
         }
@@ -238,7 +242,7 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
             ps.setString(idx++, pt.getStatus());
 
             // final parameter: which row to update
-            ps.setString(idx, pt.getProgId());
+            ps.setInt(idx, pt.getProgId());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -284,7 +288,7 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
     private ProgramTournament mapRow(ResultSet rs) throws SQLException {
         ProgramTournament pt = new ProgramTournament();
 
-        pt.setProgId(rs.getString("prog_id"));
+        pt.setProgId(rs.getInt("prog_id"));
         pt.setCreatorId(rs.getString("creator_id"));
 
         int gid = rs.getInt("game_id");
@@ -372,6 +376,33 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
                 }
                 return out;
             }
+        }
+    }
+
+    @Override
+    public List<ProgramTournament> findAll() {
+        String sql = "SELECT * FROM program_tournament WHERE deleted_flag = 0 ORDER BY start_date";
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            List<ProgramTournament> out = new ArrayList<>();
+            while (rs.next()) {
+                out.add(mapRow(rs));
+            }
+            return out;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error listing ProgramTournaments", e);
+        }
+    }
+
+    // in your DAO
+    @Override
+    public List<String> findAllScopes() throws SQLException {
+        String sql = "SELECT DISTINCT scope FROM merit_level";
+        try (var c = DBConnection.getConnection(); var ps = c.prepareStatement(sql); var rs = ps.executeQuery()) {
+            List<String> scopes = new ArrayList<>();
+            while (rs.next()) {
+                scopes.add(rs.getString("scope"));
+            }
+            return scopes;
         }
     }
 

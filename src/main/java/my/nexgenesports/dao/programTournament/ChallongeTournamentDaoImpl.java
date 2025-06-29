@@ -17,7 +17,7 @@ public class ChallongeTournamentDaoImpl implements ChallongeTournamentDao {
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
                 ChallongeTournament ct = new ChallongeTournament();
-                ct.setProgId(             rs.getString("prog_id"));
+                ct.setProgId(             rs.getInt("prog_id"));
                 ct.setChallongeTournamentId(rs.getString("challonge_id"));
                 ct.setChallongeUrl(       rs.getString("challonge_url"));
                 ct.setChallongeState(     rs.getString("state"));
@@ -45,7 +45,7 @@ public class ChallongeTournamentDaoImpl implements ChallongeTournamentDao {
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
-            ps.setString(1, ct.getProgId());
+            ps.setInt(1, ct.getProgId());
             ps.setString(2, ct.getChallongeTournamentId());
             ps.setString(3, ct.getChallongeUrl());
             ps.setString(4, ct.getChallongeState());
@@ -81,7 +81,7 @@ public class ChallongeTournamentDaoImpl implements ChallongeTournamentDao {
             ps.setTimestamp(5, ct.getChallongeLastSyncAt() != null
                 ? Timestamp.valueOf(ct.getChallongeLastSyncAt())
                 : null);
-            ps.setString(6, ct.getProgId());
+            ps.setInt(6, ct.getProgId());
             ps.executeUpdate();
         }
     }

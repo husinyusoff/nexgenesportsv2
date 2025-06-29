@@ -111,7 +111,7 @@ public void update(Bracket b) throws SQLException {
 
     @Override
     public void softDelete(int id) throws SQLException {
-        String sql = "UPDATE bracket SET deleted_flag = 1 WHERE bracket_id = ?";
+        String sql = "UPDATE bracket SET is_deleted = 1 WHERE bracket_id = ?";
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();

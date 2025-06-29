@@ -42,6 +42,7 @@ my\nexgenesports\model\Station.class
 my\nexgenesports\service\general\PaymentService.class
 my\nexgenesports\dao\team\ArchivedTeamDao.class
 my\nexgenesports\dao\memberships\UserGamingPassDao.class
+my\nexgenesports\model\MeritEntry.class
 my\nexgenesports\dao\programTournament\GameDaoImpl.class
 my\nexgenesports\controller\user\LogoutServlet.class
 my\nexgenesports\model\UserGamingPass.class
@@ -65,6 +66,7 @@ my\nexgenesports\controller\booking\DeleteStationServlet.class
 my\nexgenesports\model\TournamentParticipant.class
 my\nexgenesports\dao\programTournament\MeritScoreDao.class
 my\nexgenesports\controller\booking\SelectStationServlet.class
+my\nexgenesports\controller\programTournament\ProgramTournamentListServlet.class
 my\nexgenesports\controller\booking\EditStationServlet.class
 my\nexgenesports\dao\memberships\MembershipSessionDaoImpl.class
 my\nexgenesports\controller\programTournament\BracketScoreServlet.class

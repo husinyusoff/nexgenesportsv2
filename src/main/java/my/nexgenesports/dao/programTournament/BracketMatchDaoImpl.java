@@ -143,13 +143,11 @@ public class BracketMatchDaoImpl implements BracketMatchDao {
             SELECT *
               FROM bracket_match
              WHERE bracket_id   = ?
-               AND round        = ?
                AND match_number = ?
             """;
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, bracketId);
-            ps.setInt(2, round);
-            ps.setInt(3, matchNumber);
+            ps.setInt(2, matchNumber);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? mapRow(rs) : null;
             }

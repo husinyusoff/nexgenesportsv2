@@ -36,7 +36,6 @@ public class ProgramTournamentEditServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         ProgramTournament pt = new ProgramTournament();
-        pt.setProgId       (req.getParameter("progId").trim());
         pt.setCreatorId    (req.getParameter("creatorId"));
         pt.setGameId       (Integer.valueOf(req.getParameter("gameId")));
         pt.setProgramName  (req.getParameter("programName"));

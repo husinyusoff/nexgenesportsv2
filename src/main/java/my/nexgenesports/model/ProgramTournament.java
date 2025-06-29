@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class ProgramTournament {
-    private String progId;
+    private int progId;
     private String creatorId;
     private Integer gameId;
     private String programName;
@@ -28,10 +28,10 @@ public class ProgramTournament {
     private LocalDateTime updatedAt;
     private boolean deletedFlag;
 
-    public String getProgId() {
+    public Integer getProgId() {
         return progId;
     }
-    public void setProgId(String progId) {
+    public void setProgId(Integer progId) {
         this.progId = progId;
     }
     public String getCreatorId() {

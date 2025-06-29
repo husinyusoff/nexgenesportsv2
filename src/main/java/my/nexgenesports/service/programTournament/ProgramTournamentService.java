@@ -9,21 +9,25 @@ import my.nexgenesports.service.general.ServiceException;
 import java.util.List;
 
 public class ProgramTournamentService {
-    private final ProgramTournamentDao ptDao =
-            new ProgramTournamentDaoImpl();
-    private final TournamentParticipantDao tpDao =
-            new TournamentParticipantDaoImpl();
-    private final BracketDao bracketDao =
-            new BracketDaoImpl();
-    private final ChallongeTournamentDao challongeDao =
-            new ChallongeTournamentDaoImpl();
-    private final GameDao gameDao =
-            new GameDaoImpl();
-    private final MeritLevelDao meritDao =
-            new MeritLevelDaoImpl();
 
-    /** CREATE
-     * @param pt */
+    private final ProgramTournamentDao ptDao
+            = new ProgramTournamentDaoImpl();
+    private final TournamentParticipantDao tpDao
+            = new TournamentParticipantDaoImpl();
+    private final BracketDao bracketDao
+            = new BracketDaoImpl();
+    private final ChallongeTournamentDao challongeDao
+            = new ChallongeTournamentDaoImpl();
+    private final GameDao gameDao
+            = new GameDaoImpl();
+    private final MeritLevelDao meritDao
+            = new MeritLevelDaoImpl();
+
+    /**
+     * CREATE
+     *
+     * @param pt
+     */
     public void createProgramTournament(ProgramTournament pt) {
         try {
             ptDao.insert(pt);
@@ -32,29 +36,38 @@ public class ProgramTournamentService {
         }
     }
 
-    /** LIST PUBLIC (approved/open)
-     * @return  */
+    /**
+     * LIST PUBLIC (approved/open)
+     *
+     * @return
+     */
     public List<ProgramTournament> listPublicProgramsAndTournaments() {
         try {
-            return ptDao.findByStatusIn(List.of("OPEN","ACTIVE"));
+            return ptDao.findByStatusIn(List.of("OPEN", "ACTIVE"));
         } catch (Exception e) {
             throw new ServiceException("Failed to list public", e);
         }
     }
 
-    /** FIND DETAIL
+    /**
+     * FIND DETAIL
+     *
      * @param progId
-     * @return  */
+     * @return
+     */
     public ProgramTournament findById(String progId) {
         try {
             return ptDao.findById(progId);
         } catch (Exception e) {
-            throw new ServiceException("Not found: "+progId, e);
+            throw new ServiceException("Not found: " + progId, e);
         }
     }
 
-    /** UPDATE
-     * @param pt */
+    /**
+     * UPDATE
+     *
+     * @param pt
+     */
     public void updateProgramTournament(ProgramTournament pt) {
         try {
             ptDao.update(pt);
@@ -63,8 +76,11 @@ public class ProgramTournamentService {
         }
     }
 
-    /** SOFT DELETE
-     * @param progId */
+    /**
+     * SOFT DELETE
+     *
+     * @param progId
+     */
     public void deleteProgramTournament(String progId) {
         try {
             ptDao.softDelete(progId);
@@ -73,9 +89,12 @@ public class ProgramTournamentService {
         }
     }
 
-    /** APPROVE → OPEN
+    /**
+     * APPROVE → OPEN
+     *
      * @param progId
-     * @param by */
+     * @param by
+     */
     public void approveProgramTournament(String progId, String by) {
         try {
             ptDao.updateStatus(progId, "OPEN");
@@ -84,10 +103,13 @@ public class ProgramTournamentService {
         }
     }
 
-    /** REGISTER PARTICIPANT
+    /**
+     * REGISTER PARTICIPANT
+     *
      * @param progId
      * @param userId
-     * @param teamId */
+     * @param teamId
+     */
     public void registerParticipant(String progId, String userId, String teamId) {
         try {
             TournamentParticipant tp = new TournamentParticipant();
@@ -100,9 +122,12 @@ public class ProgramTournamentService {
         }
     }
 
-    /** LIST PARTICIPANTS
+    /**
+     * LIST PARTICIPANTS
+     *
      * @param progId
-     * @return  */
+     * @return
+     */
     public List<TournamentParticipant> listParticipants(String progId) {
         try {
             return tpDao.findByProgId(progId);
@@ -111,9 +136,12 @@ public class ProgramTournamentService {
         }
     }
 
-    /** LIST BRACKETS
+    /**
+     * LIST BRACKETS
+     *
      * @param progId
-     * @return  */
+     * @return
+     */
     public List<Bracket> listBrackets(String progId) {
         try {
             return bracketDao.findByProg(progId);
@@ -122,9 +150,12 @@ public class ProgramTournamentService {
         }
     }
 
-    /** GET CHALLONGE RECORD
+    /**
+     * GET CHALLONGE RECORD
+     *
      * @param progId
-     * @return  */
+     * @return
+     */
     public ChallongeTournament getChallonge(String progId) {
         try {
             return challongeDao.findByProg(progId);
@@ -133,8 +164,11 @@ public class ProgramTournamentService {
         }
     }
 
-    /** SYNC WITH CHALLONGE (stubbed)
-     * @param progId */
+    /**
+     * SYNC WITH CHALLONGE (stubbed)
+     *
+     * @param progId
+     */
     public void syncWithChallonge(String progId) {
         try {
             ProgramTournament pt = ptDao.findById(progId);
@@ -153,15 +187,54 @@ public class ProgramTournamentService {
         }
     }
 
-    /** FOR DROPDOWNS
-     * @return  */
+    /**
+     * FOR DROPDOWNS
+     *
+     * @return
+     */
     public List<Game> listAllGames() {
-        try { return gameDao.listAll(); }
-        catch(SQLException e){ throw new ServiceException("Failed games",e); }
+        try {
+            return gameDao.listAll();
+        } catch (SQLException e) {
+            throw new ServiceException("Failed games", e);
+        }
     }
 
     public List<MeritLevel> listAllMeritLevels() {
-        try { return meritDao.findAll(); }
-        catch(SQLException e){ throw new ServiceException("Failed merits",e); }
+        try {
+            return meritDao.findAll();
+        } catch (SQLException e) {
+            throw new ServiceException("Failed merits", e);
+        }
+    }
+
+    /**
+     * LIST ALL (any status)
+     *
+     * @return
+     */
+    public List<ProgramTournament> listAllProgramsAndTournaments() {
+        try {
+            return ptDao.findByStatusIn(List.of(
+                    "PENDING",
+                    "PENDING_APPROVAL",
+                    "OPEN",
+                    "ACTIVE",
+                    "CLOSED",
+                    "COMPLETED",
+                    "CANCELLED",
+                    "REJECTED"
+            ));
+        } catch (Exception e) {
+            throw new ServiceException("Failed to list all", e);
+        }
+    }
+
+    public List<ProgramTournament> listAllPrograms() {
+        try {
+            return ptDao.findAll();
+        } catch (Exception e) {
+            throw new ServiceException("Failed to list programs", e);
+        }
     }
 }

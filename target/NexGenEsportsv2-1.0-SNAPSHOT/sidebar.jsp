@@ -57,7 +57,7 @@
         <li class="dropdown">
             <a href="javascript:void(0)" class="dropdown-btn">Program</a>
             <ul class="dropdown-content">
-                <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/programs/join")) { %>
+                <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/programs/create")) { %>
                 <li><a href="${ctx}/programs/new">Create Program</a></li>
                     <% } %>
                     <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/programs/join")) { %>

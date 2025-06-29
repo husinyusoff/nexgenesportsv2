@@ -49,6 +49,7 @@ D:\NexGenEsportsv2\src\main\java\my\nexgenesports\controller\programTournament\P
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\dao\programTournament\GameDao.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\controller\booking\SelectStationServlet.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\model\MeritScore.java
+D:\NexGenEsportsv2\src\main\java\my\nexgenesports\controller\programTournament\ProgramTournamentListServlet.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\controller\memberships\PayPassServlet.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\controller\team\TeamDetailServlet.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\model\JoinRequest.java
@@ -113,6 +114,7 @@ D:\NexGenEsportsv2\src\main\java\my\nexgenesports\controller\team\TeamRemoveServ
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\model\PassTier.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\controller\programTournament\ProgramTournamentDeleteServlet.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\dao\programTournament\BracketMatchDaoImpl.java
+D:\NexGenEsportsv2\src\main\java\my\nexgenesports\model\MeritEntry.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\model\Game.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\dao\user\UserDao.java
 D:\NexGenEsportsv2\src\main\java\my\nexgenesports\controller\booking\BookStationServlet.java
