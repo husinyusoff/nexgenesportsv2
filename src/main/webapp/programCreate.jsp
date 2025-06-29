@@ -52,9 +52,6 @@
                     <label for="meritScope">Level</label>
                     <select id="meritScope" name="meritScope" required>
                         <option value="">-- select level --</option>
-                        <c:forEach var="scope" items="${scopes}">
-                            <option value="${scope}">${scope}</option>
-                        </c:forEach>
                     </select>
                 </div>
 
@@ -126,17 +123,40 @@
             </form>
         </main>
 
+        <script id="scopesData" type="application/json">
+            ${scopesJson}
+        </script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const typeSel = document.getElementById('programType');
                 const gameGrp = document.getElementById('gameGroup');
                 const teamGrp = document.getElementById('teamMemberGroup');
+                const scopeSel = document.getElementById('meritScope');
+                const scopes = JSON.parse(document.getElementById('scopesData').textContent || '[]');
+
+                function populateScopes() {
+                    scopeSel.innerHTML = '<option value="">-- select level --</option>';
+                    scopes.forEach(sc => {
+                        const opt = document.createElement('option');
+                        opt.value = sc;
+                        opt.textContent = sc;
+                        scopeSel.appendChild(opt);
+                    });
+                }
 
                 typeSel.addEventListener('change', () => {
                     const isTour = typeSel.value === 'TOURNAMENT';
                     gameGrp.style.display = isTour ? 'block' : 'none';
                     teamGrp.style.display = isTour ? 'block' : 'none';
+                    populateScopes();
+                    scopeSel.disabled = !typeSel.value;
                 });
+
+                // initial population
+                scopeSel.disabled = !typeSel.value;
+                if (typeSel.value) {
+                    populateScopes();
+                }
             });
         </script>
     </body>
