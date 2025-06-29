@@ -51,20 +51,47 @@ public class ProgramTournamentCreateServlet extends HttpServlet {
                     ? (String) session.getAttribute("username")
                     : null;
             pt.setCreatorId(creator);
-            pt.setGameId(Integer.valueOf(req.getParameter("gameId")));
+
+            String gameId = req.getParameter("gameId");
+            pt.setGameId(gameId != null && !gameId.isBlank()
+                    ? Integer.valueOf(gameId) : null);
+
             pt.setProgramName(req.getParameter("programName"));
-            pt.setProgramType(req.getParameter("programType"));
-            pt.setMeritId(Integer.valueOf(req.getParameter("meritId")));
+
+            String programType = req.getParameter("programType");
+            pt.setProgramType(programType);
+
+            String scope = req.getParameter("meritScope");
+            pt.setMeritId(svc.resolveMeritId(programType, scope));
+
             pt.setPlace(req.getParameter("place"));
             pt.setDescription(req.getParameter("description"));
-            pt.setProgFee(new BigDecimal(req.getParameter("progFee")));
+
+            String fee = req.getParameter("progFee");
+            pt.setProgFee(fee != null && !fee.isBlank()
+                    ? new BigDecimal(fee) : null);
+
             pt.setStartDate(LocalDate.parse(req.getParameter("startDate")));
             pt.setEndDate(LocalDate.parse(req.getParameter("endDate")));
-            pt.setStartTime(LocalTime.parse(req.getParameter("startTime")));
-            pt.setEndTime(LocalTime.parse(req.getParameter("endTime")));
-            pt.setPrizePool(new BigDecimal(req.getParameter("prizePool")));
+
+            String st = req.getParameter("startTime");
+            pt.setStartTime(st != null && !st.isBlank()
+                    ? LocalTime.parse(st) : null);
+
+            String et = req.getParameter("endTime");
+            pt.setEndTime(et != null && !et.isBlank()
+                    ? LocalTime.parse(et) : null);
+
+            String pool = req.getParameter("prizePool");
+            pt.setPrizePool(pool != null && !pool.isBlank()
+                    ? new BigDecimal(pool) : null);
+
             pt.setMaxCapacity(Integer.parseInt(req.getParameter("maxCapacity")));
-            pt.setMaxTeamMember(Integer.valueOf(req.getParameter("maxTeamMember")));
+
+            String mtm = req.getParameter("maxTeamMember");
+            pt.setMaxTeamMember(mtm != null && !mtm.isBlank()
+                    ? Integer.valueOf(mtm) : null);
+
             pt.setStatus("PENDING");  // default status
 
             svc.createProgramTournament(pt);
