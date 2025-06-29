@@ -60,6 +60,20 @@ public class MeritLevelDaoImpl implements MeritLevelDao {
     }
 
     @Override
+    public MeritLevel findByCategoryAndScope(String category, String scope) throws SQLException {
+        String sql = "SELECT * FROM merit_level WHERE category = ? AND scope = ?";
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, category);
+            ps.setString(2, scope);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? mapRow(rs) : null;
+            }
+        }
+    }
+
+    @Override
     public void update(MeritLevel ml) throws SQLException {
         String sql = """
             UPDATE merit_level
