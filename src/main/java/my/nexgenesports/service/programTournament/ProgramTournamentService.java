@@ -227,8 +227,8 @@ public class ProgramTournamentService {
     public List<ProgramTournament> listAllProgramsAndTournaments() {
         try {
             return ptDao.findByStatusIn(List.of(
-                    "PENDING",
                     "PENDING_APPROVAL",
+                    "APPROVED",
                     "OPEN",
                     "ACTIVE",
                     "CLOSED",
@@ -248,4 +248,51 @@ public class ProgramTournamentService {
             throw new ServiceException("Failed to list programs", e);
         }
     }
+
+    /**
+     * Approve a pending tournament
+     *
+     * @param progId
+     */
+    public void approveTournament(int progId) {
+        ProgramTournament pt = ptDao.findById(String.valueOf(progId));
+        if (pt == null) {
+            throw new ServiceException("Not found: " + progId);
+        }
+        if (!ProgramTournament.STATUS_PENDING.equals(pt.getStatus())) {
+            throw new ServiceException("Can only approve when status is PENDING_APPROVAL");
+        }
+        ptDao.updateStatus(String.valueOf(progId), ProgramTournament.STATUS_APPROVED);
+    }
+
+    /**
+     * Reject a pending tournament
+     *
+     * @param progId
+     */
+    public void rejectTournament(int progId) {
+        ProgramTournament pt = ptDao.findById(String.valueOf(progId));
+        if (pt == null) {
+            throw new ServiceException("Not found: " + progId);
+        }
+        if (!ProgramTournament.STATUS_PENDING.equals(pt.getStatus())) {
+            throw new ServiceException("Can only reject when status is PENDING_APPROVAL");
+        }
+        ptDao.updateStatus(String.valueOf(progId), ProgramTournament.STATUS_REJECTED);
+    }
+
+    public void changeStatus(String progId, String newStatus) {
+        ProgramTournament pt = ptDao.findById(progId);
+        if (pt == null) {
+            throw new ServiceException("Not found: " + progId);
+        }
+        String old = pt.getStatus();
+        // only allow transitions APPROVED→{OPEN,CLOSED} or OPEN↔CLOSED
+        if (!List.of("APPROVED", "OPEN", "CLOSED").contains(old)
+                || !List.of("OPEN", "CLOSED").contains(newStatus)) {
+            throw new ServiceException("Invalid status change");
+        }
+        ptDao.updateStatus(progId, newStatus);
+    }
+
 }

@@ -4,9 +4,6 @@ import my.nexgenesports.model.ProgramTournament;
 import my.nexgenesports.util.DBConnection;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import static java.util.stream.Collectors.joining;
@@ -34,75 +31,87 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
                max_capacity,
                max_team_member,
                status,
-               deleted_flag)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
-            """;
+               bracket_format
+              )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
 
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, pt.getCreatorId());
-
+            int i = 1;
+            // 1) creator_id
+            ps.setString(i++, pt.getCreatorId());
+            // 2) game_id
             if (pt.getGameId() != null) {
-                ps.setInt(2, pt.getGameId());
+                ps.setInt(i++, pt.getGameId());
             } else {
-                ps.setNull(2, Types.INTEGER);
+                ps.setNull(i++, Types.INTEGER);
             }
-
-            ps.setString(3, pt.getProgramName());
-            ps.setString(4, pt.getProgramType());
-
+            // 3) program_name
+            ps.setString(i++, pt.getProgramName());
+            // 4) program_type
+            ps.setString(i++, pt.getProgramType());
+            // 5) merit_id
             if (pt.getMeritId() != null) {
-                ps.setInt(5, pt.getMeritId());
+                ps.setInt(i++, pt.getMeritId());
             } else {
-                ps.setNull(5, Types.INTEGER);
+                ps.setNull(i++, Types.INTEGER);
             }
-
-            ps.setString(6, pt.getPlace());
-            ps.setString(7, pt.getDescription());
-
+            // 6) place
+            ps.setString(i++, pt.getPlace());
+            // 7) description
+            ps.setString(i++, pt.getDescription());
+            // 8) prog_fee
             if (pt.getProgFee() != null) {
-                ps.setBigDecimal(8, pt.getProgFee());
+                ps.setBigDecimal(i++, pt.getProgFee());
             } else {
-                ps.setNull(8, Types.DECIMAL);
+                ps.setNull(i++, Types.DECIMAL);
             }
-
-            ps.setDate(9, Date.valueOf(pt.getStartDate()));
-            ps.setDate(10, Date.valueOf(pt.getEndDate()));
-
+            // 9) start_date
+            ps.setDate(i++, Date.valueOf(pt.getStartDate()));
+            // 10) end_date
+            ps.setDate(i++, Date.valueOf(pt.getEndDate()));
+            // 11) start_time
             if (pt.getStartTime() != null) {
-                ps.setTime(11, Time.valueOf(pt.getStartTime()));
+                ps.setTime(i++, Time.valueOf(pt.getStartTime()));
             } else {
-                ps.setNull(11, Types.TIME);
+                ps.setNull(i++, Types.TIME);
             }
-
+            // 12) end_time
             if (pt.getEndTime() != null) {
-                ps.setTime(12, Time.valueOf(pt.getEndTime()));
+                ps.setTime(i++, Time.valueOf(pt.getEndTime()));
             } else {
-                ps.setNull(12, Types.TIME);
+                ps.setNull(i++, Types.TIME);
             }
-
+            // 13) prize_pool
             if (pt.getPrizePool() != null) {
-                ps.setBigDecimal(13, pt.getPrizePool());
+                ps.setBigDecimal(i++, pt.getPrizePool());
             } else {
-                ps.setNull(13, Types.DECIMAL);
+                ps.setNull(i++, Types.DECIMAL);
             }
-
-            ps.setInt(14, pt.getMaxCapacity());
-
+            // 14) max_capacity
+            ps.setInt(i++, pt.getMaxCapacity());
+            // 15) max_team_member
             if (pt.getMaxTeamMember() != null) {
-                ps.setInt(15, pt.getMaxTeamMember());
+                ps.setInt(i++, pt.getMaxTeamMember());
             } else {
-                ps.setNull(15, Types.INTEGER);
+                ps.setNull(i++, Types.INTEGER);
             }
-
-            ps.setString(16, pt.getStatus());
+            // 16) status
+            ps.setString(i++, pt.getStatus());
+            // 17) bracket_format
+            if (pt.getBracketFormat() != null) {
+                ps.setString(i++, pt.getBracketFormat());
+            } else {
+                ps.setNull(i++, Types.VARCHAR);
+            }
 
             ps.executeUpdate();
 
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    pt.setProgId(keys.getInt(1));
+            // grab generated prog_id
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    pt.setProgId(rs.getInt(1));
                 }
             }
         } catch (SQLException e) {
@@ -371,7 +380,7 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
                     tp.setUserId(rs.getString("user_id"));
                     tp.setTeamId(rs.getString("team_id"));
                     tp.setStatus(rs.getString("status"));
-                    tp.setPaymentRef(rs.getString("payment_ref"));
+                    tp.setPaymentReference(rs.getString("paymentReference"));
                     tp.setJoinedAt(rs.getTimestamp("joined_at").toLocalDateTime());
                     out.add(tp);
                 }

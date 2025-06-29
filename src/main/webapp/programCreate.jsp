@@ -1,7 +1,10 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.util.List" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
     String ctx = request.getContextPath();
+    List<String> scopes = (List<String>) request.getAttribute("scopes");
+    List<String> formats = (List<String>) request.getAttribute("formats");
 %>
 <!DOCTYPE html>
 <html>
@@ -16,17 +19,15 @@
         <main>
             <h1>Create Program / Tournament</h1>
 
-            <!-- Error display -->
             <c:if test="${not empty error}">
                 <div class="error">${error}</div>
             </c:if>
 
             <form action="${ctx}/programs/new" method="post">
-                <!-- hidden fields -->
-                <input type="hidden" name="creatorId" value="${sessionScope.username}"/>
                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
+                <input type="hidden" name="creatorId"  value="${sessionScope.username}"/>
 
-                <!-- Program vs Tournament -->
+                <!-- 1) Type -->
                 <div class="form-group">
                     <label for="programType">Type</label>
                     <select id="programType" name="programType" required>
@@ -36,8 +37,18 @@
                     </select>
                 </div>
 
-                <!-- Game (only for tournaments) -->
-                <div class="form-group" id="gameGroup" style="display:none;">
+                <div id="levelGroup" class="form-group" style="display:none;">
+                    <label for="meritScope">Level</label>
+                    <select id="meritScope" name="meritScope" required>
+                        <option value="">-- select level --</option>
+                        <c:forEach var="sc" items="${scopes}">
+                            <option value="${sc}">${sc}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <!-- 2) Game -->
+                <div id="gameGroup" class="form-group" style="display:none;">
                     <label for="gameId">Game</label>
                     <select id="gameId" name="gameId">
                         <option value="">-- select game --</option>
@@ -47,78 +58,69 @@
                     </select>
                 </div>
 
-                <!-- Merit level -->
-                <div class="form-group">
-                    <label for="meritScope">Level</label>
-                    <select id="meritScope" name="meritScope" required>
-                        <option value="">-- select level --</option>
-                        <c:forEach var="scope" items="${scopes}">
-                            <option value="${scope}">${scope}</option>
+                <div id="bracketFormatGroup" class="form-group" style="display:none;">
+                    <label for="bracketFormat">Bracket Format</label>
+                    <select id="bracketFormat" name="bracketFormat" required>
+                        <option value="">-- select format --</option>
+                        <c:forEach var="fmt" items="${formats}">
+                            <option value="${fmt}">${fmt.replace('_',' ')}</option>
                         </c:forEach>
                     </select>
                 </div>
 
-                <!-- Name -->
+                <!-- 4) Name -->
                 <div class="form-group">
                     <label for="programName">Name</label>
                     <input id="programName" name="programName" type="text" required/>
                 </div>
 
-                <!-- Place -->
+                <!-- 5) Place -->
                 <div class="form-group">
                     <label for="place">Place</label>
                     <input id="place" name="place" type="text"/>
                 </div>
 
-                <!-- Description -->
+                <!-- 6) Description -->
                 <div class="form-group">
                     <label for="description">Description</label>
                     <textarea id="description" name="description" rows="3"></textarea>
                 </div>
 
-                <!-- Entry Fee -->
+                <!-- 7) Entry Fee -->
                 <div class="form-group">
                     <label for="progFee">Entry Fee (RM)</label>
                     <input id="progFee" name="progFee" type="number" step="0.01" value="0.00"/>
                 </div>
 
-                <!-- Prize Pool -->
+                <!-- 8) Prize Pool -->
                 <div class="form-group">
-                    <label for="prizePool">Prize Pool (RM)</label>
+                    <label for="prizePool">Prize Pool</label>
                     <input id="prizePool" name="prizePool" type="number" step="0.01"/>
                 </div>
 
-                <!-- Dates & Times -->
-                <fieldset>
+                <!-- 9) Dates -->
+                <fieldset class="form-group">
                     <legend>Dates &amp; Times</legend>
-                    <div class="form-group">
-                        <label for="startDate">Start Date</label>
-                        <input id="startDate" name="startDate" type="date" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="startTime">Start Time</label>
-                        <input id="startTime" name="startTime" type="time"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="endDate">End Date</label>
-                        <input id="endDate" name="endDate" type="date" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="endTime">End Time</label>
-                        <input id="endTime" name="endTime" type="time"/>
-                    </div>
+                    <label for="startDate">Start Date</label>
+                    <input id="startDate" name="startDate" type="date" required/>
+                    <label for="startTime">Start Time</label>
+                    <input id="startTime" name="startTime" type="time"/>
+                    <label for="endDate">End Date</label>
+                    <input id="endDate" name="endDate" type="date" required/>
+                    <label for="endTime">End Time</label>
+                    <input id="endTime" name="endTime" type="time"/>
                 </fieldset>
 
-                <!-- Max Capacity -->
+                <!-- 10) Max Capacity -->
                 <div class="form-group">
                     <label for="maxCapacity">Max Capacity</label>
                     <input id="maxCapacity" name="maxCapacity" type="number" value="1" required/>
                 </div>
 
-                <!-- Max Team Members (only for tournaments) -->
-                <div class="form-group" id="teamMemberGroup" style="display:none;">
+                <!-- 11) Max Team Members -->
+                <div id="teamMemberGroup" class="form-group" style="display:none;">
                     <label for="maxTeamMember">Max Team Members</label>
-                    <input id="maxTeamMember" name="maxTeamMember" type="number" value="1"/>
+                    <input id="maxTeamMember" name="maxTeamMember" type="number"/>
                 </div>
 
                 <button type="submit">Create</button>
@@ -129,13 +131,17 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const typeSel = document.getElementById('programType');
-                const gameGrp = document.getElementById('gameGroup');
-                const teamGrp = document.getElementById('teamMemberGroup');
+                const gameGroup = document.getElementById('gameGroup');
+                const levelGroup = document.getElementById('levelGroup');
+                const teamGroup = document.getElementById('teamMemberGroup');
+                const fmtGroup = document.getElementById('bracketFormatGroup');
 
                 typeSel.addEventListener('change', () => {
                     const isTour = typeSel.value === 'TOURNAMENT';
-                    gameGrp.style.display = isTour ? 'block' : 'none';
-                    teamGrp.style.display = isTour ? 'block' : 'none';
+                    gameGroup.style.display = isTour ? 'block' : 'none';
+                    teamGroup.style.display = isTour ? 'block' : 'none';
+                    levelGroup.style.display = isTour ? 'block' : 'none';
+                    fmtGroup.style.display = isTour ? 'block' : 'none';
                 });
             });
         </script>

@@ -114,8 +114,10 @@ my\nexgenesports\model\UserClubMembership.class
 my\nexgenesports\dao\programTournament\BracketRefereeDao.class
 my\nexgenesports\service\booking\BusinessConfigService.class
 my\nexgenesports\service\programTournament\BracketService.class
+my\nexgenesports\controller\programTournament\ProgramTournamentRejectServlet.class
 my\nexgenesports\dao\memberships\PassTierDaoImpl.class
 my\nexgenesports\controller\booking\ManageBookingServlet.class
+my\nexgenesports\controller\programTournament\ProgramTournamentChangeStatusServlet.class
 my\nexgenesports\controller\programTournament\BracketEditServlet.class
 my\nexgenesports\controller\general\CsrfFilter.class
 my\nexgenesports\dao\memberships\PassTierDao.class
