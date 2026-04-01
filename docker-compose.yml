@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0.33
+    container_name: nexgenesports_db
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: trial_nexgenesports
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: nexgenesports_pma
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ""
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+
+  web:
+    image: tomcat:9.0-jdk17-temurin
+    container_name: nexgenesports_web
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target/NexGenEsportsv2-1.0-SNAPSHOT.war:/usr/local/tomcat/webapps/NexGenEsportsv2.war
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:

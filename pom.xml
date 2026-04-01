@@ -16,8 +16,8 @@
     <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Compile for Java 8 -->
-    <maven.compiler.source>24</maven.compiler.source>
-    <maven.compiler.target>24</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
   </properties>
 
   <repositories>
@@ -153,6 +153,31 @@
           <additionalJOptions>
             <additionalJOption>-Xdoclint:none</additionalJOption>
           </additionalJOptions>
+        </configuration>
+      </plugin>
+
+      <!-- Cargo Plugin to run Tomcat easily -->
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven3-plugin</artifactId>
+        <version>1.10.13</version>
+        <configuration>
+          <container>
+            <containerId>tomcat9x</containerId>
+            <type>embedded</type>
+          </container>
+          <configuration>
+            <properties>
+              <cargo.servlet.port>8080</cargo.servlet.port>
+            </properties>
+          </configuration>
+          <deployables>
+            <deployable>
+              <properties>
+                <context>/NexGenEsportsv2</context>
+              </properties>
+            </deployable>
+          </deployables>
         </configuration>
       </plugin>
     </plugins>

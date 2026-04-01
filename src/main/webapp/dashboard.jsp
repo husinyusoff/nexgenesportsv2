@@ -1,34 +1,35 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Dashboard – NexGen Esports</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <title>Dashboard - NexGen Esports</title>
 </head>
-<body>
-  <jsp:include page="header.jsp"/>
+<body class="app-wrapper">
+    <jsp:include page="header.jsp"/>
 
-  <button id="openToggle" class="open-toggle">☰</button>
-  <div class="container">
-    <div class="sidebar">
-      <button id="closeToggle" class="close-toggle">×</button>
-      <jsp:include page="sidebar.jsp"/>
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <jsp:include page="sidebar.jsp"/>
+
+        <!-- Main Content -->
+        <main class="content">
+            <div class="module-header">
+                <h2>INCOMING TRANSMISSION: DASHBOARD</h2>
+            </div>
+            
+            <div class="glass-card">
+                <h3 style="color: var(--neon-cyan); margin-bottom: 10px;">Welcome back, <c:out value="${sessionScope.username}"/>!</h3>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 20px;">
+                    Current Access Level: <strong style="color: var(--text-primary); text-transform: uppercase;"><c:out value="${sessionScope.role}"/></strong>
+                </p>
+                
+                <p>Welcome to the core. All systems nominal. Select a module from the terminal sidebar to proceed.</p>
+            </div>
+        </main>
     </div>
 
-    <div class="content">
-      <div class="dashboard-container">
-        <h2>Welcome, <c:out value="${sessionScope.username}"/>!</h2>
-        <p>Your role: <c:out value="${sessionScope.role}"/></p>
-      </div>
-    </div>
-  </div>
-
-  <jsp:include page="footer.jsp"/>
-
-  <script>
-    document.getElementById('openToggle').onclick  = () => document.body.classList.remove('sidebar-collapsed');
-    document.getElementById('closeToggle').onclick = () => document.body.classList.add('sidebar-collapsed');
-  </script>
+    <jsp:include page="footer.jsp"/>
 </body>
 </html>

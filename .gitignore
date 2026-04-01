@@ -1,0 +1,13 @@
+target/
+*.class
+.vscode/
+.tools/
+.idea/
+*.log
+*.bak
+*.tmp
+temp/
+/dist/
+/node_modules/
+.DS_Store
+Thumbs.db

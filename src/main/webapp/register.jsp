@@ -1,92 +1,92 @@
-<!-- register.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up – NexGen Esports</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Sign Up - NexGen Esports</title>
 </head>
-<body>
-    <!-- Header -->
-    <div class="header">
-        <img src="${pageContext.request.contextPath}/images/umt-logo.png" alt="UMT Logo" class="logo umt-logo">
-        <img src="${pageContext.request.contextPath}/images/esports-logo.png" alt="Esports Logo" class="logo esports-logo">
-        <h1>NEXGEN ESPORTS</h1>
-    </div>
+<body class="auth-wrapper">
+    <jsp:include page="header.jsp"/>
 
-    <!-- ☰ open-sidebar button -->
-    <button id="openToggle" class="open-toggle">☰</button>
-
-    <div class="container">
-        <!-- Sidebar (static for register/login) -->
-        <div class="sidebar">
-            <button id="closeToggle" class="close-toggle">×</button>
-            <nav>
-                <ul>
-                    <li><a href="${pageContext.request.contextPath}/login.jsp">Login</a></li>
-                    <li><a href="${pageContext.request.contextPath}/register.jsp">Sign Up</a></li>
-                </ul>
-            </nav>
-        </div>
-
-        <!-- Main content -->
+    <div class="main-container">
         <div class="content">
-            <div class="register-container">
-                <h2>SIGN UP</h2>
-                <form action="${pageContext.request.contextPath}/RegisterServlet" method="post">
+            <div class="auth-box glass-card" style="max-width: 480px;">
+                <h2>CREATE ACCOUNT</h2>
+
+                <% if ("success".equals(request.getParameter("status"))) { %>
+                    <div style="color:var(--neon-cyan); text-align:center; margin-bottom: 20px; padding: 10px; border: 1px solid var(--neon-cyan); border-radius: 8px; background: rgba(0,229,255,0.1);">
+                        Registration successful! <a href="login.jsp" style="color: white; font-weight: bold;">Login here</a>
+                    </div>
+                <% } %>
+                <% if (request.getAttribute("errorMsg") != null) { %>
+                    <div class="error-msg"><%= request.getAttribute("errorMsg") %></div>
+                <% } %>
+
+                <form action="${pageContext.request.contextPath}/auth?action=register" method="post">
                     <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
 
-                    <label for="userID">User ID</label>
-                    <input type="text" id="userID" name="userID" required>
+                    <label class="label" for="userID">User ID</label>
+                    <input class="input-field" type="text" id="userID" name="userID" required
+                           placeholder="Choose a unique User ID" pattern="[a-zA-Z0-9_]+"
+                           title="Only letters, numbers, and underscores allowed">
 
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" required>
+                    <label class="label" for="name">Full Name</label>
+                    <input class="input-field" type="text" id="name" name="name" required
+                           placeholder="Enter your full name">
 
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
+                    <label class="label" for="email">Email</label>
+                    <input class="input-field" type="email" id="email" name="email" required
+                           placeholder="your.email@student.umt.edu.my">
 
-                    <label for="phoneNumber">Phone Number</label>
-                    <input type="text" id="phoneNumber" name="phoneNumber">
+                    <label class="label" for="phoneNumber">Phone Number</label>
+                    <input class="input-field" type="tel" id="phoneNumber" name="phoneNumber"
+                           placeholder="01X-XXXXXXX">
 
-                    <label for="selectedRole">Role</label>
-                    <select id="selectedRole" name="selectedRole" required>
-                        <option value="athlete">Athlete</option>
-                        <option value="referee">Referee</option>
-                        <option value="executive_council">Executive Council</option>
-                        <option value="high_council">High Council</option>
-                    </select>
+                    <label class="label" for="matricNumber">Matric / Staff Number</label>
+                    <input class="input-field" type="text" id="matricNumber" name="matricNumber"
+                           placeholder="e.g. S12345 (Student), Staff ID (Staff)">
 
-                    <label for="position">Position</label>
-                    <input type="text" id="position" name="position">
+                    <label class="label" for="newPassword">Password</label>
+                    <div class="password-wrapper">
+                        <input class="input-field" type="password" id="newPassword" name="password" required
+                               placeholder="Minimum 6 characters" minlength="6">
+                        <span class="eye-icon" id="togglePassword">&#128065;</span>
+                    </div>
 
-                    <label for="clubSessionID">Club Session</label>
-                    <select id="clubSessionID" name="clubSessionID" required>
-                        <option value="ESUMT_24/25">2024/2025</option>
-                        <option value="ESUMT_25/26">2025/2026</option>
-                    </select>
+                    <label class="label" for="confirmPassword">Confirm Password</label>
+                    <div class="password-wrapper">
+                        <input class="input-field" type="password" id="confirmPassword" name="confirmPassword" required
+                               placeholder="Re-enter password" minlength="6">
+                        <span class="eye-icon" id="toggleConfirm">&#128065;</span>
+                    </div>
 
-                    <label for="gamingPassID">Gaming Pass Tier</label>
-                    <input id="gamingPassID" name="gamingPassID">
+                    <button class="btn btn-primary btn-block" type="submit">Sign Up</button>
 
-                    <button type="submit">Register</button>
+                    <div class="auth-links" style="justify-content: center;">
+                        <a href="${pageContext.request.contextPath}/login.jsp">Already have an account? Login</a>
+                    </div>
                 </form>
-                <% if (request.getAttribute("message") != null) { %>
-                    <p class="error"><%= request.getAttribute("message") %></p>
-                <% } %>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        &copy; NexGen Esports 2025 All Rights Reserved.
-    </div>
+    <jsp:include page="footer.jsp"/>
 
-    <!-- Toggle script -->
     <script>
-        document.getElementById('openToggle').onclick  = () => document.body.classList.remove('sidebar-collapsed');
-        document.getElementById('closeToggle').onclick = () => document.body.classList.add('sidebar-collapsed');
+        function setupToggle(toggleId, fieldId) {
+            document.getElementById(toggleId).addEventListener('click', function() {
+                const field = document.getElementById(fieldId);
+                if (field.type === 'password') {
+                    field.type = 'text';
+                    this.style.color = '#00e5ff';
+                } else {
+                    field.type = 'password';
+                    this.style.color = '#a0a0ab';
+                }
+            });
+        }
+        setupToggle('togglePassword', 'newPassword');
+        setupToggle('toggleConfirm', 'confirmPassword');
     </script>
 </body>
 </html>

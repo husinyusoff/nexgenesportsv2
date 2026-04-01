@@ -35,12 +35,15 @@ public class CsrfFilter implements Filter {
             session.setAttribute("csrfToken", UUID.randomUUID().toString());
         }
 
-        // Skip non‐POSTs and login/register
+        // Skip non-POSTs and auth/profile endpoints
         if (!"POST".equalsIgnoreCase(method)
          || path.equals("/LoginServlet")
          || path.equals("/RegisterServlet")
          || path.equals("/login.jsp")
-         || path.equals("/register.jsp")) {
+         || path.equals("/register.jsp")
+         || path.equals("/auth")
+         || path.equals("/manageProfile")
+         || path.equals("/inGameProfile")) {
             chain.doFilter(rq, rs);
             return;
         }

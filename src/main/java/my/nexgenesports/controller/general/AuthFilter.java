@@ -17,7 +17,10 @@ public class AuthFilter implements Filter {
             "/index.jsp",
             "/login.jsp",
             "/register.jsp",
+            "/forgotPassword.jsp",
+            "/resetPassword.jsp",
             "/accessDenied.jsp",
+            "/auth",
             "/logout",
             "/styles.css",
             "/LoginServlet",
@@ -41,6 +44,7 @@ public class AuthFilter implements Filter {
         if (path == null
                 || path.isEmpty()
                 || PUBLIC.contains(path)
+                || path.startsWith("/js/")
                 || path.startsWith("/images/")
                 || path.startsWith("/scripts/")
                 || path.startsWith("/fonts/")) {
@@ -56,8 +60,11 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        // 3) Dashboard is always allowed once you're in
-        if ("/dashboard.jsp".equals(path) || "/DashboardServlet".equals(path)) {
+        // 3) Dashboard + Profile pages are always allowed once you're in
+        if ("/dashboard.jsp".equals(path)
+                || "/DashboardServlet".equals(path)
+                || "/manageProfile".equals(path)
+                || "/inGameProfile".equals(path)) {
             chain.doFilter(rq, rs);
             return;
         }

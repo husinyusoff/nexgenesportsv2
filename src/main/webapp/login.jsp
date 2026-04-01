@@ -1,60 +1,65 @@
-<!-- login.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login – NexGen Esports</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Login - NexGen Esports</title>
 </head>
-<body>
+<body class="auth-wrapper">
     <!-- Header -->
     <jsp:include page="header.jsp"/>
 
-    <!-- ☰ open-sidebar button -->
-    <button id="openToggle" class="open-toggle">☰</button>
-
-    <div class="container">
-        <!-- Sidebar (static for login/register) -->
-        <div class="sidebar">
-            <button id="closeToggle" class="close-toggle">×</button>
-            <nav>
-                <ul>
-                    <li><a href="${pageContext.request.contextPath}/login.jsp">Login</a></li>
-                    <li><a href="${pageContext.request.contextPath}/register.jsp">Sign Up</a></li>
-                </ul>
-            </nav>
-        </div>
-
+    <div class="main-container">
         <!-- Main content -->
         <div class="content">
-            <div class="login-container">
+            <div class="auth-box glass-card">
                 <h2>LOGIN</h2>
                 <% if ("badcreds".equals(request.getParameter("error"))) { %>
-                    <p class="error">❌ Invalid user ID, password or role.</p>
+                    <div class="error-msg">Invalid user ID, password or role.</div>
+                <% } %>
+                <% if ("passwordReset".equals(request.getParameter("status"))) { %>
+                    <div style="color:var(--neon-cyan); text-align:center; margin-bottom: 20px; padding: 10px; border: 1px solid var(--neon-cyan); border-radius: 8px; background: rgba(0,229,255,0.1);">
+                        Password reset successful! You can now login with your new password.
+                    </div>
                 <% } %>
 
                 <form action="${pageContext.request.contextPath}/LoginServlet" method="post">
                     <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
 
                     <div class="roles-grid">
-                        <label><input type="radio" name="selectedRole" value="athlete"       checked> Athlete</label>
-                        <label><input type="radio" name="selectedRole" value="referee"> Referee</label>
-                        <label><input type="radio" name="selectedRole" value="executive_council"> Exec Council</label>
-                        <label><input type="radio" name="selectedRole" value="high_council"> High Council</label>
+                        <label class="role-pill">
+                            <input type="radio" name="selectedRole" value="athlete" checked> 
+                            <span>Athlete</span>
+                        </label>
+                        <label class="role-pill">
+                            <input type="radio" name="selectedRole" value="referee"> 
+                            <span>Referee</span>
+                        </label>
+                        <label class="role-pill">
+                            <input type="radio" name="selectedRole" value="executive_council"> 
+                            <span>Exec Council</span>
+                        </label>
+                        <label class="role-pill">
+                            <input type="radio" name="selectedRole" value="high_council"> 
+                            <span>High Council</span>
+                        </label>
                     </div>
 
-                    <label for="userID">User ID</label>
-                    <input type="text" id="userID" name="userID" required>
+                    <label class="label" for="userID">User ID</label>
+                    <input class="input-field" type="text" id="userID" name="userID" required placeholder="Enter User ID">
 
-                    <label for="password">Password</label>
+                    <label class="label" for="password">Password</label>
                     <div class="password-wrapper">
-                        <input type="password" id="password" name="password" required>
-                        <span class="eye-icon" id="togglePassword"></span>
+                        <input class="input-field" type="password" id="password" name="password" required placeholder="••••••••">
+                        <span class="eye-icon" id="togglePassword">👁</span>
                     </div>
 
-                    <a href="#" class="forgot">forgot password</a>
-                    <button type="submit">Login</button>
+                    <button class="btn btn-primary btn-block" type="submit">Login</button>
+                    
+                    <div class="auth-links">
+                        <a href="${pageContext.request.contextPath}/register.jsp">Don't have an account? Sign Up</a>
+                        <a href="${pageContext.request.contextPath}/forgotPassword.jsp">Forgot password?</a>
+                    </div>
                 </form>
             </div>
         </div>
@@ -63,23 +68,17 @@
     <!-- Footer -->
     <jsp:include page="footer.jsp"/>
 
-    <!-- Toggle script -->
+    <!-- Password “reveal” script -->
     <script>
-        document.getElementById('openToggle').onclick  = () => document.body.classList.remove('sidebar-collapsed');
-        document.getElementById('closeToggle').onclick = () => document.body.classList.add('sidebar-collapsed');
-    </script>
-
-    <!-- Password “hold to reveal” script -->
-    <script>
-    (function(){
         const pwd = document.getElementById('password'),
               eye = document.getElementById('togglePassword');
-        eye.addEventListener('mousedown', ()=> pwd.type='text');
-        eye.addEventListener('mouseup',   ()=> pwd.type='password');
-        eye.addEventListener('mouseleave',()=> pwd.type='password');
-        eye.addEventListener('touchstart',()=> pwd.type='text');
-        eye.addEventListener('touchend',  ()=> pwd.type='password');
-    })();
+        
+        let isVisible = false;
+        eye.addEventListener('click', () => {
+            isVisible = !isVisible;
+            pwd.type = isVisible ? 'text' : 'password';
+            eye.style.color = isVisible ? '#00e5ff' : '#a0a0ab';
+        });
     </script>
 </body>
 </html>

@@ -1,14 +1,13 @@
 package my.nexgenesports.service.programTournament;
 
 import my.nexgenesports.dao.programTournament.GameDao;
-import my.nexgenesports.dao.programTournament.GameDaoImpl;
 import my.nexgenesports.model.Game;
 import my.nexgenesports.service.general.ServiceException;
 import java.sql.SQLException;
 import java.util.List;
 
 public class GameService {
-    private final GameDao dao = new GameDaoImpl();
+    private final GameDao dao = new GameDao();
 
     public Game createGame(Game g) {
         try {

@@ -19,7 +19,7 @@ public class ProgramTournamentService {
     private final ChallongeTournamentDao challongeDao
             = new ChallongeTournamentDaoImpl();
     private final GameDao gameDao
-            = new GameDaoImpl();
+            = new GameDao();
     private final MeritLevelDao meritDao
             = new MeritLevelDaoImpl();
 
