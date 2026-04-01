@@ -68,6 +68,7 @@ public class UserService {
         String hash = BCrypt.hashpw(password, BCrypt.gensalt());
 
         User u = new User();
+<<<<<<< Updated upstream
         u.setUserID      (userID.trim());
         u.setName        (name.trim());
         u.setEmail       (email.trim().toLowerCase());
@@ -75,6 +76,13 @@ public class UserService {
         u.setPhoneNumber (phone);
         u.setMatricNumber(matricNumber);
         u.setRpId        (rpId);
+=======
+        u.setUserID        (userID);
+        u.setName          (name);
+        u.setPasswordHash  (hash);
+        u.setPhoneNumber   (phone);
+        u.setRpId          (rpId);
+>>>>>>> Stashed changes
 
         try {
             userDao.save(u);

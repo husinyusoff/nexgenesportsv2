@@ -19,7 +19,7 @@ public class BracketDaoImpl implements BracketDao {
             """;
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, b.getProgId());
+            ps.setInt(1, b.getProgId());
             ps.setString(2, b.getName());
             ps.setString(3, b.getFormat());
             ps.setString(4, b.getCreatedBy());
@@ -49,11 +49,11 @@ public class BracketDaoImpl implements BracketDao {
     }
 
     @Override
-    public List<Bracket> findByProg(String progId) throws SQLException {
+    public List<Bracket> findByProg(int progId) throws SQLException {
         String sql = "SELECT * FROM bracket WHERE prog_id = ?";
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
 
-            ps.setString(1, progId);
+            ps.setInt(1, progId);
             try (ResultSet rs = ps.executeQuery()) {
                 List<Bracket> out = new ArrayList<>();
                 while (rs.next()) {
@@ -77,7 +77,7 @@ public class BracketDaoImpl implements BracketDao {
     private Bracket mapRow(ResultSet rs) throws SQLException {
         Bracket b = new Bracket();
         b.setBracketId(rs.getInt("bracket_id"));
-        b.setProgId(rs.getString("prog_id"));
+        b.setProgId(rs.getInt("prog_id"));
         b.setName(rs.getString("name"));
         b.setFormat(rs.getString("format"));
         b.setCreatedBy(rs.getString("created_by"));
@@ -101,7 +101,7 @@ public void update(Bracket b) throws SQLException {
          PreparedStatement ps = c.prepareStatement(sql)) {
 
         int idx = 1;
-        ps.setString(idx++, b.getProgId());
+        ps.setInt(idx++, b.getProgId());
         ps.setString(idx++, b.getName());
         ps.setString(idx++, b.getFormat());
         ps.setInt(idx, b.getBracketId());

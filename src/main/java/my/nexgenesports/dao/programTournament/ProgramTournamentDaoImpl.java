@@ -120,7 +120,7 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
     }
 
     @Override
-    public ProgramTournament findById(String progId) {
+    public ProgramTournament findById(int progId) {
         String sql = """
             SELECT *
               FROM program_tournament
@@ -129,7 +129,7 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
             """;
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
 
-            ps.setString(1, progId);
+            ps.setInt(1, progId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
                     return null;
@@ -261,14 +261,14 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
     }
 
     @Override
-    public void softDelete(String progId) {
+    public void softDelete(int progId) {
         String sql = """
             UPDATE program_tournament
                SET deleted_flag = 1
              WHERE prog_id = ?
             """;
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, progId);
+            ps.setInt(1, progId);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error soft‐deleting ProgramTournament", e);
@@ -276,7 +276,7 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
     }
 
     @Override
-    public void updateStatus(String progId, String status) {
+    public void updateStatus(int progId, String status) {
         String sql = """
             UPDATE program_tournament
                SET status = ?
@@ -285,7 +285,7 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
             """;
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, status);
-            ps.setString(2, progId);
+            ps.setInt(2, progId);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error updating status of ProgramTournament", e);
@@ -337,6 +337,12 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
             pt.setMaxTeamMember(mx);
         }
 
+        // ← NEW: read the minimum team members
+        int mn = rs.getInt("min_team_member");
+        if (!rs.wasNull()) {
+            pt.setMinTeamMember(mn);
+        }
+
         pt.setStatus(rs.getString("status"));
 
         Timestamp ca = rs.getTimestamp("created_at");
@@ -349,18 +355,20 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
         }
 
         pt.setDeletedFlag(rs.getBoolean("deleted_flag"));
+        pt.setBracketFormat(rs.getString("bracket_format"));
+
         return pt;
     }
 
     @Override
-    public List<TournamentParticipant> listParticipants(String progId) throws SQLException {
+    public List<TournamentParticipant> listParticipants(int progId) throws SQLException {
         String sql = """
         SELECT id,
                prog_id,
                user_id,
                team_id,
                status,
-               payment_ref,
+               paymentReference,
                joined_at
           FROM tournament_participant
          WHERE prog_id     = ?
@@ -369,16 +377,16 @@ public class ProgramTournamentDaoImpl implements ProgramTournamentDao {
 
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
 
-            ps.setString(1, progId);
+            ps.setInt(1, progId);
 
             try (ResultSet rs = ps.executeQuery()) {
                 List<TournamentParticipant> out = new ArrayList<>();
                 while (rs.next()) {
                     TournamentParticipant tp = new TournamentParticipant();
                     tp.setId(rs.getLong("id"));
-                    tp.setProgId(rs.getString("prog_id"));
+                    tp.setProgId(rs.getInt("prog_id"));
                     tp.setUserId(rs.getString("user_id"));
-                    tp.setTeamId(rs.getString("team_id"));
+                    tp.setTeamId(rs.getInt("team_id"));
                     tp.setStatus(rs.getString("status"));
                     tp.setPaymentReference(rs.getString("paymentReference"));
                     tp.setJoinedAt(rs.getTimestamp("joined_at").toLocalDateTime());

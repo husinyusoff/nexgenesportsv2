@@ -23,7 +23,7 @@ public class ProgramTournamentApproveServlet extends HttpServlet {
         }
 
         int progId = Integer.parseInt(idParam);
-        svc.approveTournament(progId);
+        svc.approveProgramTournament(progId);
         // back to the list
         resp.sendRedirect(req.getContextPath() + "/programs");
     }

@@ -483,6 +483,7 @@ select.input-field {
     gap: 10px;
 }
 
+<<<<<<< Updated upstream
 /* Mobile Data Cards */
 @media (max-width: 768px) {
     .data-table, .data-table tbody {
@@ -553,3 +554,497 @@ select.input-field {
     font-size: 1.2rem;
     font-weight: 600;
 }
+=======
+/* ===================== Manage Team Styles ===================== */
+.team-page .card {
+    max-width: 900px;
+    margin: 40px auto 60px;
+    padding: 24px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative;
+}
+.team-page .card > h1 {
+    text-align: center;
+    margin: 0 0 16px;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+}
+.team-page .create-team-btn {
+    position: absolute;
+    top: 24px;
+}
+.team-page .join-request-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+}
+
+/* Summary table */
+.team-page .summary-table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:24px;
+}
+.team-page .summary-table th,
+.team-page .summary-table td {
+    border:1px solid #ccc;
+    padding:8px 12px;
+    text-align:center;
+}
+.team-page .summary-table th {
+    background:#38b6ff;
+    color:#fff;
+    text-transform:uppercase;
+}
+.team-page .logo-thumb {
+    width:48px;
+    height:48px;
+    object-fit:cover;
+}
+
+/* Tab-switcher (identical to manageMembership) */
+.team-page .tab-switcher {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:2rem;
+    margin:24px 0;
+}
+.team-page .tab-label {
+    font-size:1.2rem;
+    font-weight:bold;
+    color:#777;
+    cursor:pointer;
+    transition:color .2s;
+}
+.team-page .tab-label.active {
+    color: #38b6ff;
+}
+
+/* Team info */
+.team-page .team-info {
+    text-align:center;
+    margin-bottom:24px;
+}
+.team-page .team-logo {
+    width:128px;
+    height:128px;
+    object-fit:cover;
+    border:2px solid #333;
+    margin:0 auto 16px;
+}
+.team-page .team-meta h2 {
+    margin:0 0 8px;
+    font-size:1.5rem;
+}
+.team-page .team-meta p {
+    margin:4px 0;
+}
+
+/* Inner panels */
+.team-page .inner-panel {
+    margin-top:16px;
+}
+
+/* Members & achievement tables */
+.team-page .members-table,
+.team-page .achievement-table {
+    width:100%;
+    border-collapse:collapse;
+}
+.team-page .members-table th,
+.team-page .achievement-table th {
+    background:#38b6ff;
+    color:#fff;
+    text-transform:uppercase;
+}
+.team-page .members-table th,
+.team-page .members-table td,
+.team-page .achievement-table th,
+.team-page .achievement-table td {
+    border:1px solid #ccc;
+    padding:8px 12px;
+    text-align:center;
+}
+
+/* Change-role dropdown pill */
+.team-page .role-select {
+    -webkit-appearance:none;
+    appearance:none;
+    padding:8px 12px;
+    border:none;
+    background:#ccff90;
+    border-radius:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* ===== Sign-Up form uses the same card style as login ===== */
+.register-container {
+    width: 260px;
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.register-container h2 {
+    text-align: center;
+    margin: 0 0 30px;
+    font-size: 1.3rem;
+}
+.register-container label {
+    display: block;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: bold;
+}
+.register-container input[type="text"],
+.register-container input[type="password"],
+.register-container select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.register-container button {
+    display: block;
+    width: 100%;
+    margin: 16px 0 0;
+    padding: 8px;
+    background: #38b6ff;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 13px;
+}
+.register-container button:hover {
+    background: #259de3;
+}
+
+/* ============================================================ */
+/*                RBAC Manager Page Overrides                  */
+/* ============================================================ */
+
+.rbac-page .rbac-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 100%;
+}
+
+.rbac-page h2 {
+    margin-top: 0;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+.rbac-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    display: block;
+    overflow-x: auto;
+}
+
+.rbac-table th,
+.rbac-table td {
+    border: 1px solid #ddd;
+    padding: 0.5rem 0.75rem;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.rbac-table th {
+    background: #259de3;
+    color: #fff;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.rbac-table .inh-col {
+    text-align: left;
+    min-width: 200px;
+}
+
+.rbac-table td.inh-col {
+    font-weight: bold;
+}
+
+.success {
+    color: #2e7d32;
+    margin: 0.5rem 0;
+    font-weight: bold;
+}
+
+/* Ensure our card is centered in the content area */
+.rbac-page .content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+}
+
+/* ============================================================ */
+/*             Select Team Page: Scoped Card & Table Styles     */
+/* ============================================================ */
+.select-team-page .card {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 24px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.select-team-page h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  color: #333;
+}
+
+/* Summary tables on this page only */
+.select-team-page .summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+/* Table headers */
+.select-team-page .summary-table th {
+  background: #f2f2f2;
+  color: #333;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+}
+
+/* Table data cells */
+.select-team-page .summary-table td {
+  background: #fff;
+  color: #333;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+}
+
+/* Form labels */
+.select-team-page label {
+  display: block;
+  margin: 16px 0 8px;
+  font-weight: bold;
+}
+
+/* Dropdown select */
+.select-team-page select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Primary action button */
+.select-team-page button[type="submit"] {
+  display: block;
+  margin: 24px auto 0;
+  padding: 12px 24px;
+  background: #38b6ff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.select-team-page button[type="submit"]:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.select-team-page button[type="submit"]:not(:disabled):hover {
+  background: #259de3;
+}
+
+
+/* ==========================================================================
+   Page-specific: “Manage All Program” (tournament-page)
+   ========================================================================== */
+
+/* Cancel the global flex so header → controls → table stack vertically */
+body.tournament-page .content {
+  display: block !important;
+  padding: 24px;
+}
+
+/* Page title wrapper */
+body.tournament-page .content .page-header {
+  max-width: 1100px;
+  margin: 0 auto 16px;
+}
+body.tournament-page .content .page-header h2 {
+  text-align: center;
+  margin: 0;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+}
+
+/* Controls row: search, sort, create */
+body.tournament-page .content .controls {
+  max-width: 1100px;
+  margin: 0 auto 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Search input */
+body.tournament-page .content .controls .search {
+  position: relative;
+}
+body.tournament-page .content .controls .search input {
+  width: 200px;
+  padding: 6px 28px 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+body.tournament-page .content .controls .search i.fa {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+/* Sort dropdown */
+body.tournament-page .content .controls .sort-by select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  appearance: none;
+}
+
+/* “Create New” button */
+body.tournament-page .content .controls .btn-create-new {
+  background: #38b6ff;
+  color: #fff;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background .2s;
+}
+body.tournament-page .content .controls .btn-create-new:hover {
+  background: #259de3;
+}
+
+/* Table */
+body.tournament-page .content .summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+body.tournament-page .content .summary-table th,
+body.tournament-page .content .summary-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+body.tournament-page .content .summary-table th {
+  background: #38b6ff;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+/* Action-column buttons, stacked & same size */
+body.tournament-page .content .summary-table td .btn {
+  display: block;
+  width: 100px;
+  height: 32px;
+  line-height: 32px;
+  margin: 4px auto;
+  text-align: center;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+/* DETAILS */
+body.tournament-page .content .btn.gray-btn {
+  background: #777;
+  color: #fff;
+}
+body.tournament-page .content .btn.gray-btn:hover {
+  background: #555;
+}
+
+/* EDIT */
+body.tournament-page .content .btn.green-btn {
+  background: #ccff90;
+  color: #33691e;
+}
+body.tournament-page .content .btn.green-btn:hover {
+  background: #b2ff59;
+}
+
+/* DELETE */
+body.tournament-page .content .btn.red-btn {
+  background: #e62828;
+  color: #fff;
+}
+body.tournament-page .content .btn.red-btn:hover {
+  background: #c91f1f;
+}
+
+/* APPROVE */
+body.tournament-page .content .btn-approve {
+  background: #a4de02;
+  color: #000;
+}
+body.tournament-page .content .btn-approve:hover {
+  background: #8cc200;
+}
+
+/* REJECT */
+body.tournament-page .content .btn-reject {
+  background: #e62828;
+  color: #fff;
+}
+body.tournament-page .content .btn-reject:hover {
+  background: #c91f1f;
+}
+
+/* ===================================================================
+   White card canvas around the programs table + controls
+   =================================================================== */
+body.tournament-page .main .table-card {
+  background: #fff;                     /* pure white background */
+  border-radius: 8px;                   /* rounded corners */
+  padding: 24px;                        /* inner breathing room */
+  max-width: 1100px;                    /* match the table width */
+  margin: 0 auto 40px;                  /* center and separate from footer */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* subtle drop shadow */
+}
+
+/* Optional: ensure the <h1> and toolbar keep their spacing inside the card */
+body.tournament-page .main .table-card > h1 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+body.tournament-page .main .table-card .toolbar {
+  margin-bottom: 24px;
+}
+>>>>>>> Stashed changes

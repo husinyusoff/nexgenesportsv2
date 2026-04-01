@@ -17,7 +17,7 @@ public class BracketDeleteServlet extends HttpServlet {
         int bracketId = Integer.parseInt(req.getParameter("bracketId"));
         service.deleteBracket(bracketId);
         // redirect back to parent program
-        String progId = req.getParameter("progId");
+        int progId = Integer.parseInt(req.getParameter("progId"));
         resp.sendRedirect(req.getContextPath() + "/programs/detail?progId=" + progId);
     }
 }

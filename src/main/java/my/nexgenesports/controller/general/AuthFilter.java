@@ -9,10 +9,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-@WebFilter("/*")
+@WebFilter(urlPatterns = "/*", dispatcherTypes = { DispatcherType.REQUEST })
 public class AuthFilter implements Filter {
 
+    // Removed "/" from PUBLIC — we’ll handle it explicitly instead
     private static final Set<String> PUBLIC = Set.of(
+<<<<<<< Updated upstream
             "/", // root
             "/index.jsp",
             "/login.jsp",
@@ -25,22 +27,44 @@ public class AuthFilter implements Filter {
             "/styles.css",
             "/LoginServlet",
             "/RegisterServlet"
+=======
+        "/login.jsp",
+        "/register.jsp",
+        "/LoginServlet",
+        "/RegisterServlet",
+        "/logout",
+        "/accessDenied.jsp",
+        "/styles.css",
+        "/header.jsp",
+        "/sidebar.jsp",
+        "/footer.jsp",
+        "/scripts/",
+        "/images/",
+        "/fonts/"
+>>>>>>> Stashed changes
     );
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // no‐op
+        // no‑op
     }
-    
+
     @Override
     public void doFilter(ServletRequest rq, ServletResponse rs, FilterChain chain)
             throws IOException, ServletException {
 
-        HttpServletRequest req = (HttpServletRequest) rq;
-        HttpServletResponse res = (HttpServletResponse) rs;
-        String path = req.getServletPath();
+        HttpServletRequest  req  = (HttpServletRequest) rq;
+        HttpServletResponse res  = (HttpServletResponse) rs;
+        String path = req.getServletPath(); // e.g. "/", "/login.jsp", etc.
+
+        // 0) Intercept root ("/") or empty and redirect to dashboard.jsp
+        if (path == null || path.isEmpty() || "/".equals(path)) {
+            req.getRequestDispatcher("/login.jsp").forward(req, res);
+            return;
+        }
 
         // 1) Always allow public paths & static assets
+<<<<<<< Updated upstream
         if (path == null
                 || path.isEmpty()
                 || PUBLIC.contains(path)
@@ -48,6 +72,12 @@ public class AuthFilter implements Filter {
                 || path.startsWith("/images/")
                 || path.startsWith("/scripts/")
                 || path.startsWith("/fonts/")) {
+=======
+        if (PUBLIC.contains(path)
+         || path.startsWith("/images/")
+         || path.startsWith("/scripts/")
+         || path.startsWith("/fonts/")) {
+>>>>>>> Stashed changes
             chain.doFilter(rq, rs);
             return;
         }
@@ -55,7 +85,6 @@ public class AuthFilter implements Filter {
         // 2) Must be logged in
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("username") == null) {
-            // redirect to login, not accessDenied
             res.sendRedirect(req.getContextPath() + "/login.jsp");
             return;
         }
@@ -69,11 +98,11 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        // 4) Role‐based check for everything else
+        // 4) Role‑based access check for everything else
         @SuppressWarnings("unchecked")
         List<String> roles = (List<String>) session.getAttribute("effectiveRoles");
         String chosenRole = (String) session.getAttribute("role");
-        String position = (String) session.getAttribute("position");
+        String position   = (String) session.getAttribute("position");
 
         if (PermissionChecker.hasAccess(roles, chosenRole, position, path)) {
             chain.doFilter(rq, rs);
@@ -84,6 +113,6 @@ public class AuthFilter implements Filter {
 
     @Override
     public void destroy() {
-        // no‐op
+        // no‑op
     }
 }

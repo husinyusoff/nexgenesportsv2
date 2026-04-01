@@ -16,8 +16,8 @@ public class ProgramTournamentDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String progId = req.getParameter("progId");
-        ProgramTournament pt = service.findById(progId);
+        int progId = Integer.parseInt(req.getParameter("progId"));
+        ProgramTournament pt = service.getProgramById(progId);
         if (pt == null) {
             resp.sendError(404, "Program/Tournament not found");
             return;

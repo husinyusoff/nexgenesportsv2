@@ -24,7 +24,7 @@ public class BracketViewServlet extends HttpServlet {
         req.setAttribute("bracket", b);
         req.setAttribute("matches", matches);
         req.setAttribute("ctx", req.getContextPath());
-        req.getRequestDispatcher("/WEB-INF/jsp/tournament/bracketView.jsp")
+        req.getRequestDispatcher("/bracketView.jsp")
            .forward(req, resp);
     }
 }

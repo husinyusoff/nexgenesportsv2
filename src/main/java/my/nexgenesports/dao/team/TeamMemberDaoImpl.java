@@ -193,6 +193,4 @@ public class TeamMemberDaoImpl implements TeamMemberDao {
         m.setRoleAssignedAt(rs.getTimestamp("roleAssignedAt").toLocalDateTime());
         return m;
     }
-    
-    
 }

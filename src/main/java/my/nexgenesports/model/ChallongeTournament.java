@@ -1,30 +1,30 @@
-// File: ChallongeTournament.java
+// src/main/java/my/nexgenesports/model/ChallongeTournament.java
 package my.nexgenesports.model;
 
 import java.time.LocalDateTime;
 
 public class ChallongeTournament {
-    private int progId;
-    private String challongeTournamentId;
-    private String challongeUrl;
-    private String challongeState;
-    private LocalDateTime challongeCreatedAt;
-    private LocalDateTime challongeLastSyncAt;
-    private String challongeMetadata;
+    private int            progId;
+    private String         challongeId;
+    private String         challongeUrl;
+    private String         state;
+    private String         metadata;     // raw JSON from Challonge
+    private LocalDateTime  createdAt;
+    private LocalDateTime  lastSyncAt;
 
     // getters + setters
-    public int getProgId() { return progId; }
-    public void setProgId(int progId) { this.progId = progId; }
-    public String getChallongeTournamentId() { return challongeTournamentId; }
-    public void setChallongeTournamentId(String id) { this.challongeTournamentId = id; }
-    public String getChallongeUrl() { return challongeUrl; }
-    public void setChallongeUrl(String url) { this.challongeUrl = url; }
-    public String getChallongeState() { return challongeState; }
-    public void setChallongeState(String challongeState) { this.challongeState = challongeState; }
-    public LocalDateTime getChallongeCreatedAt() { return challongeCreatedAt; }
-    public void setChallongeCreatedAt(LocalDateTime challongeCreatedAt) { this.challongeCreatedAt = challongeCreatedAt; }
-    public LocalDateTime getChallongeLastSyncAt() { return challongeLastSyncAt; }
-    public void setChallongeLastSyncAt(LocalDateTime challongeLastSyncAt) { this.challongeLastSyncAt = challongeLastSyncAt; }
-    public String getChallongeMetadata() { return challongeMetadata; }
-    public void setChallongeMetadata(String challongeMetadata) { this.challongeMetadata = challongeMetadata; }
+    public int getProgId()                  { return progId; }
+    public void setProgId(int progId)       { this.progId = progId; }
+    public String getChallongeId()          { return challongeId; }
+    public void setChallongeId(String i)    { this.challongeId = i; }
+    public String getChallongeUrl()         { return challongeUrl; }
+    public void setChallongeUrl(String u)   { this.challongeUrl = u; }
+    public String getState()                { return state; }
+    public void setState(String s)          { this.state = s; }
+    public String getMetadata()             { return metadata; }
+    public void setMetadata(String m)       { this.metadata = m; }
+    public LocalDateTime getCreatedAt()     { return createdAt; }
+    public void setCreatedAt(LocalDateTime t){ this.createdAt = t; }
+    public LocalDateTime getLastSyncAt()    { return lastSyncAt; }
+    public void setLastSyncAt(LocalDateTime t){ this.lastSyncAt = t; }
 }

@@ -1,46 +1,49 @@
-// src/main/java/my/nexgenesports/service/general/PaymentService.java
+// File: src/main/java/my/nexgenesports/service/general/PaymentService.java
 package my.nexgenesports.service.general;
 
 import my.nexgenesports.service.booking.BookingService;
 import my.nexgenesports.service.memberships.MembershipService;
 import my.nexgenesports.service.memberships.PassService;
+import my.nexgenesports.service.programTournament.ParticipantService;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
+/**
+ * Central payment orchestration.
+ */
 public class PaymentService {
-    private final BookingService    bookingSvc    = new BookingService();
-    private final MembershipService membershipSvc = new MembershipService();
-    private final PassService       passSvc       = new PassService();
 
-    /** Local test mode – flips to real gateway when you implement it */
+    private final BookingService     bookingSvc    = new BookingService();
+    private final MembershipService  membershipSvc = new MembershipService();
+    private final PassService        passSvc       = new PassService();
+    private final ParticipantService partSvc       = new ParticipantService();
+
+    /** Toggle this to `false` once you wire up a real gateway. */
     private final boolean simulate = true;
 
     /**
-     * Kick off a payment: returns the URL to redirect the user to.
-     * @param module  "booking", "membership" or "pass"
-     * @param id      primary key of the record being paid
-     * @param amount  how much to charge
-     * @return redirect URL
+     * Kick off a payment.
      */
     public String createCharge(String module, int id, BigDecimal amount) {
         if (simulate) {
             String reference = "SIM-" + System.currentTimeMillis();
             return "/paymentCallback"
-                 + "?module="    + module
-                 + "&id="        + id
-                 + "&paid=true"
-                 + "&reference=" + reference;
+                + "?module="    + module
+                + "&id="        + id
+                + "&paid=true"
+                + "&reference=" + reference;
         }
         throw new UnsupportedOperationException("Real gateway not yet implemented");
     }
 
     /**
-     * Callback entrypoint: flips statuses or records references.
-     * @param module    "booking", "membership" or "pass"
-     * @param id        primary key (bookingID, ucm.id, ugp.id)
-     * @param paid      true if payment succeeded
-     * @param reference external reference string
+     * Handle the gateway callback.
+     * @param module
+     * @param id
+     * @param paid
+     * @param reference
+     * @throws java.sql.SQLException
      */
     public void handleCallback(String module,
                                int id,
@@ -51,6 +54,7 @@ public class PaymentService {
         if (module == null) {
             throw new IllegalArgumentException("Unknown module: " + module);
         }
+
         switch (module) {
             case "booking" -> {
                 bookingSvc.updatePaymentStatus(
@@ -64,9 +68,12 @@ public class PaymentService {
                 membershipSvc.updateMembershipRecord(id, status, reference);
             }
             case "pass" -> {
-                // NEW: flip pass status too
                 String status = paid ? "ACTIVE" : "CANCELLED";
                 passSvc.updatePassRecord(id, reference, status);
+            }
+            case "program", "tournament" -> {
+                // batch‐update all participants (solo or team) in that group
+                partSvc.finalizeRegistration(id, paid, reference);
             }
             default -> throw new IllegalArgumentException("Unknown module: " + module);
         }

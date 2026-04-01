@@ -31,6 +31,7 @@ public class ProgramTournament {
     private LocalTime endTime;
     private BigDecimal prizePool;
     private int maxCapacity;
+    private Integer minTeamMember;
     private Integer maxTeamMember;
     private String status;
     private LocalDateTime createdAt;
@@ -43,7 +44,7 @@ public class ProgramTournament {
     }
 
     public void setProgId(Integer progId) {
-        this.progId = progId;
+        this.setProgId((int) progId);
     }
 
     public String getCreatorId() {
@@ -204,5 +205,17 @@ public class ProgramTournament {
 
     public void setBracketFormat(String bracketFormat) {
         this.bracketFormat = bracketFormat;
+    }
+
+    public void setProgId(int progId) {
+        this.progId = progId;
+    }
+
+    public Integer getMinTeamMember() {
+        return minTeamMember;
+    }
+
+    public void setMinTeamMember(Integer minTeamMember) {
+        this.minTeamMember = minTeamMember;
     }
 }

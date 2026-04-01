@@ -17,14 +17,14 @@ public class BracketCreateServlet extends HttpServlet {
             throws ServletException, IOException {
         req.setAttribute("progId", req.getParameter("progId"));
         req.setAttribute("ctx", req.getContextPath());
-        req.getRequestDispatcher("/WEB-INF/jsp/tournament/bracketCreate.jsp")
+        req.getRequestDispatcher("/bracketCreate.jsp")
            .forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String progId    = req.getParameter("progId");
+        int progId    = Integer.parseInt(req.getParameter("progId"));
         String name      = req.getParameter("name");
         String format    = req.getParameter("format");
         HttpSession sess = req.getSession(false);

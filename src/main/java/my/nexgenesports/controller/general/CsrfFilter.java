@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * CSRF protection filter that supports multipart/form-data.
  */
-@WebFilter("/*")
+@WebFilter(urlPatterns = "/*",dispatcherTypes = { DispatcherType.REQUEST })
 public class CsrfFilter implements Filter {
 
     @Override

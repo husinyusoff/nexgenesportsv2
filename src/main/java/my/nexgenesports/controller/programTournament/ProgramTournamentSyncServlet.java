@@ -15,7 +15,7 @@ public class ProgramTournamentSyncServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String progId = req.getParameter("progId");
+        int progId = Integer.parseInt(req.getParameter("progId"));
         try {
             service.syncWithChallonge(progId);
         } catch (Exception e) {

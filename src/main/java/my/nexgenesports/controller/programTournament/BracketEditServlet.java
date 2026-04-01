@@ -20,7 +20,7 @@ public class BracketEditServlet extends HttpServlet {
 
         req.setAttribute("bracket", b);
         req.setAttribute("ctx", req.getContextPath());
-        req.getRequestDispatcher("/WEB-INF/jsp/tournament/bracketEdit.jsp")
+        req.getRequestDispatcher("/bracketEdit.jsp")
            .forward(req, resp);
     }
 

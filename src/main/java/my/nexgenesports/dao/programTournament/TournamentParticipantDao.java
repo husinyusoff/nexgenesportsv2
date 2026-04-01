@@ -33,11 +33,15 @@ public interface TournamentParticipantDao {
      * @return
      * @throws java.sql.SQLException
      */
-    List<TournamentParticipant> findByProgId(String progId) throws SQLException;
+    List<TournamentParticipant> findByProgId(int progId) throws SQLException;
 
     /**
      * @param participantId
      * @throws java.sql.SQLException
      */
     void softDelete(long participantId) throws SQLException;
+
+    // in TournamentParticipantDao.java
+    void updatePaymentStatusForTeam(int progId, Integer teamId, String status, String reference) throws SQLException;
+    TournamentParticipant findById(long id) throws SQLException;
 }

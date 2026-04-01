@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 public class Bracket {
     private Integer bracketId;
-    private String progId;
+    private int progId;
     private String name;
     private String format;
     private String createdBy;
@@ -15,8 +15,8 @@ public class Bracket {
     // getters + setters
     public Integer getBracketId() { return bracketId; }
     public void setBracketId(Integer bracketId) { this.bracketId = bracketId; }
-    public String getProgId() { return progId; }
-    public void setProgId(String progId) { this.progId = progId; }
+    public int getProgId() { return progId; }
+    public void setProgId(int progId) { this.progId = progId; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getFormat() { return format; }

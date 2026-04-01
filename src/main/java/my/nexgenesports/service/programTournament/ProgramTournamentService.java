@@ -2,14 +2,31 @@ package my.nexgenesports.service.programTournament;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import my.nexgenesports.dao.programTournament.*;
-import my.nexgenesports.model.*;
-import my.nexgenesports.service.general.ServiceException;
-
 import java.util.List;
+
+import my.nexgenesports.dao.programTournament.BracketDao;
+import my.nexgenesports.dao.programTournament.BracketDaoImpl;
+import my.nexgenesports.dao.programTournament.ChallongeTournamentDao;
+import my.nexgenesports.dao.programTournament.ChallongeTournamentDaoImpl;
+import my.nexgenesports.dao.programTournament.GameDao;
+import my.nexgenesports.dao.programTournament.GameDaoImpl;
+import my.nexgenesports.dao.programTournament.MeritLevelDao;
+import my.nexgenesports.dao.programTournament.MeritLevelDaoImpl;
+import my.nexgenesports.dao.programTournament.ProgramTournamentDao;
+import my.nexgenesports.dao.programTournament.ProgramTournamentDaoImpl;
+import my.nexgenesports.dao.programTournament.TournamentParticipantDao;
+import my.nexgenesports.dao.programTournament.TournamentParticipantDaoImpl;
+import my.nexgenesports.model.Bracket;
+import my.nexgenesports.model.ChallongeTournament;
+import my.nexgenesports.model.Game;
+import my.nexgenesports.model.MeritLevel;
+import my.nexgenesports.model.ProgramTournament;
+import my.nexgenesports.model.TournamentParticipant;
+import my.nexgenesports.service.general.ServiceException;
 
 public class ProgramTournamentService {
 
+<<<<<<< Updated upstream
     private final ProgramTournamentDao ptDao
             = new ProgramTournamentDaoImpl();
     private final TournamentParticipantDao tpDao
@@ -22,113 +39,67 @@ public class ProgramTournamentService {
             = new GameDao();
     private final MeritLevelDao meritDao
             = new MeritLevelDaoImpl();
+=======
+    private final ProgramTournamentDao ptDao = new ProgramTournamentDaoImpl();
+    private final TournamentParticipantDao tpDao = new TournamentParticipantDaoImpl();
+    private final BracketDao bracketDao = new BracketDaoImpl();
+    private final ChallongeTournamentDao challongeDao = new ChallongeTournamentDaoImpl();
+    private final GameDao gameDao = new GameDaoImpl();
+    private final MeritLevelDao meritDao = new MeritLevelDaoImpl();
+    private final ChallongeService challongeService = new ChallongeService();
 
-    /**
-     * CREATE
-     *
-     * @param pt
-     */
+    // --- PROGRAM / TOURNAMENT CRUD + STATUS --------------------------------
+    public ProgramTournament getProgramById(int progId) {
+        return ptDao.findById(progId);
+    }
+>>>>>>> Stashed changes
+
     public void createProgramTournament(ProgramTournament pt) {
-        try {
-            ptDao.insert(pt);
-        } catch (Exception e) {
-            throw new ServiceException("Failed to create", e);
-        }
+        ptDao.insert(pt);
     }
 
-    /**
-     * LIST PUBLIC (approved/open)
-     *
-     * @return
-     */
-    public List<ProgramTournament> listPublicProgramsAndTournaments() {
-        try {
-            return ptDao.findByStatusIn(List.of("OPEN", "ACTIVE"));
-        } catch (Exception e) {
-            throw new ServiceException("Failed to list public", e);
-        }
-    }
-
-    /**
-     * FIND DETAIL
-     *
-     * @param progId
-     * @return
-     */
-    public ProgramTournament findById(String progId) {
-        try {
-            return ptDao.findById(progId);
-        } catch (Exception e) {
-            throw new ServiceException("Not found: " + progId, e);
-        }
-    }
-
-    /**
-     * UPDATE
-     *
-     * @param pt
-     */
     public void updateProgramTournament(ProgramTournament pt) {
-        try {
-            ptDao.update(pt);
-        } catch (Exception e) {
-            throw new ServiceException("Failed to update", e);
-        }
+        ptDao.update(pt);
     }
 
-    /**
-     * SOFT DELETE
-     *
-     * @param progId
-     */
-    public void deleteProgramTournament(String progId) {
-        try {
-            ptDao.softDelete(progId);
-        } catch (Exception e) {
-            throw new ServiceException("Failed to delete", e);
-        }
+    public void deleteProgramTournament(int progId) {
+        ptDao.softDelete(progId);
     }
 
-    /**
-     * APPROVE → OPEN
-     *
-     * @param progId
-     * @param by
-     */
-    public void approveProgramTournament(String progId, String by) {
-        try {
-            ptDao.updateStatus(progId, "OPEN");
-        } catch (Exception e) {
-            throw new ServiceException("Failed to approve", e);
-        }
+    public void approveProgramTournament(int progId) {
+        ptDao.updateStatus(progId, "OPEN");
     }
 
-    /**
-     * REGISTER PARTICIPANT
-     *
-     * @param progId
-     * @param userId
-     * @param teamId
-     */
-    public void registerParticipant(String progId, String userId, String teamId) {
+    public void rejectProgramTournament(int progId) {
+        ptDao.updateStatus(progId, "REJECTED");
+    }
+
+    public void changeStatus(int progId, String newStatus) {
+        ProgramTournament pt = getProgramById(progId);
+        String old = pt.getStatus();
+        if (!List.of("APPROVED", "OPEN", "CLOSED").contains(old)
+                || !List.of("OPEN", "CLOSED").contains(newStatus)) {
+            throw new ServiceException("Invalid status transition: " + old + "→" + newStatus);
+        }
+        ptDao.updateStatus(progId, newStatus);
+    }
+
+    // --- PARTICIPANTS -------------------------------------------------------
+    public void registerParticipant(int progId, String userId, Integer teamId) {
         try {
             TournamentParticipant tp = new TournamentParticipant();
             tp.setProgId(progId);
             tp.setUserId(userId);
             tp.setTeamId(teamId);
+            tp.setRole("MAIN");
+            tp.setStatus("PAID");
             tpDao.insert(tp);
         } catch (SQLException e) {
-            throw new ServiceException("Failed to register", e);
+            throw new ServiceException("Failed to register participant", e);
         }
     }
 
-    /**
-     * LIST PARTICIPANTS
-     *
-     * @param progId
-     * @return
-     */
-    public List<TournamentParticipant> listParticipants(String progId) {
+    public List<TournamentParticipant> listParticipants(int progId) {
         try {
             return tpDao.findByProgId(progId);
         } catch (SQLException e) {
@@ -136,13 +107,8 @@ public class ProgramTournamentService {
         }
     }
 
-    /**
-     * LIST BRACKETS
-     *
-     * @param progId
-     * @return
-     */
-    public List<Bracket> listBrackets(String progId) {
+    // --- BRACKETS -----------------------------------------------------------
+    public List<Bracket> listBrackets(int progId) {
         try {
             return bracketDao.findByProg(progId);
         } catch (SQLException e) {
@@ -150,53 +116,85 @@ public class ProgramTournamentService {
         }
     }
 
-    /**
-     * GET CHALLONGE RECORD
-     *
-     * @param progId
-     * @return
-     */
-    public ChallongeTournament getChallonge(String progId) {
+    // fetch our local Challonge mapping record
+    public ChallongeTournament getChallonge(int progId) {
         try {
-            return challongeDao.findByProg(progId);
+            return challongeDao.findByProgId(progId);
         } catch (SQLException e) {
-            throw new ServiceException("Failed to load bracket sync info", e);
+            throw new ServiceException("Failed to load Challonge mapping", e);
         }
     }
 
     /**
-     * SYNC WITH CHALLONGE (stubbed)
-     *
-     * @param progId
+     * Creates & seeds a brand-new Challonge bracket, persists the mapping and
+     * returns the new ChallongeTournament.
      */
-    public void syncWithChallonge(String progId) {
+    public ChallongeTournament provisionChallonge(int progId) {
+        return challongeService.provision(progId);
+    }
+
+    /**
+     * Updates name and description on Challonge (and in our metadata).
+     * @param progId
+     * @param name
+     * @param description
+     */
+    public void updateChallonge(int progId, String name, String description) {
+        challongeService.update(progId, name, description);
+    }
+
+        public void syncWithChallonge(int progId) {
         try {
-            ProgramTournament pt = ptDao.findById(progId);
-            ChallongeClient client = new ChallongeClient();
-            ChallongeTournament out;
-            ChallongeTournament existing = challongeDao.findByProg(progId);
+            // 1) look up existing mapping
+            ChallongeTournament existing = challongeDao.findByProgId(progId);
+            ChallongeService client       = new ChallongeService();
+            ChallongeTournament updated;
+
             if (existing == null) {
-                out = client.createTournament(pt);
-                challongeDao.insert(out);
+                // no mapping yet → provision brand-new
+                updated = client.provision(progId);
             } else {
-                out = client.syncTournament(existing);
-                challongeDao.update(out);
+                // already exists → just refresh sync
+                updated = client.syncTournament(existing);
             }
-        } catch (IOException | SQLException e) {
+
+            // 2) persist back into our table
+            challongeDao.insertOrUpdate(updated);
+
+        } catch (SQLException e) {
             throw new ServiceException("Challonge sync failed", e);
         }
     }
-
+        
     /**
-     * FOR DROPDOWNS
-     *
-     * @return
+     * Deletes the bracket remotely in Challonge and locally in our DB.
+     * @param progId
      */
+    public void deleteChallonge(int progId) {
+        challongeService.delete(progId);
+    }
+
+    // --- PROGRAM/TOURNAMENT LISTING ----------------------------------------
+    public List<ProgramTournament> listPublicProgramsAndTournaments() {
+        return ptDao.findByStatusIn(List.of("OPEN", "ACTIVE"));
+    }
+
+    public List<ProgramTournament> listAllProgramsAndTournaments() {
+        return ptDao.findByStatusIn(List.of(
+                "PENDING_APPROVAL", "APPROVED", "OPEN", "ACTIVE", "CLOSED", "COMPLETED", "CANCELLED", "REJECTED"
+        ));
+    }
+
+    public List<ProgramTournament> listAllPrograms() {
+        return ptDao.findAll();
+    }
+
+    // --- DROPDOWNS ---------------------------------------------------------
     public List<Game> listAllGames() {
         try {
             return gameDao.listAll();
         } catch (SQLException e) {
-            throw new ServiceException("Failed games", e);
+            throw new ServiceException("Failed to list games", e);
         }
     }
 
@@ -204,95 +202,26 @@ public class ProgramTournamentService {
         try {
             return meritDao.findAll();
         } catch (SQLException e) {
-            throw new ServiceException("Failed merits", e);
+            throw new ServiceException("Failed to list merit levels", e);
         }
     }
 
     public Integer resolveMeritId(String programType, String scope) {
-        String category = "PROGRAM".equalsIgnoreCase(programType)
-                ? "Program" : "Tournament";
+        String category = "PROGRAM".equalsIgnoreCase(programType) ? "Program" : "Tournament";
         try {
             MeritLevel ml = meritDao.findByCategoryAndScope(category, scope);
             return ml != null ? ml.getMeritId() : null;
         } catch (SQLException e) {
-            throw new ServiceException("Failed merits", e);
+            throw new ServiceException("Failed to resolve merit ID", e);
         }
     }
 
-    /**
-     * LIST ALL (any status)
-     *
-     * @return
-     */
-    public List<ProgramTournament> listAllProgramsAndTournaments() {
-        try {
-            return ptDao.findByStatusIn(List.of(
-                    "PENDING_APPROVAL",
-                    "APPROVED",
-                    "OPEN",
-                    "ACTIVE",
-                    "CLOSED",
-                    "COMPLETED",
-                    "CANCELLED",
-                    "REJECTED"
-            ));
-        } catch (Exception e) {
-            throw new ServiceException("Failed to list all", e);
-        }
+    // --- TEAM SIZE ---------------------------------------------------------
+    public Integer getMinTeamMember(int progId) {
+        return getProgramById(progId).getMinTeamMember();
     }
 
-    public List<ProgramTournament> listAllPrograms() {
-        try {
-            return ptDao.findAll();
-        } catch (Exception e) {
-            throw new ServiceException("Failed to list programs", e);
-        }
+    public Integer getMaxTeamMember(int progId) {
+        return getProgramById(progId).getMaxTeamMember();
     }
-
-    /**
-     * Approve a pending tournament
-     *
-     * @param progId
-     */
-    public void approveTournament(int progId) {
-        ProgramTournament pt = ptDao.findById(String.valueOf(progId));
-        if (pt == null) {
-            throw new ServiceException("Not found: " + progId);
-        }
-        if (!ProgramTournament.STATUS_PENDING.equals(pt.getStatus())) {
-            throw new ServiceException("Can only approve when status is PENDING_APPROVAL");
-        }
-        ptDao.updateStatus(String.valueOf(progId), ProgramTournament.STATUS_APPROVED);
-    }
-
-    /**
-     * Reject a pending tournament
-     *
-     * @param progId
-     */
-    public void rejectTournament(int progId) {
-        ProgramTournament pt = ptDao.findById(String.valueOf(progId));
-        if (pt == null) {
-            throw new ServiceException("Not found: " + progId);
-        }
-        if (!ProgramTournament.STATUS_PENDING.equals(pt.getStatus())) {
-            throw new ServiceException("Can only reject when status is PENDING_APPROVAL");
-        }
-        ptDao.updateStatus(String.valueOf(progId), ProgramTournament.STATUS_REJECTED);
-    }
-
-    public void changeStatus(String progId, String newStatus) {
-        ProgramTournament pt = ptDao.findById(progId);
-        if (pt == null) {
-            throw new ServiceException("Not found: " + progId);
-        }
-        String old = pt.getStatus();
-        // only allow transitions APPROVED→{OPEN,CLOSED} or OPEN↔CLOSED
-        if (!List.of("APPROVED", "OPEN", "CLOSED").contains(old)
-                || !List.of("OPEN", "CLOSED").contains(newStatus)) {
-            throw new ServiceException("Invalid status change");
-        }
-        ptDao.updateStatus(progId, newStatus);
-    }
-
 }

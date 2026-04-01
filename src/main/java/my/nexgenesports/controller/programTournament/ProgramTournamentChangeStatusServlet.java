@@ -15,7 +15,7 @@ public class ProgramTournamentChangeStatusServlet extends HttpServlet {
     @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-    String progId   = req.getParameter("progId");
+    int progId   = Integer.parseInt(req.getParameter("progId"));
     String newStatus= req.getParameter("newStatus");
     svc.changeStatus(progId, newStatus);
     resp.sendRedirect(req.getContextPath() + "/programs");

@@ -14,7 +14,7 @@ public class ProgramTournamentDeleteServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String progId = req.getParameter("progId");
+        int progId = Integer.parseInt(req.getParameter("progId"));
         service.deleteProgramTournament(progId);
         resp.sendRedirect(req.getContextPath() + "/programs");
     }

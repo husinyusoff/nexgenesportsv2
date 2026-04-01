@@ -16,8 +16,6 @@ public class User {
     private String  passwordResetToken;
     private LocalDateTime passwordResetExpiry;
     private int     rpId;
-    private String  clubSessionID;
-    private Integer gamingPassID;  // nullable
 
     // position comes from JOIN with role_positions
     private String  position;
@@ -38,6 +36,7 @@ public class User {
     public String getPhoneNumber()                     { return phoneNumber; }
     public void   setPhoneNumber(String pn)            { this.phoneNumber = pn; }
 
+<<<<<<< Updated upstream
     public String getMatricNumber()                    { return matricNumber; }
     public void   setMatricNumber(String mn)           { this.matricNumber = mn; }
 
@@ -75,4 +74,9 @@ public class User {
 
     public String getPosition()                        { return position; }
     public void   setPosition(String pos)              { this.position = pos; }
+=======
+    // **NEW** getter/setter for position
+    public String getPosition()              { return position; }
+    public void   setPosition(String pos)    { this.position = pos; }
+>>>>>>> Stashed changes
 }
