@@ -14,7 +14,6 @@ public class AuthFilter implements Filter {
 
     // Removed "/" from PUBLIC — we’ll handle it explicitly instead
     private static final Set<String> PUBLIC = Set.of(
-<<<<<<< Updated upstream
             "/", // root
             "/index.jsp",
             "/login.jsp",
@@ -27,21 +26,6 @@ public class AuthFilter implements Filter {
             "/styles.css",
             "/LoginServlet",
             "/RegisterServlet"
-=======
-        "/login.jsp",
-        "/register.jsp",
-        "/LoginServlet",
-        "/RegisterServlet",
-        "/logout",
-        "/accessDenied.jsp",
-        "/styles.css",
-        "/header.jsp",
-        "/sidebar.jsp",
-        "/footer.jsp",
-        "/scripts/",
-        "/images/",
-        "/fonts/"
->>>>>>> Stashed changes
     );
 
     @Override
@@ -64,7 +48,6 @@ public class AuthFilter implements Filter {
         }
 
         // 1) Always allow public paths & static assets
-<<<<<<< Updated upstream
         if (path == null
                 || path.isEmpty()
                 || PUBLIC.contains(path)
@@ -72,12 +55,6 @@ public class AuthFilter implements Filter {
                 || path.startsWith("/images/")
                 || path.startsWith("/scripts/")
                 || path.startsWith("/fonts/")) {
-=======
-        if (PUBLIC.contains(path)
-         || path.startsWith("/images/")
-         || path.startsWith("/scripts/")
-         || path.startsWith("/fonts/")) {
->>>>>>> Stashed changes
             chain.doFilter(rq, rs);
             return;
         }

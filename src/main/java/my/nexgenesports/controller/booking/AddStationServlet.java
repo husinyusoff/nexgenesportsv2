@@ -9,7 +9,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 
 @WebServlet("/stations/add")
 public class AddStationServlet extends HttpServlet {

@@ -483,7 +483,6 @@ select.input-field {
     gap: 10px;
 }
 
-<<<<<<< Updated upstream
 /* Mobile Data Cards */
 @media (max-width: 768px) {
     .data-table, .data-table tbody {
@@ -554,7 +553,6 @@ select.input-field {
     font-size: 1.2rem;
     font-weight: 600;
 }
-=======
 /* ===================== Manage Team Styles ===================== */
 .team-page .card {
     max-width: 900px;
@@ -1047,4 +1045,3 @@ body.tournament-page .main .table-card > h1 {
 body.tournament-page .main .table-card .toolbar {
   margin-bottom: 24px;
 }
->>>>>>> Stashed changes

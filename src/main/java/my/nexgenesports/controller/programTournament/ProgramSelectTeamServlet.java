@@ -132,7 +132,6 @@ public class ProgramSelectTeamServlet extends HttpServlet {
         }
 
         // 6) persist
-        TournamentParticipantDao tpDao = new TournamentParticipantDaoImpl();
         LocalDateTime now = LocalDateTime.now();
 
         // mains

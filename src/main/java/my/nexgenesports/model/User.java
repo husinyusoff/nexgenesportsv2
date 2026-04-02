@@ -36,7 +36,6 @@ public class User {
     public String getPhoneNumber()                     { return phoneNumber; }
     public void   setPhoneNumber(String pn)            { this.phoneNumber = pn; }
 
-<<<<<<< Updated upstream
     public String getMatricNumber()                    { return matricNumber; }
     public void   setMatricNumber(String mn)           { this.matricNumber = mn; }
 
@@ -66,17 +65,6 @@ public class User {
     public int    getRpId()                            { return rpId; }
     public void   setRpId(int rpId)                    { this.rpId = rpId; }
 
-    public String getClubSessionID()                   { return clubSessionID; }
-    public void   setClubSessionID(String cs)          { this.clubSessionID = cs; }
-
-    public Integer getGamingPassID()                   { return gamingPassID; }
-    public void    setGamingPassID(Integer g)          { this.gamingPassID = g; }
-
     public String getPosition()                        { return position; }
     public void   setPosition(String pos)              { this.position = pos; }
-=======
-    // **NEW** getter/setter for position
-    public String getPosition()              { return position; }
-    public void   setPosition(String pos)    { this.position = pos; }
->>>>>>> Stashed changes
 }

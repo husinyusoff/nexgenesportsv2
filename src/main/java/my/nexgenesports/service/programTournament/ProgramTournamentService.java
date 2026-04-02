@@ -1,6 +1,5 @@
 package my.nexgenesports.service.programTournament;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -9,7 +8,6 @@ import my.nexgenesports.dao.programTournament.BracketDaoImpl;
 import my.nexgenesports.dao.programTournament.ChallongeTournamentDao;
 import my.nexgenesports.dao.programTournament.ChallongeTournamentDaoImpl;
 import my.nexgenesports.dao.programTournament.GameDao;
-import my.nexgenesports.dao.programTournament.GameDaoImpl;
 import my.nexgenesports.dao.programTournament.MeritLevelDao;
 import my.nexgenesports.dao.programTournament.MeritLevelDaoImpl;
 import my.nexgenesports.dao.programTournament.ProgramTournamentDao;
@@ -26,7 +24,6 @@ import my.nexgenesports.service.general.ServiceException;
 
 public class ProgramTournamentService {
 
-<<<<<<< Updated upstream
     private final ProgramTournamentDao ptDao
             = new ProgramTournamentDaoImpl();
     private final TournamentParticipantDao tpDao
@@ -39,20 +36,12 @@ public class ProgramTournamentService {
             = new GameDao();
     private final MeritLevelDao meritDao
             = new MeritLevelDaoImpl();
-=======
-    private final ProgramTournamentDao ptDao = new ProgramTournamentDaoImpl();
-    private final TournamentParticipantDao tpDao = new TournamentParticipantDaoImpl();
-    private final BracketDao bracketDao = new BracketDaoImpl();
-    private final ChallongeTournamentDao challongeDao = new ChallongeTournamentDaoImpl();
-    private final GameDao gameDao = new GameDaoImpl();
-    private final MeritLevelDao meritDao = new MeritLevelDaoImpl();
     private final ChallongeService challongeService = new ChallongeService();
 
     // --- PROGRAM / TOURNAMENT CRUD + STATUS --------------------------------
     public ProgramTournament getProgramById(int progId) {
         return ptDao.findById(progId);
     }
->>>>>>> Stashed changes
 
     public void createProgramTournament(ProgramTournament pt) {
         ptDao.insert(pt);

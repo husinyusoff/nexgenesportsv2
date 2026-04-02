@@ -1,7 +1,6 @@
 package my.nexgenesports.model;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * Snapshot of a team when disbanded.

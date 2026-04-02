@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import my.nexgenesports.dao.memberships.PassTierDao;
 import my.nexgenesports.model.PassTier;
 import my.nexgenesports.model.UserGamingPass;
 import my.nexgenesports.util.DBConnection;

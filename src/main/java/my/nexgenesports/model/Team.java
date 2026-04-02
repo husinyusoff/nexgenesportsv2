@@ -27,7 +27,7 @@ public class Team {
         this.teamName = teamName;
         this.description = description;
         this.logoURL = logoURL;
-        this.leader = leader;
+        this.leader = createdBy;
         this.createdAt = createdAt;
         this.disbandedAt = disbandedAt;
         this.status = status;

@@ -11,7 +11,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import my.nexgenesports.dao.memberships.MembershipSessionDao;
 import my.nexgenesports.model.MembershipSession;
 import my.nexgenesports.model.UserClubMembership;
 import my.nexgenesports.util.DBConnection;

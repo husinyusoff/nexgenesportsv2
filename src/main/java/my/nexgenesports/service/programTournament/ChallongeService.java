@@ -9,11 +9,7 @@ import my.nexgenesports.service.general.ServiceException;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.*;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse.BodyHandlers;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;

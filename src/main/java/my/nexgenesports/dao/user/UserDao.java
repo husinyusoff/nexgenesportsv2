@@ -12,30 +12,19 @@ public class UserDao {
 
     public void save(User u) throws SQLException {
         String sql = "INSERT INTO users "
-<<<<<<< Updated upstream
                    + "(userID, name, email, password_hash, phoneNumber, rp_id) "
                    + "VALUES (?,?,?,?,?,?)";
-=======
-                   + "(userID,name,password_hash,phoneNumber,rp_id) "
-                   + "VALUES (?,?,?,?,?)";
->>>>>>> Stashed changes
 
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, u.getUserID());
             ps.setString(2, u.getName());
-<<<<<<< Updated upstream
             ps.setString(3, u.getEmail());
             ps.setString(4, u.getPasswordHash());
             ps.setString(5, u.getPhoneNumber());
             ps.setInt   (6, u.getRpId());
 
-=======
-            ps.setString(3, u.getPasswordHash());
-            ps.setString(4, u.getPhoneNumber());
-            ps.setInt   (5, u.getRpId());
->>>>>>> Stashed changes
             ps.executeUpdate();
         }
     }
@@ -44,15 +33,10 @@ public class UserDao {
 
     public User findByUserID(String userID) throws SQLException {
         String sql =
-<<<<<<< Updated upstream
             "SELECT u.userID, u.name, u.email, u.password_hash, u.phoneNumber,"
           + "       u.matricNumber, u.ign, u.bio, u.discordID, u.registrationDate,"
           + "       u.password_reset_token, u.password_reset_expiry,"
           + "       u.rp_id, rp.position"
-=======
-            "SELECT u.userID, u.name, u.password_hash, u.phoneNumber, u.rp_id,"
-          + "       rp.position"
->>>>>>> Stashed changes
           + "  FROM users u"
           + "  LEFT JOIN role_positions rp ON u.rp_id = rp.id"
           + " WHERE u.userID = ?";
@@ -62,19 +46,7 @@ public class UserDao {
             ps.setString(1, userID);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
-<<<<<<< Updated upstream
                 return mapRow(rs);
-=======
-
-                User u = new User();
-                u.setUserID       (rs.getString("userID"));
-                u.setName         (rs.getString("name"));
-                u.setPasswordHash (rs.getString("password_hash"));
-                u.setPhoneNumber  (rs.getString("phoneNumber"));
-                u.setRpId         (rs.getInt   ("rp_id"));
-                u.setPosition     (rs.getString("position")); // ← NEW
-                return u;
->>>>>>> Stashed changes
             }
         }
     }
