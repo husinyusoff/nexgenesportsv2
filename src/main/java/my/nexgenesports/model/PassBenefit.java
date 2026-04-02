@@ -7,6 +7,7 @@ public class PassBenefit {
     private int tierId;
     private int benefitOrder;
     private String benefitText;
+    private String benefitName;
 
     public PassBenefit() {}
 
@@ -28,6 +29,9 @@ public class PassBenefit {
 
     public String getBenefitText() { return benefitText; }
     public void setBenefitText(String benefitText) { this.benefitText = benefitText; }
+
+    public String getBenefitName() { return benefitName; }
+    public void setBenefitName(String benefitName) { this.benefitName = benefitName; }
 
     @Override
     public boolean equals(Object o) {
