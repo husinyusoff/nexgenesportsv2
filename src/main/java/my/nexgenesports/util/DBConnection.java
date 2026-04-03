@@ -6,7 +6,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private static final String URL      = "jdbc:mysql://localhost:3306/trial_nexgenesports?useSSL=false&serverTimezone=UTC";
+    private static final String DEFAULT_HOST = System.getenv("DB_HOST") != null ? System.getenv("DB_HOST") : "localhost";
+    private static final String URL      = "jdbc:mysql://" + DEFAULT_HOST + ":3306/trial_nexgenesports?useSSL=false&serverTimezone=UTC";
     private static final String USER     = "root";
     private static final String PASSWORD = "";
 

@@ -1,0 +1,27 @@
+:root {
+    /* Backgrounds */
+    --bg-dark: #09090b;
+    --glass-bg: rgba(20, 20, 25, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    
+    /* Neons */
+    --neon-cyan: #00e5ff;
+    --neon-cyan-glow: rgba(0, 229, 255, 0.4);
+    --neon-pink: #ff007f;
+    
+    /* Semantic Status Neons */
+    --neon-green: #00ff88;
+    --neon-yellow: #ffdd00;
+    --neon-purple: #b026ff;
+
+    /* Typography */
+    --text-primary: #ffffff;
+    --text-muted: #a0a0ab;
+    --font-main: 'Inter', sans-serif;
+    --font-heading: 'Rajdhani', sans-serif;
+
+    /* Layout & Animation */
+    --header-height: 70px;
+    --sidebar-width: 240px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}

@@ -1,45 +1,41 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags/shared" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Forgot Password - NexGen Esports</title>
 </head>
-<body class="auth-wrapper">
-    <jsp:include page="header.jsp"/>
+<body>
+    <t:AppShell cssClass="auth-wrapper" hideSidebar="true">
+        <t:GlassCard cssClass="auth-box">
+            <h2 style="text-align: center; margin-bottom: 24px; color: var(--text-primary); font-family: var(--font-heading); text-transform: uppercase;">FORGOT PASSWORD</h2>
+            <p style="color: var(--text-muted); text-align: center; margin-bottom: 25px; font-size: 0.95rem;">
+                Enter your registered email address and we'll send you a password reset link.
+            </p>
 
-    <div class="main-container">
-        <div class="content">
-            <div class="auth-box glass-card">
-                <h2>FORGOT PASSWORD</h2>
-                <p style="color: var(--text-muted); text-align: center; margin-bottom: 25px; font-size: 0.95rem;">
-                    Enter your registered email address and we'll send you a password reset link.
-                </p>
+            <% if (request.getAttribute("successMsg") != null) { %>
+                <t:Alert variant="success"><%= request.getAttribute("successMsg") %></t:Alert>
+            <% } %>
+            <% if (request.getAttribute("errorMsg") != null) { %>
+                <t:Alert variant="danger"><%= request.getAttribute("errorMsg") %></t:Alert>
+            <% } %>
 
-                <% if (request.getAttribute("successMsg") != null) { %>
-                    <div style="color:var(--neon-cyan); text-align:center; margin-bottom: 20px; padding: 12px; border: 1px solid var(--neon-cyan); border-radius: 8px; background: rgba(0,229,255,0.1); font-weight: 600;">
-                        <%= request.getAttribute("successMsg") %>
-                    </div>
-                <% } %>
-                <% if (request.getAttribute("errorMsg") != null) { %>
-                    <div class="error-msg"><%= request.getAttribute("errorMsg") %></div>
-                <% } %>
-
-                <form action="${pageContext.request.contextPath}/auth?action=forgotPassword" method="post">
-                    <label class="label" for="email">Email Address</label>
+            <form action="${pageContext.request.contextPath}/auth?action=forgotPassword" method="post">
+                <t:Field id="email" label="Email Address" required="true">
                     <input class="input-field" type="email" id="email" name="email" required
                            placeholder="your.email@student.umt.edu.my">
+                </t:Field>
 
-                    <button class="btn btn-primary btn-block" type="submit">Send Reset Link</button>
+                <div style="margin-top: 30px;">
+                    <t:Button variant="primary" type="submit" cssClass="w-100" style="width: 100%;">Send Reset Link</t:Button>
+                </div>
 
-                    <div class="auth-links" style="justify-content: center; margin-top: 20px;">
-                        <a href="${pageContext.request.contextPath}/login.jsp">Back to Login</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <jsp:include page="footer.jsp"/>
+                <div class="auth-links" style="justify-content: center; margin-top: 20px; font-size: 0.85rem;">
+                    <a href="${pageContext.request.contextPath}/login.jsp" style="color: var(--neon-cyan); transition: var(--transition);">Back to Login</a>
+                </div>
+            </form>
+        </t:GlassCard>
+    </t:AppShell>
 </body>
 </html>

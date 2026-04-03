@@ -1045,3 +1045,248 @@ body.tournament-page .main .table-card > h1 {
 body.tournament-page .main .table-card .toolbar {
   margin-bottom: 24px;
 }
+
+/* ===================================================================
+   MANAGE MEMBERSHIPS PAGE 
+   =================================================================== */
+.manage-membership-page .main-dashboard-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(15, 15, 20, 0.85); /* Dark Glass */
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+}
+.manage-membership-page .subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+}
+.manage-membership-page .tab-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+.manage-membership-page .tab-label {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #666;
+  cursor: pointer;
+  padding: 10px 20px;
+  transition: all 0.3s;
+  border-bottom: 3px solid transparent;
+}
+.manage-membership-page .tab-label.active {
+  color: var(--neon-cyan);
+  border-bottom: 3px solid var(--neon-cyan);
+  text-shadow: 0 0 10px var(--neon-cyan);
+}
+.manage-membership-page .panel {
+  display: none;
+  animation: fadeIn 0.5s;
+}
+.manage-membership-page .panel.active {
+  display: block;
+}
+
+/* Pricing Cards */
+.manage-membership-page .pricing-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+}
+.manage-membership-page .pricing-card {
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.9), rgba(15, 15, 20, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 30px;
+  width: 300px;
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+.manage-membership-page .pricing-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2);
+  border-color: rgba(0, 229, 255, 0.5);
+}
+.manage-membership-page .premium-card {
+  border: 1px solid var(--neon-pink);
+  box-shadow: 0 0 20px rgba(255, 0, 127, 0.1);
+}
+.manage-membership-page .card-badge {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  background: var(--neon-pink);
+  color: #fff;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px var(--neon-pink);
+}
+.manage-membership-page .pricing-card h2 {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-top: 0;
+  margin-bottom: 15px;
+  text-align: center;
+}
+.manage-membership-page .pricing-card .price {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+}
+.manage-membership-page .pricing-card .price .currency {
+  font-size: 1.2rem;
+  vertical-align: top;
+}
+.manage-membership-page .pricing-card .price .amount {
+  font-size: 3rem;
+  font-weight: 800;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+.manage-membership-page .pricing-card .price .period {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+.manage-membership-page .tier-desc {
+  color: #bbb;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.manage-membership-page .benefit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px;
+  flex: 1;
+}
+.manage-membership-page .benefit-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.9rem;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+}
+.manage-membership-page .benefit-list li .check-icon {
+  color: var(--neon-cyan);
+  margin-right: 10px;
+  font-weight: bold;
+}
+.manage-membership-page .data-driven li {
+  justify-content: space-between;
+}
+.manage-membership-page .active-benefit .benefit-value {
+  color: var(--neon-cyan);
+  font-weight: 700;
+}
+.manage-membership-page .disabled-benefit {
+  opacity: 0.5;
+}
+.manage-membership-page .disabled-benefit .benefit-name {
+  text-decoration: line-through;
+}
+
+/* Card Actions / Buttons */
+.manage-membership-page .card-actions {
+  display: flex;
+  justify-content: center;
+}
+.manage-membership-page .card-actions button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  color: #fff;
+}
+.manage-membership-page .btn-buy {
+  background: var(--neon-cyan);
+  color: #000 !important;
+  box-shadow: 0 0 10px var(--neon-cyan);
+}
+.manage-membership-page .btn-buy:hover {
+  background: #00b3cc;
+  box-shadow: 0 0 20px var(--neon-cyan);
+}
+.manage-membership-page .btn-renew {
+  background: var(--neon-pink);
+  color: #fff !important;
+  box-shadow: 0 0 10px var(--neon-pink);
+}
+.manage-membership-page .btn-renew:hover {
+  background: #cc0066;
+  box-shadow: 0 0 20px var(--neon-pink);
+}
+.manage-membership-page .btn-locked {
+  background: #333;
+  color: #777 !important;
+  cursor: not-allowed;
+}
+.manage-membership-page .btn-current {
+  background: transparent;
+  border: 2px solid var(--neon-cyan);
+  color: var(--neon-cyan) !important;
+  cursor: default;
+}
+.manage-membership-page .btn-upgrade {
+  background: linear-gradient(90deg, var(--neon-cyan), #00ffcc);
+  color: #000 !important;
+  box-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* Status Banners / Boxes */
+.manage-membership-page .status-box {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+.manage-membership-page .status-active {
+  border-left: 4px solid #0f0;
+}
+.manage-membership-page .status-expired {
+  border-left: 4px solid var(--neon-pink);
+}
+.manage-membership-page .current-pass-banner {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+.manage-membership-page .banner-active {
+  border-bottom: 3px solid var(--neon-cyan);
+}
+.manage-membership-page .current-pass-banner h3 {
+  margin: 0 0 10px;
+  color: #fff;
+}
+.manage-membership-page .current-pass-banner h3 span {
+  color: var(--neon-cyan);
+  font-size: 1.4rem;
+}
+.manage-membership-page .current-pass-banner p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

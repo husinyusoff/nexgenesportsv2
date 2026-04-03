@@ -51,6 +51,9 @@ public class AuthFilter implements Filter {
         if (path == null
                 || path.isEmpty()
                 || PUBLIC.contains(path)
+                || "/preview.jsp".equals(path)
+                || "/layout_example.jsp".equals(path)
+                || path.startsWith("/css/")
                 || path.startsWith("/js/")
                 || path.startsWith("/images/")
                 || path.startsWith("/scripts/")

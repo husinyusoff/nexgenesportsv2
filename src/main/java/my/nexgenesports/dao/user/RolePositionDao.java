@@ -3,6 +3,9 @@ package my.nexgenesports.dao.user;
 import my.nexgenesports.util.DBConnection;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import my.nexgenesports.model.RolePosition;
 
 public class RolePositionDao {
 
@@ -50,5 +53,22 @@ public class RolePositionDao {
                 throw new SQLException("No role for rp_id=" + rpId);
             }
         }
+    }
+
+    public List<RolePosition> listAllRoles() throws SQLException {
+        List<RolePosition> roles = new ArrayList<>();
+        String sql = "SELECT id, role, position FROM role_positions ORDER BY id";
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                RolePosition rp = new RolePosition();
+                rp.setId(rs.getInt("id"));
+                rp.setRole(rs.getString("role"));
+                rp.setPosition(rs.getString("position"));
+                roles.add(rp);
+            }
+        }
+        return roles;
     }
 }

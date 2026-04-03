@@ -8,6 +8,7 @@
   <meta charset="UTF-8">
   <title>Manage Membership &amp; Pass – NexGen Esports</title>
   <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="manage-membership-page">
 
@@ -21,229 +22,140 @@
     </div>
 
     <div class="content">
-      <div class="card">
-
+      <div class="card main-dashboard-card">
         <div class="card-header">
-          <h1>Manage Membership &amp; Pass</h1>
+          <h1>My Memberships & Passes</h1>
+          <p class="subtitle">Elevate your game with our premium tiers.</p>
         </div>
 
-        <!-- SUMMARY TABLE -->
-        <table class="summary-table">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Tier / Session</th>
-              <th>Price (RM)</th>
-              <th>Purchased</th>
-              <th>Expires</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Club Membership</td>
-              <td><c:out value="${currentMembership != null ? currentMembership.session.sessionName : '-'}"/></td>
-              <td>
-                <c:choose>
-                  <c:when test="${currentMembership != null}">
-                    RM<fmt:formatNumber value="${currentMembership.session.fee}" minFractionDigits="2"/>
-                  </c:when>
-                  <c:otherwise>-</c:otherwise>
-                </c:choose>
-              </td>
-              <td>
-                <c:choose>
-                  <c:when test="${currentMembership != null}">
-                    <c:out value="${fn:replace(currentMembership.purchaseDate, 'T', ' ')}"/>
-                  </c:when>
-                  <c:otherwise>-</c:otherwise>
-                </c:choose>
-              </td>
-              <td>
-                <c:choose>
-                  <c:when test="${currentMembership != null}">
-                    <c:out value="${fn:replace(currentMembership.expiryDate, 'T', ' ')}"/>
-                  </c:when>
-                  <c:otherwise>-</c:otherwise>
-                </c:choose>
-              </td>
-              <td><c:out value="${currentMembership != null ? currentMembership.status : '-'}"/></td>
-            </tr>
-            <tr>
-              <td>Monthly Gaming Pass</td>
-              <td><c:out value="${currentPass != null ? currentPass.tier.tierName : '-'}"/></td>
-              <td>
-                <c:choose>
-                  <c:when test="${currentPass != null}">
-                    RM<fmt:formatNumber value="${currentPass.tier.price}" minFractionDigits="2"/>
-                  </c:when>
-                  <c:otherwise>-</c:otherwise>
-                </c:choose>
-              </td>
-              <td>
-                <c:choose>
-                  <c:when test="${currentPass != null}">
-                    <c:out value="${fn:replace(currentPass.purchaseDate, 'T', ' ')}"/>
-                  </c:when>
-                  <c:otherwise>-</c:otherwise>
-                </c:choose>
-              </td>
-              <td>
-                <c:choose>
-                  <c:when test="${currentPass != null}">
-                    <c:out value="${fn:replace(currentPass.expiryDate, 'T', ' ')}"/>
-                  </c:when>
-                  <c:otherwise>-</c:otherwise>
-                </c:choose>
-              </td>
-              <td><c:out value="${currentPass != null ? currentPass.status : '-'}"/></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- TAB SWITCHER -->
         <div class="tab-switcher">
-          <div id="prev" class="tab-btn">&lt;</div>
           <div id="lbl-club" class="tab-label active" data-tab="club">Club Membership</div>
-          <div id="lbl-pass" class="tab-label" data-tab="pass">Gaming Pass</div>
-          <div id="next" class="tab-btn">&gt;</div>
+          <div id="lbl-pass" class="tab-label" data-tab="pass">Gaming Passes</div>
         </div>
 
-        <!-- CLUB BENEFITS PANEL -->
+        <!-- CLUB MEMBERSHIP -->
         <div id="panel-club" class="panel active">
-          <table class="benefits-table club">
-            <thead>
-              <tr><th>#</th><th>Benefit</th></tr>
-            </thead>
-            <tbody>
-              <c:forEach var="b" items="${clubBenefits}" varStatus="st">
-                <tr>
-                  <td>${st.index + 1}</td>
-                  <td><c:out value="${b.benefitText}"/></td>
-                </tr>
-              </c:forEach>
-              <tr>
-                <td colspan="2" style="text-align:center">
-                  <c:choose>
+          <div class="pricing-cards">
+            <div class="pricing-card premium-card">
+              <div class="card-badge">Yearly Access</div>
+              <h2>NexGen Club Membership</h2>
+              <div class="price">
+                <span class="currency">RM</span>
+                <span class="amount"><fmt:formatNumber value="${activeSession.fee}" type="number" minFractionDigits="0"/></span>
+              </div>
+              <p class="tier-desc">Unlock massive exclusive benefits and tournament access for the entire season.</p>
+
+              <c:if test="${currentMembership != null}">
+                <div class="status-box ${currentMembership.status == 'ACTIVE' ? 'status-active' : 'status-expired'}">
+                  <strong>Status:</strong> ${currentMembership.status} <br>
+                  <strong>Expires:</strong> ${fn:replace(currentMembership.expiryDate, 'T', ' ')}
+                </div>
+              </c:if>
+
+              <ul class="benefit-list">
+                <c:forEach var="b" items="${clubBenefits}">
+                  <li><span class="check-icon">✓</span> <c:out value="${b.benefitText}"/></li>
+                </c:forEach>
+              </ul>
+
+              <div class="card-actions">
+                <c:choose>
                     <c:when test="${currentMembership != null && currentMembership.status == 'ACTIVE'}">
-                      <button class="btn-renew" disabled>Active</button>
+                        <button class="btn-renew disabled" disabled>Active</button>
                     </c:when>
                     <c:when test="${currentMembership != null && currentMembership.status == 'EXPIRED'}">
-                      <form action="${pageContext.request.contextPath}/payMembership" method="get">
-                        <input type="hidden" name="sessionId" value="${activeSession.sessionId}"/>
-                        <button class="btn-renew">
-                          RM<fmt:formatNumber value="${activeSession.fee}" minFractionDigits="2"/>
-                        </button>
-                      </form>
+                        <form action="${pageContext.request.contextPath}/payMembership" method="get">
+                            <input type="hidden" name="sessionId" value="${activeSession.sessionId}"/>
+                            <button class="btn-renew pulse">Renew Membership</button>
+                        </form>
                     </c:when>
                     <c:otherwise>
-                      <form action="${pageContext.request.contextPath}/payMembership" method="get">
-                        <input type="hidden" name="sessionId" value="${activeSession.sessionId}"/>
-                        <button class="btn-buy">
-                          RM<fmt:formatNumber value="${activeSession.fee}" minFractionDigits="2"/>
-                        </button>
-                      </form>
+                        <form action="${pageContext.request.contextPath}/payMembership" method="get">
+                            <input type="hidden" name="sessionId" value="${activeSession.sessionId}"/>
+                            <button class="btn-buy pulse">Buy Membership</button>
+                        </form>
                     </c:otherwise>
-                  </c:choose>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </c:choose>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- PASS BENEFITS PANEL -->
+        <!-- GAMING PASSES -->
         <div id="panel-pass" class="panel">
-          <table class="benefits-table">
-            <thead>
-              <tr>
-                <th>#</th><th>Benefit</th>
-                <c:forEach var="tier" items="${passTiers}">
-                  <th><c:out value="${tier.tierName}"/></th>
-                </c:forEach>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td><td>Discount Per Hour</td>
-                <c:forEach var="tier" items="${passTiers}">
-                  <td><c:out value="${passBenefitsMap[tier.tierId][0].benefitText}"/></td>
-                </c:forEach>
-              </tr>
-              <tr>
-                <td>2</td><td>No Booking Fees</td>
-                <c:forEach var="tier" items="${passTiers}">
-                  <td><c:out value="${passBenefitsMap[tier.tierId][1].benefitText}"/></td>
-                </c:forEach>
-              </tr>
-              <tr>
-                <td>3</td><td>Priority Booking</td>
-                <c:forEach var="tier" items="${passTiers}">
-                  <td><c:out value="${passBenefitsMap[tier.tierId][2].benefitText}"/></td>
-                </c:forEach>
-              </tr>
-              <tr>
-                <td>4</td><td>Free Hours Per Month</td>
-                <c:forEach var="tier" items="${passTiers}">
-                  <td><c:out value="${passBenefitsMap[tier.tierId][3].benefitText}"/></td>
-                </c:forEach>
-              </tr>
-              <tr>
-                <td>5</td><td>Friends Pass</td>
-                <c:forEach var="tier" items="${passTiers}">
-                  <td><c:out value="${passBenefitsMap[tier.tierId][4].benefitText}"/></td>
-                </c:forEach>
-              </tr>
-              <tr>
-                <td colspan="2"></td>
-                <c:forEach var="tier" items="${passTiers}">
-                  <td>
+          <c:if test="${currentPass != null}">
+             <div class="current-pass-banner ${currentPass.status == 'ACTIVE' ? 'banner-active' : 'banner-expired'}">
+                <h3>My Current Pass: <span>${currentPass.tier.tierName}</span> (Status: ${currentPass.status})</h3>
+                <p>Expires: ${fn:replace(currentPass.expiryDate, 'T', ' ')}</p>
+             </div>
+          </c:if>
+
+          <div class="pricing-cards">
+            <c:forEach var="tier" items="${passTiers}">
+              <div class="pricing-card tier-${tier.tierId}">
+                <h2><c:out value="${tier.tierName}"/></h2>
+                <div class="price">
+                  <span class="currency">RM</span>
+                  <span class="amount"><fmt:formatNumber value="${tier.price}" type="number" minFractionDigits="0"/></span>
+                  <span class="period">/mo</span>
+                </div>
+
+                <ul class="benefit-list data-driven">
+                  <c:forEach var="bf" items="${passBenefitsMap[tier.tierId]}">
+                    <c:set var="v" value="${bf.benefitText}" />
+                    <c:set var="isNo" value="${v == 'X' || v == '?' || v == 'None'}" />
+                    <li class="${isNo ? 'disabled-benefit' : 'active-benefit'}">
+                      <span class="benefit-name"><c:out value="${bf.benefitName}"/>:</span>
+                      <span class="benefit-value"><c:out value="${isNo ? 'No' : v}"/></span>
+                    </li>
+                  </c:forEach>
+                </ul>
+
+                <div class="card-actions">
                     <c:choose>
                       <c:when test="${currentPass == null}">
                         <form action="${pageContext.request.contextPath}/payPass" method="get">
                           <input type="hidden" name="tierId" value="${tier.tierId}"/>
-                          <button class="btn-buy">
-                            RM<fmt:formatNumber value="${tier.price}" minFractionDigits="2"/>
-                          </button>
+                          <button class="btn-buy">Buy Plan</button>
                         </form>
                       </c:when>
+
                       <c:when test="${currentPass.status == 'EXPIRED' && tier.tierId == currentPass.tier.tierId}">
                         <form action="${pageContext.request.contextPath}/payPass" method="get">
                           <input type="hidden" name="tierId" value="${tier.tierId}"/>
-                          <button class="btn-renew">
-                            RM<fmt:formatNumber value="${tier.price}" minFractionDigits="2"/>
-                          </button>
+                          <button class="btn-renew">Renew Plan</button>
                         </form>
                       </c:when>
+
                       <c:when test="${currentPass.status == 'PENDING'}">
-                        <button class="btn-renew" disabled>Pending</button>
+                        <button class="btn-locked" disabled>Pending</button>
                       </c:when>
+
                       <c:when test="${currentPass.status == 'ACTIVE'}">
                         <c:choose>
                           <c:when test="${tier.tierId == currentPass.tier.tierId}">
-                            <button class="btn-renew" disabled>Current</button>
+                            <button class="btn-current" disabled>Current Plan</button>
                           </c:when>
                           <c:when test="${tier.tierId > currentPass.tier.tierId}">
                             <form action="${pageContext.request.contextPath}/payPass" method="get">
                               <input type="hidden" name="tierId" value="${tier.tierId}"/>
-                              <button class="btn-buy">
-                                RM<fmt:formatNumber value="${tier.price}" minFractionDigits="2"/>
-                              </button>
+                              <button class="btn-upgrade">Upgrade</button>
                             </form>
                           </c:when>
                           <c:otherwise>
-                            <button class="btn-renew" disabled>Locked</button>
+                            <button class="btn-locked" disabled>Locked</button>
                           </c:otherwise>
                         </c:choose>
                       </c:when>
+                      
                       <c:otherwise>
-                        <button class="btn-renew" disabled>Locked</button>
+                        <button class="btn-locked" disabled>Locked</button>
                       </c:otherwise>
                     </c:choose>
-                  </td>
-                </c:forEach>
-              </tr>
-            </tbody>
-          </table>
+                </div>
+              </div>
+            </c:forEach>
+          </div>
         </div>
 
       </div>
@@ -255,19 +167,15 @@
     (function(){
       let idx    = 0,
           tabs   = ['club','pass'],
-          prev   = document.getElementById('prev'),
-          next   = document.getElementById('next'),
           labels = document.querySelectorAll('.tab-label');
+
       function update(){
         tabs.forEach((t,i)=>{
           document.getElementById('panel-'+t).classList.toggle('active', i===idx);
           labels[i].classList.toggle('active', i===idx);
         });
-        prev.classList.toggle('disabled', idx===0);
-        next.classList.toggle('disabled', idx===tabs.length-1);
       }
-      prev.onclick = () => idx>0 && --idx && update();
-      next.onclick = () => idx<tabs.length-1 && ++idx && update();
+
       labels.forEach((lbl,i)=> lbl.onclick = () => { idx = i; update(); });
       update();
     })();

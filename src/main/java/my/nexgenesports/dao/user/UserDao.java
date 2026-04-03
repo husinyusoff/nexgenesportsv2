@@ -5,6 +5,8 @@ import my.nexgenesports.util.DBConnection;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDao {
 
@@ -176,6 +178,38 @@ public class UserDao {
             ps.setString(2, userID);
             ps.executeUpdate();
         }
+    }
+
+    public void updateUserRole(String userID, int rpId) throws SQLException {
+        String sql = "UPDATE users SET rp_id=? WHERE userID=?";
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, rpId);
+            ps.setString(2, userID);
+            ps.executeUpdate();
+        }
+    }
+
+    /* ---- READ ALL ---- */
+    public List<User> listAllUsers() throws SQLException {
+        List<User> list = new ArrayList<>();
+        String sql =
+            "SELECT u.userID, u.name, u.email, u.password_hash, u.phoneNumber,"
+          + "       u.matricNumber, u.ign, u.bio, u.discordID, u.registrationDate,"
+          + "       u.password_reset_token, u.password_reset_expiry,"
+          + "       u.rp_id, rp.position"
+          + "  FROM users u"
+          + "  LEFT JOIN role_positions rp ON u.rp_id = rp.id"
+          + " ORDER BY u.registrationDate DESC";
+
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        }
+        return list;
     }
 
     /* ---- HELPERS ---- */

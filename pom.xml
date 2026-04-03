@@ -12,23 +12,12 @@
 
     <name>NexGenEsports</name>
 
-<<<<<<< Updated upstream
   <properties>
     <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <!-- Compile for Java 8 -->
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
   </properties>
-=======
-    <properties>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Compile for Java 8 -->
-        <maven.compiler.source>24</maven.compiler.source>
-        <maven.compiler.target>24</maven.compiler.target>
-    </properties>
->>>>>>> Stashed changes
 
     <repositories>
         <repository>
@@ -139,47 +128,6 @@
                 </configuration>
             </plugin>
 
-<<<<<<< Updated upstream
-      <!-- Maven Javadoc Plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.11.2</version>
-        <configuration>
-          <failOnError>false</failOnError>
-          <additionalJOptions>
-            <additionalJOption>-Xdoclint:none</additionalJOption>
-          </additionalJOptions>
-        </configuration>
-      </plugin>
-
-      <!-- Cargo Plugin to run Tomcat easily -->
-      <plugin>
-        <groupId>org.codehaus.cargo</groupId>
-        <artifactId>cargo-maven3-plugin</artifactId>
-        <version>1.10.13</version>
-        <configuration>
-          <container>
-            <containerId>tomcat9x</containerId>
-            <type>embedded</type>
-          </container>
-          <configuration>
-            <properties>
-              <cargo.servlet.port>8080</cargo.servlet.port>
-            </properties>
-          </configuration>
-          <deployables>
-            <deployable>
-              <properties>
-                <context>/NexGenEsportsv2</context>
-              </properties>
-            </deployable>
-          </deployables>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-=======
             <!-- Dependency Plugin to copy endorsed API -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -221,5 +169,4 @@
             </plugin>
         </plugins>
     </build>
->>>>>>> Stashed changes
 </project>

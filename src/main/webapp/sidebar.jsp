@@ -38,6 +38,9 @@
                     <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/manageBookings")) { %>
                     <li><a href="${ctx}/manageBookings">Manage All Booking</a></li>
                     <% } %>
+                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/manageStations")) { %>
+                    <li><a href="${ctx}/manageStations">Manage Stations</a></li>
+                    <% } %>
                 </ul>
             </li>
 
@@ -77,9 +80,27 @@
             <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/auditLog")) { %>
             <li><a href="${ctx}/auditLog">Audit Log</a></li>
             <%}%>
-            <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/admin/rbac")) { %>
-            <li><a href="${ctx}/admin/rbac">RBAC Center</a></li>
-            <% } %>
+            
+            <c:set var="canAccessUsers" value='<%= PermissionChecker.hasAccess((List<String>)request.getSession().getAttribute("effectiveRoles"), (String)request.getSession().getAttribute("role"), (String)request.getSession().getAttribute("position"), "/admin/users") %>' />
+            <c:set var="canAccessRbac" value='<%= PermissionChecker.hasAccess((List<String>)request.getSession().getAttribute("effectiveRoles"), (String)request.getSession().getAttribute("role"), (String)request.getSession().getAttribute("position"), "/admin/rbac") %>' />
+            <c:set var="canAccessMemberships" value='<%= PermissionChecker.hasAccess((List<String>)request.getSession().getAttribute("effectiveRoles"), (String)request.getSession().getAttribute("role"), (String)request.getSession().getAttribute("position"), "/admin/memberships") %>' />
+            
+            <c:if test="${canAccessUsers || canAccessRbac || canAccessMemberships}">
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropdown-btn">Admin Management &#9662;</a>
+                    <ul class="dropdown-content">
+                        <c:if test="${canAccessUsers}">
+                        <li><a href="${ctx}/admin/users">Manage Users</a></li>
+                        </c:if>
+                        <c:if test="${canAccessMemberships}">
+                        <li><a href="${ctx}/admin/memberships">Manage Memberships</a></li>
+                        </c:if>
+                        <c:if test="${canAccessRbac}">
+                        <li><a href="${ctx}/admin/rbac">Manage Permissions</a></li>
+                        </c:if>
+                    </ul>
+                </li>
+            </c:if>
             
             <li><a href="${ctx}/logout" style="color: var(--neon-pink); border: 1px solid var(--neon-pink);">Logout</a></li>
         </ul>
@@ -107,7 +128,7 @@
             });
         }
 
-        // Handle dropdowns
+        // Handle dropdowns click
         const dropdownBtns = document.querySelectorAll('.dropdown-btn');
         dropdownBtns.forEach(btn => {
             btn.addEventListener('click', function(e) {
@@ -120,6 +141,37 @@
                     content.style.display = 'block';
                 }
             });
+        });
+
+        // Automatically expand the dropdown that contains the current URL
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.dropdown-content a').forEach(link => {
+            try {
+                const linkPath = new URL(link.href).pathname;
+                if (currentPath === linkPath || currentPath.startsWith(linkPath) && linkPath.length > (typeof ctx !== 'undefined' ? ctx.length + 1 : Number.MAX_VALUE)) {
+                    const dropdownContent = link.closest('.dropdown-content');
+                    if (dropdownContent) {
+                        dropdownContent.style.display = 'block';
+                        // Keep dropdown button highlighted if you want
+                        dropdownContent.previousElementSibling.style.color = 'var(--neon-cyan)';
+                    }
+                    link.style.color = 'var(--neon-cyan)';
+                    link.style.boxShadow = 'inset 3px 0 0 var(--neon-cyan)';
+                    link.style.background = 'rgba(0, 229, 255, 0.1)';
+                }
+            } catch (err) {}
+        });
+        
+        // Handle standalone links highlighting
+        document.querySelectorAll('.sidebar nav > ul > li > a:not(.dropdown-btn)').forEach(link => {
+            try {
+               const linkPath = new URL(link.href).pathname;
+               if (currentPath === linkPath) {
+                    link.style.color = 'var(--neon-cyan)';
+                    link.style.boxShadow = 'inset 3px 0 0 var(--neon-cyan)';
+                    link.style.background = 'rgba(0, 229, 255, 0.1)';
+               }
+            } catch (e) {}
         });
     });
 </script>
