@@ -1,31 +1,39 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" %>
+<%@ page import="java.time.ZoneId" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%
+  long membershipDeadline = 0;
+  my.nexgenesports.model.UserClubMembership cm = (my.nexgenesports.model.UserClubMembership) request.getAttribute("currentMembership");
+  if(cm != null && "PENDING".equals(cm.getStatus()) && cm.getPaymentDeadline() != null) {
+      membershipDeadline = cm.getPaymentDeadline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+  }
+  
+  long passDeadline = 0;
+  my.nexgenesports.model.UserGamingPass cp = (my.nexgenesports.model.UserGamingPass) request.getAttribute("currentPass");
+  if(cp != null && "PENDING".equals(cp.getStatus()) && cp.getPaymentDeadline() != null) {
+      passDeadline = cp.getPaymentDeadline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+  }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Manage Membership &amp; Pass – NexGen Esports</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="manage-membership-page">
+<body class="app-wrapper manage-membership-page">
 
   <jsp:include page="header.jsp"/>
-  <button id="openToggle" class="open-toggle">☰</button>
 
-  <div class="container">
-    <div class="sidebar">
-      <button id="closeToggle" class="close-toggle">×</button>
-      <jsp:include page="sidebar.jsp"/>
-    </div>
+  <div class="main-container">
+    <jsp:include page="sidebar.jsp"/>
 
-    <div class="content">
-      <div class="card main-dashboard-card">
-        <div class="card-header">
-          <h1>My Memberships & Passes</h1>
-          <p class="subtitle">Elevate your game with our premium tiers.</p>
+    <main class="content">
+      <div class="glass-card main-dashboard-card">
+        <div class="module-header" style="display:flex; flex-direction:column; align-items:center; margin-bottom: 20px;">
+          <h2>My Memberships & Passes</h2>
+          <p class="subtitle" style="margin-top: 10px;">Elevate your game with our premium tiers.</p>
         </div>
 
         <div class="tab-switcher">
@@ -69,6 +77,18 @@
                             <button class="btn-renew pulse">Renew Membership</button>
                         </form>
                     </c:when>
+                    <c:when test="${currentMembership != null && currentMembership.status == 'PENDING'}">
+                      <div class="pending-payment-container">
+                          <span class="timer-warning badge-warning" id="club-timer-display" style="display: inline-block; margin-bottom: 15px;">Calculating...</span>
+                          <form action="${pageContext.request.contextPath}/payMembership" method="get" id="club-pay-btn-form">
+                              <input type="hidden" name="sessionId" value="${activeSession.sessionId}"/>
+                              <button class="btn-primary pulse" id="club-pay-btn" style="width: 100%;">Pay Now</button>
+                          </form>
+                          <p class="error-msg" id="club-pay-blocked" style="display:none; color:red; font-size:12px; margin-top:10px;">
+                              Payment blocked/paused because you do not have enough time to pay (less than 30 seconds). The slot will be released shortly.
+                          </p>
+                      </div>
+                    </c:when>
                     <c:otherwise>
                         <form action="${pageContext.request.contextPath}/payMembership" method="get">
                             <input type="hidden" name="sessionId" value="${activeSession.sessionId}"/>
@@ -111,7 +131,7 @@
                   </c:forEach>
                 </ul>
 
-                <div class="card-actions">
+                  <div class="card-actions">
                     <c:choose>
                       <c:when test="${currentPass == null}">
                         <form action="${pageContext.request.contextPath}/payPass" method="get">
@@ -127,8 +147,21 @@
                         </form>
                       </c:when>
 
-                      <c:when test="${currentPass.status == 'PENDING'}">
-                        <button class="btn-locked" disabled>Pending</button>
+                      <c:when test="${currentPass.status == 'PENDING' && tier.tierId == currentPass.tier.tierId}">
+                        <div class="pending-payment-container">
+                            <span class="timer-warning badge-warning" id="pass-timer-display" style="display: inline-block; margin-bottom: 15px;">Calculating...</span>
+                            <form action="${pageContext.request.contextPath}/payPass" method="get" id="pass-pay-btn-form">
+                                <input type="hidden" name="tierId" value="${tier.tierId}"/>
+                                <button class="btn-primary pulse" id="pass-pay-btn" style="width: 100%;">Pay Now</button>
+                            </form>
+                            <p class="error-msg" id="pass-pay-blocked" style="display:none; color:red; font-size:12px; margin-top:10px;">
+                                Payment blocked/paused because you do not have enough time to pay (less than 30 seconds). The slot will be released shortly.
+                            </p>
+                        </div>
+                      </c:when>
+
+                      <c:when test="${currentPass.status == 'PENDING' && tier.tierId != currentPass.tier.tierId}">
+                        <button class="btn-locked" disabled>Other Plan Pending</button>
                       </c:when>
 
                       <c:when test="${currentPass.status == 'ACTIVE'}">
@@ -157,9 +190,8 @@
             </c:forEach>
           </div>
         </div>
-
       </div>
-    </div>
+    </main>
   </div>
 
   <jsp:include page="footer.jsp"/>
@@ -178,6 +210,57 @@
 
       labels.forEach((lbl,i)=> lbl.onclick = () => { idx = i; update(); });
       update();
+
+      // Timer Logic
+      function startCountdown(deadlineMillis, displayId, btnId, blockedId, formId) {
+          if (!deadlineMillis || deadlineMillis <= 0) return;
+          
+          function updateTimer() {
+              const now = new Date().getTime();
+              const remaining = deadlineMillis - now;
+              
+              if (remaining <= 0) {
+                  document.getElementById(displayId).textContent = "Expired. Please refresh.";
+                  document.getElementById(btnId).disabled = true;
+                  return;
+              }
+              
+              const seconds = Math.floor((remaining / 1000) % 60);
+              const minutes = Math.floor((remaining / 1000 / 60));
+              
+              document.getElementById(displayId).textContent = "Time to pay: " + minutes + "m " + seconds + "s";
+              
+              if (remaining < 30000) {
+                  document.getElementById(btnId).disabled = true;
+                  document.getElementById(btnId).style.opacity = '0.5';
+                  document.getElementById(blockedId).style.display = 'block';
+              } else {
+                  document.getElementById(btnId).disabled = false;
+                  document.getElementById(btnId).style.opacity = '1';
+                  document.getElementById(blockedId).style.display = 'none';
+              }
+          }
+          
+          updateTimer();
+          setInterval(updateTimer, 1000);
+          
+          document.getElementById(formId).addEventListener('submit', function(e) {
+              const now = new Date().getTime();
+              if (deadlineMillis - now < 30000) {
+                  e.preventDefault();
+                  alert("Payment blocked/paused because you do not have enough time to pay (less than 30 seconds). The slot will be released shortly.");
+              }
+          });
+      }
+      
+      // Load epoch millis for JS
+      <c:if test="${currentMembership != null && currentMembership.status == 'PENDING'}">
+          startCountdown(<%= membershipDeadline %>, 'club-timer-display', 'club-pay-btn', 'club-pay-blocked', 'club-pay-btn-form');
+      </c:if>
+      
+      <c:if test="${currentPass != null && currentPass.status == 'PENDING'}">
+          startCountdown(<%= passDeadline %>, 'pass-timer-display', 'pass-pay-btn', 'pass-pay-blocked', 'pass-pay-btn-form');
+      </c:if>
     })();
   </script>
 </body>
