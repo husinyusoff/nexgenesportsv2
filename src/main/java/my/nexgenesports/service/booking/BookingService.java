@@ -88,6 +88,7 @@ public Booking createBooking(
         b.setPlayerCount(playerCount);
         b.setHourCount(selectedSlots.size());
         b.setPaymentStatus("PENDING");
+        b.setPaymentDeadline(java.time.LocalDateTime.now().plusMinutes(5));
 
         // price calculation
         Station s = stationSvc.find(stationID);
@@ -204,7 +205,7 @@ public Booking createBooking(
      * @param paymentStatus
      * @param reference
      */
-    public void updatePaymentStatus(int bookingID, String paymentStatus, Integer reference) {
+    public void updatePaymentStatus(int bookingID, String paymentStatus, String reference) {
         try {
             dao.updatePaymentStatus(bookingID, paymentStatus, reference);
         } catch (SQLException e) {
@@ -236,5 +237,16 @@ public Booking createBooking(
     public int getOpeningHour(LocalDate date) {
         DayOfWeek dow = date.getDayOfWeek();
         return (dow == DayOfWeek.FRIDAY || dow == DayOfWeek.SATURDAY) ? 15 : 14;
+    }
+
+    /**
+     * Expire pending bookings where payment deadline has passed.
+     */
+    public void expirePendingBookings() {
+        try {
+            dao.expirePendingBookings();
+        } catch (SQLException e) {
+            throw new ServiceException("Failed to expire pending bookings", e);
+        }
     }
 }

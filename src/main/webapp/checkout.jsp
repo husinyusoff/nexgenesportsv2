@@ -1,12 +1,71 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" %>
+<%@ page import="java.time.ZoneId" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%
+  long deadlineMillis = 0;
+  if(request.getAttribute("booking") != null) {
+      my.nexgenesports.model.Booking b = (my.nexgenesports.model.Booking) request.getAttribute("booking");
+      if(b.getPaymentDeadline() != null) {
+          deadlineMillis = b.getPaymentDeadline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+      }
+  } else if(request.getAttribute("ucm") != null) {
+      my.nexgenesports.model.UserClubMembership m = (my.nexgenesports.model.UserClubMembership) request.getAttribute("ucm");
+      if(m.getPaymentDeadline() != null) {
+          deadlineMillis = m.getPaymentDeadline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+      }
+  } else if(request.getAttribute("ugp") != null) {
+      my.nexgenesports.model.UserGamingPass p = (my.nexgenesports.model.UserGamingPass) request.getAttribute("ugp");
+      if(p.getPaymentDeadline() != null) {
+          deadlineMillis = p.getPaymentDeadline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+      }
+  } else if(request.getAttribute("deadlineMillis") != null) {
+      deadlineMillis = (Long) request.getAttribute("deadlineMillis");
+  }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Checkout – NexGen Esports</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css"/>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var deadline = <%= deadlineMillis %>;
+        if (deadline > 0) {
+            function updateTimer() {
+                var now = new Date().getTime();
+                var remaining = deadline - now;
+                var display = document.getElementById("timer-display");
+                var btn = document.getElementById("pay-btn");
+                var blockMsg = document.getElementById("pay-blocked-msg");
+                
+                if (remaining <= 0) {
+                    display.textContent = "Expired. Please refresh.";
+                    btn.disabled = true;
+                    return;
+                }
+                
+                var seconds = Math.floor((remaining / 1000) % 60);
+                var minutes = Math.floor((remaining / 1000 / 60));
+                
+                display.textContent = "Time to pay: " + minutes + "m " + seconds + "s";
+                
+                if (remaining < 30000) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    blockMsg.style.display = 'block';
+                } else {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    blockMsg.style.display = 'none';
+                }
+            }
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+    });
+  </script>
 </head>
 <body class="checkout-page">
   <jsp:include page="/header.jsp"/>
@@ -62,6 +121,10 @@
           </c:otherwise>
         </c:choose>
 
+        <div style="margin: 15px 0;">
+            <span class="timer-warning" id="timer-display" style="font-weight: bold; color: var(--accent);"></span>
+        </div>
+
         <form action="${pageContext.request.contextPath}/redirectToPayment" method="post">
           <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
 
@@ -96,7 +159,7 @@
             </c:forEach>
           </c:if>
 
-          <button type="submit" class="btn-submit">
+          <button type="submit" class="btn-submit pulse" id="pay-btn">
             <c:choose>
               <c:when test="${not empty users}">
                 Pay &amp; Register
@@ -107,6 +170,10 @@
             </c:choose>
           </button>
         </form>
+
+        <p class="error-msg" id="pay-blocked-msg" style="display:none; color:red; font-size:12px; margin-top:10px;">
+            Payment blocked/paused because you do not have enough time to pay (less than 30 seconds). The slot will be released shortly.
+        </p>
 
         <c:choose>
           <c:when test="${not empty booking}">

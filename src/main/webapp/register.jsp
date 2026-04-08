@@ -15,12 +15,12 @@
         <t:GlassCard cssClass="auth-box" style="max-width: 480px;">
             <h2 style="text-align: center; margin-bottom: 24px; color: var(--text-primary); font-family: var(--font-heading); text-transform: uppercase;">CREATE ACCOUNT</h2>
 
-            <% if ("success".equals(request.getParameter("status"))) { %>
+            <c:if test="${param.status == 'success'}">
                 <t:Alert variant="success">Registration successful! <a href="login.jsp" style="color: white; font-weight: bold; text-decoration: underline;">Login here</a></t:Alert>
-            <% } %>
-            <% if (request.getAttribute("errorMsg") != null) { %>
-                <t:Alert variant="danger"><%= request.getAttribute("errorMsg") %></t:Alert>
-            <% } %>
+            </c:if>
+            <c:if test="${not empty requestScope.errorMsg}">
+                <t:Alert variant="danger"><c:out value="${requestScope.errorMsg}"/></t:Alert>
+            </c:if>
 
             <form action="${pageContext.request.contextPath}/auth?action=register" method="post">
                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>

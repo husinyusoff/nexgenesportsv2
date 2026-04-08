@@ -2,8 +2,9 @@
 <%@ attribute name="id" required="true" type="java.lang.String" %>
 <%@ attribute name="label" required="true" type="java.lang.String" %>
 <%@ attribute name="cssClass" required="false" type="java.lang.String" %>
+<%@ attribute name="required" required="false" type="java.lang.Boolean" %>
 
-<div class="${not empty cssClass ? cssClass : ''}">
+<div class="field-container ${not empty cssClass ? cssClass : ''}">
     <label class="label" for="${id}">${label}</label>
     <jsp:doBody/>
 </div>

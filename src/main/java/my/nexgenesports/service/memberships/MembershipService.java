@@ -72,8 +72,13 @@ public class MembershipService {
         m.setExpiryDate(sess.getEndMembershipDate());
         m.setStatus("PENDING");
         m.setPaymentReference(null);
+        m.setPaymentDeadline(LocalDateTime.now().plusMinutes(5));
         this.ucmDao.insert(m);
         return m;
+    }
+
+    public void expirePendingMemberships() throws SQLException {
+        this.ucmDao.expirePendingMemberships();
     }
 
     public List<MembershipSession> getAllSessions() throws SQLException {

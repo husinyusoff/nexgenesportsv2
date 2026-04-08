@@ -59,8 +59,13 @@ public class PassService {
         p.setExpiryDate(now.plusDays(30L));
         p.setStatus("PENDING");
         p.setPaymentReference(null);
+        p.setPaymentDeadline(now.plusMinutes(5));
         this.ugpDao.insert(p);
         return p;
+    }
+
+    public void expirePendingPasses() throws SQLException {
+        this.ugpDao.expirePendingPasses();
     }
 
     public void updatePassRecord(int ugpId, String reference, String status) throws SQLException {

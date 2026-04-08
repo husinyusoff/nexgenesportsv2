@@ -11,8 +11,12 @@ public class UserGamingPass {
     private LocalDateTime  expiryDate;
     private String         status;
     private String         paymentReference;
+    private LocalDateTime  paymentDeadline;
 
     public UserGamingPass() {}
+
+    public LocalDateTime getPaymentDeadline() { return paymentDeadline; }
+    public void setPaymentDeadline(LocalDateTime paymentDeadline) { this.paymentDeadline = paymentDeadline; }
 
     public UserGamingPass(int id,
                           String userId,

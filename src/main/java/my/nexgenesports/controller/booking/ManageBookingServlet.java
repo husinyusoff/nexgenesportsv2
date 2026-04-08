@@ -19,6 +19,9 @@ public class ManageBookingServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
         String userID = (String) session.getAttribute("username");
 
+        bookingSvc.expirePendingBookings();
+
+
         List<Booking> mine = bookingSvc.listBookingsForUser(userID);
         req.setAttribute("bookings", mine);
         req.getRequestDispatcher("manageBooking.jsp")

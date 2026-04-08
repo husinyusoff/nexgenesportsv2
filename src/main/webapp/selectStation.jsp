@@ -19,87 +19,89 @@
             }
         </script>
     </head>
-    <body>
+    <body class="app-wrapper">
         <%@ include file="header.jsp" %>
 
-        <div class="container">
-            <div class="sidebar">
-                <%@ include file="sidebar.jsp" %>
-                <button class="close-toggle">×</button>
-            </div>
-
-            <div class="content">
-                <div class="select-station-box">
-                    <a href="javascript:history.back()" class="back-link" aria-label="Go Back">
-                        <!-- your SVG arrow here -->
+        <div class="main-container">
+            <%@ include file="sidebar.jsp" %>
+            
+            <main class="content">
+                <div class="glass-card" style="width: 100%; max-width: 900px; margin: 0 auto; position: relative;">
+                    <a href="javascript:history.back()" class="back-link" aria-label="Go Back" style="color: var(--neon-cyan); text-decoration: none; margin-bottom: 20px; display: inline-block;">
+                        &larr; Back
                     </a>
-                    <h2>SELECT SESSION</h2>
+                    
+                    <div class="module-header">
+                        <h2>SELECT SESSION</h2>
+                    </div>
 
                     <form method="get" action="${pageContext.request.contextPath}/bookStation">
                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
-                        <table class="select-station-table">
-                            <thead>
-                                <tr>
-                                    <th>Select</th><th>Station ID</th><th>Name</th>
-                                    <th>Normal (1P)</th><th>Normal (2P)</th>
-                                    <th>Happy (1P)</th><th>Happy (2P)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="s" items="${stations}">
+                        
+                        <div style="overflow-x: auto; margin-bottom: 20px;">
+                            <table class="data-table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <input type="radio" name="stationID"
-                                                   value="${s.stationID}"
-                                                   required onchange="onStationChange(this)" />
-                                        </td>
-                                        <td>${s.stationID}</td>
-                                        <td>${s.stationName}</td>
-                                        <td>RM${s.normalPrice1Player}</td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${not empty s.normalPrice2Player}">
-                                                    RM${s.normalPrice2Player}
-                                                </c:when>
-                                                <c:otherwise>—</c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>RM${s.happyHourPrice1Player}</td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${not empty s.happyHourPrice2Player}">
-                                                    RM${s.happyHourPrice2Player}
-                                                </c:when>
-                                                <c:otherwise>—</c:otherwise>
-                                            </c:choose>
-                                        </td>
+                                        <th>Select</th><th>Station ID</th><th>Name</th>
+                                        <th>Normal (1P)</th><th>Normal (2P)</th>
+                                        <th>Happy (1P)</th><th>Happy (2P)</th>
                                     </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="s" items="${stations}">
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <input type="radio" name="stationID"
+                                                       value="${s.stationID}"
+                                                       required onchange="onStationChange(this)" style="transform: scale(1.5); accent-color: var(--neon-cyan);" />
+                                            </td>
+                                            <td>${s.stationID}</td>
+                                            <td>${s.stationName}</td>
+                                            <td>RM${s.normalPrice1Player}</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${not empty s.normalPrice2Player}">
+                                                        RM${s.normalPrice2Player}
+                                                    </c:when>
+                                                    <c:otherwise>—</c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td>RM${s.happyHourPrice1Player}</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${not empty s.happyHourPrice2Player}">
+                                                        RM${s.happyHourPrice2Player}
+                                                    </c:when>
+                                                    <c:otherwise>—</c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
 
-                        <div class="player-count-wrapper">
-                            <label for="playerCount">Number of Players:</label>
-                            <select name="playerCount" id="playerCount" required>
+                        <div class="player-count-wrapper" style="margin-bottom: 25px;">
+                            <label for="playerCount" class="label">Number of Players:</label>
+                            <select name="playerCount" id="playerCount" class="input-field" required style="width: auto; min-width: 200px;">
                                 <option value="1">1 Player</option>
                                 <option value="2" id="opt-2-players">2 Players</option>
                             </select>
                         </div>
 
-                        <div class="buttons">
-                            <button type="submit" class="button green-button">Next</button>
+                        <div class="buttons" style="display: flex; gap: 15px;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1; max-width: 200px;">Next</button>
                             <button type="button"
                                     onclick="window.location = '${pageContext.request.contextPath}/dashboard.jsp';"
-                                    class="button blue-button cancel-btn">
+                                    class="btn btn-danger" style="flex: 1; max-width: 200px;">
                                 Cancel
                             </button>
                         </div>
                     </form>
                 </div>
-            </div>
+            </main>
         </div>
 
         <%@ include file="footer.jsp" %>
-        <button class="open-toggle">☰</button>
     </body>
 </html>

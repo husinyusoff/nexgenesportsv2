@@ -34,10 +34,13 @@ public class PayMembershipServlet extends HttpServlet {
             return;
         }
 
-        // 3) Create the PENDING membership record
+        // 3) Create or reuse the PENDING membership record
         UserClubMembership m;
         try {
-            m = ms.createPending(userId, sessionId);
+            m = ms.getCurrentMembership(userId);
+            if (m == null || !"PENDING".equals(m.getStatus()) || !m.getSession().getSessionId().equals(sessionId)) {
+                m = ms.createPending(userId, sessionId);
+            }
         } catch (SQLException e) {
             throw new ServletException("Failed to initialize membership payment", e);
         }

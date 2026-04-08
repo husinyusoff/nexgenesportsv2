@@ -60,7 +60,7 @@ public class PaymentService {
                 bookingSvc.updatePaymentStatus(
                     id,
                     paid ? "PAID" : "FAILED",
-                    paid ? Integer.valueOf(reference.replace("SIM-", "")) : null
+                    paid ? reference : null
                 );
             }
             case "membership" -> {

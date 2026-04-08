@@ -18,7 +18,7 @@ public class UserGamingPassDao {
     private final PassTierDao tierDao = new PassTierDao();
 
     public void insert(UserGamingPass p) throws SQLException {
-        String sql = "    INSERT INTO usergamingpasses\n      (userId, tierId, purchaseDate, expiryDate, status, paymentReference)\n    VALUES (?, ?, ?, ?, ?, ?)\n";
+        String sql = "    INSERT INTO usergamingpasses\n      (userId, tierId, purchaseDate, expiryDate, status, paymentReference, paymentDeadline)\n    VALUES (?, ?, ?, ?, ?, ?, ?)\n";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql, 1);){
             ps.setString(1, p.getUserId());
@@ -27,6 +27,11 @@ public class UserGamingPassDao {
             ps.setTimestamp(4, Timestamp.valueOf(p.getExpiryDate()));
             ps.setString(5, p.getStatus());
             ps.setString(6, p.getPaymentReference());
+            if (p.getPaymentDeadline() != null) {
+                ps.setTimestamp(7, Timestamp.valueOf(p.getPaymentDeadline()));
+            } else {
+                ps.setNull(7, java.sql.Types.TIMESTAMP);
+            }
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys();){
                 if (keys.next()) {
@@ -40,7 +45,7 @@ public class UserGamingPassDao {
      * Exception decompiling
      */
     public UserGamingPass findLatestByUser(String userId) throws SQLException {
-        String sql = "SELECT id, userId, tierId, purchaseDate, expiryDate, status, paymentReference FROM usergamingpasses WHERE userId = ? ORDER BY purchaseDate DESC LIMIT 1";
+        String sql = "SELECT id, userId, tierId, purchaseDate, expiryDate, status, paymentReference, paymentDeadline FROM usergamingpasses WHERE userId = ? ORDER BY purchaseDate DESC LIMIT 1";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, userId);
@@ -54,7 +59,7 @@ public class UserGamingPassDao {
      * Exception decompiling
      */
     public UserGamingPass findById(int id) throws SQLException {
-        String sql = "SELECT id, userId, tierId, purchaseDate, expiryDate, status, paymentReference FROM usergamingpasses WHERE id = ?";
+        String sql = "SELECT id, userId, tierId, purchaseDate, expiryDate, status, paymentReference, paymentDeadline FROM usergamingpasses WHERE id = ?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -65,7 +70,7 @@ public class UserGamingPassDao {
     }
 
     public List<UserGamingPass> findAll() throws SQLException {
-        String sql = "    SELECT id, userId, tierId, purchaseDate, expiryDate, status, paymentReference\n      FROM usergamingpasses\n     ORDER BY purchaseDate DESC\n";
+        String sql = "    SELECT id, userId, tierId, purchaseDate, expiryDate, status, paymentReference, paymentDeadline\n      FROM usergamingpasses\n     ORDER BY purchaseDate DESC\n";
         ArrayList<UserGamingPass> list = new ArrayList<UserGamingPass>();
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
@@ -87,7 +92,7 @@ public class UserGamingPassDao {
     }
 
     public void update(UserGamingPass p) throws SQLException {
-        String sql = "    UPDATE usergamingpasses\n       SET tierId           = ?,\n           purchaseDate     = ?,\n           expiryDate       = ?,\n           status           = ?,\n           paymentReference = ?\n     WHERE id = ?\n";
+        String sql = "    UPDATE usergamingpasses\n       SET tierId           = ?,\n           purchaseDate     = ?,\n           expiryDate       = ?,\n           status           = ?,\n           paymentReference = ?,\n           paymentDeadline  = ?\n     WHERE id = ?\n";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);){
             ps.setInt(1, p.getTier().getTierId());
@@ -95,7 +100,12 @@ public class UserGamingPassDao {
             ps.setTimestamp(3, Timestamp.valueOf(p.getExpiryDate()));
             ps.setString(4, p.getStatus());
             ps.setString(5, p.getPaymentReference());
-            ps.setInt(6, p.getId());
+            if (p.getPaymentDeadline() != null) {
+                ps.setTimestamp(6, Timestamp.valueOf(p.getPaymentDeadline()));
+            } else {
+                ps.setNull(6, java.sql.Types.TIMESTAMP);
+            }
+            ps.setInt(7, p.getId());
             ps.executeUpdate();
         }
     }
@@ -110,6 +120,19 @@ public class UserGamingPassDao {
         p.setExpiryDate(rs.getTimestamp("expiryDate").toLocalDateTime());
         p.setStatus(rs.getString("status"));
         p.setPaymentReference(rs.getString("paymentReference"));
+        Timestamp pd = rs.getTimestamp("paymentDeadline");
+        if (pd != null) {
+            p.setPaymentDeadline(pd.toLocalDateTime());
+        }
         return p;
+    }
+
+    public void expirePendingPasses() throws SQLException {
+        String sql = "DELETE FROM usergamingpasses WHERE status = 'PENDING' AND paymentDeadline < ?";
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setTimestamp(1, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()));
+            ps.executeUpdate();
+        }
     }
 }

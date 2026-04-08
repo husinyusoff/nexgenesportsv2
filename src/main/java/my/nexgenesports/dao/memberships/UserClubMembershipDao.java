@@ -19,7 +19,7 @@ public class UserClubMembershipDao {
     private final MembershipSessionDao sessionDao = new MembershipSessionDao();
 
     public void insert(UserClubMembership m) throws SQLException {
-        String sql = "    INSERT INTO userclubmemberships\n      (userId, sessionId, purchaseDate, expiryDate, status, payment_reference)\n    VALUES (?, ?, ?, ?, ?, ?)\n";
+        String sql = "    INSERT INTO userclubmemberships\n      (userId, sessionId, purchaseDate, expiryDate, status, payment_reference, paymentDeadline)\n    VALUES (?, ?, ?, ?, ?, ?, ?)\n";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql, 1);){
             ps.setString(1, m.getUserId());
@@ -28,6 +28,11 @@ public class UserClubMembershipDao {
             ps.setTimestamp(4, Timestamp.valueOf(m.getExpiryDate()));
             ps.setString(5, m.getStatus());
             ps.setString(6, m.getPaymentReference());
+            if (m.getPaymentDeadline() != null) {
+                ps.setTimestamp(7, Timestamp.valueOf(m.getPaymentDeadline()));
+            } else {
+                ps.setNull(7, java.sql.Types.TIMESTAMP);
+            }
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys();){
                 if (keys.next()) {
@@ -41,7 +46,7 @@ public class UserClubMembershipDao {
      * Exception decompiling
      */
     public UserClubMembership findLatestByUser(String userId) throws SQLException {
-        String sql = "SELECT id, userId, sessionId, purchaseDate, expiryDate, status, payment_reference FROM userclubmemberships WHERE userId = ? ORDER BY purchaseDate DESC LIMIT 1";
+        String sql = "SELECT id, userId, sessionId, purchaseDate, expiryDate, status, payment_reference, paymentDeadline FROM userclubmemberships WHERE userId = ? ORDER BY purchaseDate DESC LIMIT 1";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, userId);
@@ -55,7 +60,7 @@ public class UserClubMembershipDao {
      * Exception decompiling
      */
     public UserClubMembership findById(int id) throws SQLException {
-        String sql = "SELECT id, userId, sessionId, purchaseDate, expiryDate, status, payment_reference FROM userclubmemberships WHERE id = ?";
+        String sql = "SELECT id, userId, sessionId, purchaseDate, expiryDate, status, payment_reference, paymentDeadline FROM userclubmemberships WHERE id = ?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -66,7 +71,7 @@ public class UserClubMembershipDao {
     }
 
     public List<UserClubMembership> findAll() throws SQLException {
-        String sql = "    SELECT id, userId, sessionId, purchaseDate, expiryDate, status, payment_reference\n      FROM userclubmemberships\n     ORDER BY purchaseDate DESC\n";
+        String sql = "    SELECT id, userId, sessionId, purchaseDate, expiryDate, status, payment_reference, paymentDeadline\n      FROM userclubmemberships\n     ORDER BY purchaseDate DESC\n";
         ArrayList<UserClubMembership> list = new ArrayList<UserClubMembership>();
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
@@ -88,14 +93,19 @@ public class UserClubMembershipDao {
     }
 
     public void update(UserClubMembership m) throws SQLException {
-        String sql = "    UPDATE userclubmemberships\n       SET status = ?, purchaseDate = ?, expiryDate = ?, payment_reference = ?\n     WHERE id = ?\n";
+        String sql = "    UPDATE userclubmemberships\n       SET status = ?, purchaseDate = ?, expiryDate = ?, payment_reference = ?, paymentDeadline = ?\n     WHERE id = ?\n";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);){
             ps.setString(1, m.getStatus());
             ps.setTimestamp(2, Timestamp.valueOf(m.getPurchaseDate()));
             ps.setTimestamp(3, Timestamp.valueOf(m.getExpiryDate()));
             ps.setString(4, m.getPaymentReference());
-            ps.setInt(5, m.getId());
+            if (m.getPaymentDeadline() != null) {
+                ps.setTimestamp(5, Timestamp.valueOf(m.getPaymentDeadline()));
+            } else {
+                ps.setNull(5, java.sql.Types.TIMESTAMP);
+            }
+            ps.setInt(6, m.getId());
             ps.executeUpdate();
         }
     }
@@ -120,6 +130,19 @@ public class UserClubMembershipDao {
         m.setExpiryDate(rs.getTimestamp("expiryDate").toLocalDateTime());
         m.setStatus(rs.getString("status"));
         m.setPaymentReference(rs.getString("payment_reference"));
+        Timestamp pd = rs.getTimestamp("paymentDeadline");
+        if (pd != null) {
+            m.setPaymentDeadline(pd.toLocalDateTime());
+        }
         return m;
+    }
+
+    public void expirePendingMemberships() throws SQLException {
+        String sql = "DELETE FROM userclubmemberships WHERE status = 'PENDING' AND paymentDeadline < ?";
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setTimestamp(1, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()));
+            ps.executeUpdate();
+        }
     }
 }

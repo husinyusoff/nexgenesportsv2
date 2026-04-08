@@ -11,8 +11,12 @@ public class UserClubMembership {
     private LocalDateTime       expiryDate;
     private String              status;
     private String              paymentReference;
+    private LocalDateTime       paymentDeadline;
 
     public UserClubMembership() {}
+
+    public LocalDateTime getPaymentDeadline() { return paymentDeadline; }
+    public void setPaymentDeadline(LocalDateTime paymentDeadline) { this.paymentDeadline = paymentDeadline; }
 
     public UserClubMembership(int id,
                               String userId,

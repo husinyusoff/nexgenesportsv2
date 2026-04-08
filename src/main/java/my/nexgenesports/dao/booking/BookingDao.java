@@ -26,9 +26,14 @@ public class BookingDao {
         b.setPlayerCount    (r.getInt("playerCount"));
         b.setPrice          (r.getBigDecimal("price"));
         b.setPaymentStatus  (r.getString("paymentStatus"));
-        int pref = r.getInt("paymentReference");
+        String pref = r.getString("paymentReference");
         if (!r.wasNull()) b.setPaymentReference(pref);
         b.setHourCount      (r.getInt("hourCount"));
+        
+        java.sql.Timestamp pd = r.getTimestamp("paymentDeadline");
+        if (pd != null) {
+            b.setPaymentDeadline(pd.toLocalDateTime());
+        }
         return b;
     }
 
@@ -41,8 +46,8 @@ public class BookingDao {
         String sql = ""
           + "INSERT INTO gamingstationbooking "
           + "(userID, stationID, date, startTime, endTime, "
-          +  "status, priceType, playerCount, price, paymentStatus, hourCount) "
-          + "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+          +  "status, priceType, playerCount, price, paymentStatus, hourCount, paymentDeadline) "
+          + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -58,6 +63,12 @@ public class BookingDao {
             ps.setBigDecimal(9, b.getPrice());          // ← total price
             ps.setString(  10, b.getPaymentStatus());
             ps.setInt(     11, b.getHourCount());
+            
+            if (b.getPaymentDeadline() != null) {
+                ps.setTimestamp(12, Timestamp.valueOf(b.getPaymentDeadline()));
+            } else {
+                ps.setNull(12, Types.TIMESTAMP);
+            }
 
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -149,14 +160,14 @@ public class BookingDao {
         }
     }
 
-    public void updatePaymentStatus(int bookingID, String paymentStatus, Integer reference)
+    public void updatePaymentStatus(int bookingID, String paymentStatus, String reference)
             throws SQLException {
         String sql = "UPDATE gamingstationbooking SET paymentStatus=?, paymentReference=? WHERE bookingID=?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, paymentStatus);
-            if (reference == null) ps.setNull(2, Types.INTEGER);
-            else                   ps.setInt(2, reference);
+            if (reference == null) ps.setNull(2, Types.VARCHAR);
+            else                   ps.setString(2, reference);
             ps.setInt(3, bookingID);
             ps.executeUpdate();
         }
@@ -167,6 +178,15 @@ public class BookingDao {
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, bookingID);
+            ps.executeUpdate();
+        }
+    }
+
+    public void expirePendingBookings() throws SQLException {
+        String sql = "DELETE FROM gamingstationbooking WHERE paymentStatus = 'PENDING' AND paymentDeadline < ?";
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setTimestamp(1, Timestamp.valueOf(java.time.LocalDateTime.now()));
             ps.executeUpdate();
         }
     }

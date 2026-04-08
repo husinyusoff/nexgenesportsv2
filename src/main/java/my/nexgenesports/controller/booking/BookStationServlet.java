@@ -31,6 +31,8 @@ public class BookStationServlet extends HttpServlet {
         // — STEP 0: prevent past‐date pick
         LocalDate today = LocalDate.now();
         req.setAttribute("minDate", today.toString());
+        
+        bookingSvc.expirePendingBookings();
 
         String stationID   = req.getParameter("stationID");
         String pcParam     = req.getParameter("playerCount");

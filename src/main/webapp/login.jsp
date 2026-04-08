@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/shared" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,12 +12,12 @@
         <t:GlassCard cssClass="auth-box">
             <h2 style="text-align: center; margin-bottom: 24px; color: var(--text-primary); font-family: var(--font-heading); text-transform: uppercase;">LOGIN</h2>
             
-            <% if ("badcreds".equals(request.getParameter("error"))) { %>
+            <c:if test="${param.error == 'badcreds'}">
                 <t:Alert variant="danger">Invalid user ID, password or role.</t:Alert>
-            <% } %>
-            <% if ("passwordReset".equals(request.getParameter("status"))) { %>
+            </c:if>
+            <c:if test="${param.status == 'passwordReset'}">
                 <t:Alert variant="success">Password reset successful! You can now login with your new password.</t:Alert>
-            <% } %>
+            </c:if>
 
             <form action="${pageContext.request.contextPath}/LoginServlet" method="post">
                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>

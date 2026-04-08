@@ -16,10 +16,14 @@ public class Booking {
     private int         playerCount;
     private BigDecimal  price;
     private String      paymentStatus;   // enum: PENDING, PAID, FAILED
-    private Integer     paymentReference;
+    private String      paymentReference;
     private int         hourCount;
+    private java.time.LocalDateTime paymentDeadline;
 
     // getters & setters
+    public java.time.LocalDateTime getPaymentDeadline() { return paymentDeadline; }
+    public void setPaymentDeadline(java.time.LocalDateTime paymentDeadline) { this.paymentDeadline = paymentDeadline; }
+
     public int getBookingID() { return bookingID; }
     public void setBookingID(int bookingID) { this.bookingID = bookingID; }
 
@@ -53,8 +57,8 @@ public class Booking {
     public String getPaymentStatus() { return paymentStatus; }
     public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
 
-    public Integer getPaymentReference() { return paymentReference; }
-    public void setPaymentReference(Integer paymentReference) { this.paymentReference = paymentReference; }
+    public String getPaymentReference() { return paymentReference; }
+    public void setPaymentReference(String paymentReference) { this.paymentReference = paymentReference; }
 
     public int getHourCount() { return hourCount; }
     public void setHourCount(int hourCount) { this.hourCount = hourCount; }
