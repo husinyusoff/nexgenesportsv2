@@ -13,7 +13,7 @@
 <div class="sidebar" id="sidebar">
     <nav>
         <ul>
-            <li><a href="${ctx}/dashboard">Dashboard</a></li>
+            <li><a href="${ctx}/dashboard.jsp">Dashboard</a></li>
 
             <li class="dropdown">
                 <a href="javascript:void(0)" class="dropdown-btn">Profile <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>

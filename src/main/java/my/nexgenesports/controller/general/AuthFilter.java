@@ -70,7 +70,8 @@ public class AuthFilter implements Filter {
         }
 
         // 3) Dashboard + Profile pages are always allowed once you're in
-        if ("/dashboard.jsp".equals(path)
+        if ("/dashboard".equals(path)
+                || "/dashboard.jsp".equals(path)
                 || "/DashboardServlet".equals(path)
                 || "/manageProfile".equals(path)
                 || "/inGameProfile".equals(path)) {
