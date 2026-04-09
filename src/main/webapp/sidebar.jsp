@@ -16,7 +16,7 @@
             <li><a href="${ctx}/dashboard">Dashboard</a></li>
 
             <li class="dropdown">
-                <a href="javascript:void(0)" class="dropdown-btn">Profile &#9662;</a>
+                <a href="javascript:void(0)" class="dropdown-btn">Profile <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                 <ul class="dropdown-content">
                     <li><a href="${ctx}/manageProfile">My Profile</a></li>
                     <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/inGameProfile")) { %>
@@ -27,7 +27,7 @@
             </li>
 
             <li class="dropdown">
-                <a href="javascript:void(0)" class="dropdown-btn">Multiplayer Lounge &#9662;</a>
+                <a href="javascript:void(0)" class="dropdown-btn">Multiplayer Lounge <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                 <ul class="dropdown-content">
                     <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/selectStation")) { %>
                     <li><a href="${ctx}/selectStation">Book Gaming Session</a></li>
@@ -45,7 +45,7 @@
             </li>
 
             <li class="dropdown">
-                <a href="javascript:void(0)" class="dropdown-btn">Program &#9662;</a>
+                <a href="javascript:void(0)" class="dropdown-btn">Program <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                 <ul class="dropdown-content">
                     <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/programs/create")) { %>
                     <li><a href="${ctx}/programs/new">Create Program</a></li>
@@ -63,7 +63,7 @@
             </li>
 
             <li class="dropdown">
-                <a href="javascript:void(0)" class="dropdown-btn">Team &#9662;</a>
+                <a href="javascript:void(0)" class="dropdown-btn">Team <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                 <ul class="dropdown-content">
                     <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/team/manage")) { %>
                     <li><a href="${ctx}/team/manage">My Teams</a></li>
@@ -87,7 +87,7 @@
             
             <c:if test="${canAccessUsers || canAccessRbac || canAccessMemberships}">
                 <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropdown-btn">Admin Management &#9662;</a>
+                    <a href="javascript:void(0)" class="dropdown-btn">Admin Management <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                     <ul class="dropdown-content">
                         <c:if test="${canAccessUsers}">
                         <li><a href="${ctx}/admin/users">Manage Users</a></li>
@@ -111,67 +111,71 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
+        const sidebar    = document.getElementById('sidebar');
 
         if (menuToggle && sidebar) {
             menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
+                if (window.innerWidth <= 900) {
+                    // Mobile: slide in from left with backdrop
+                    document.documentElement.classList.toggle('sidebar-mobile-open');
+                } else {
+                    // Desktop: slide off-canvas and REMEMBER across navigation
+                    const isNowCollapsed = document.documentElement.classList.toggle('sidebar-collapsed');
+                    try { localStorage.setItem('sidebar-collapsed', isNowCollapsed ? 'true' : 'false'); } catch(e) {}
+                }
             });
 
-            // Close sidebar if clicking outside on mobile
+            // Close mobile sidebar when clicking the backdrop
             document.addEventListener('click', (e) => {
-                if (window.innerWidth <= 900) {
-                    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target) && sidebar.classList.contains('active')) {
-                        sidebar.classList.remove('active');
-                    }
+                if (window.innerWidth <= 900 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    document.documentElement.classList.remove('sidebar-mobile-open');
                 }
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 900) document.documentElement.classList.remove('sidebar-mobile-open');
             });
         }
 
-        // Handle dropdowns click
-        const dropdownBtns = document.querySelectorAll('.dropdown-btn');
-        dropdownBtns.forEach(btn => {
+        // ── Smooth accordion dropdowns ──────────────────────────────────────
+        document.querySelectorAll('.dropdown-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 const content = this.nextElementSibling;
-                if(content.style.display === 'block') {
-                    content.style.display = 'none';
-                } else {
-                    document.querySelectorAll('.dropdown-content').forEach(el => el.style.display = 'none');
-                    content.style.display = 'block';
+                const isOpen  = this.classList.contains('open');
+
+                // Close all first
+                document.querySelectorAll('.dropdown-btn').forEach(b => b.classList.remove('open'));
+                document.querySelectorAll('.dropdown-content').forEach(el => { el.style.maxHeight = '0'; el.style.opacity = '0'; });
+
+                if (!isOpen) {
+                    this.classList.add('open');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    content.style.opacity   = '1';
                 }
             });
         });
 
-        // Automatically expand the dropdown that contains the current URL
+        // ── Auto-expand dropdown containing the current page ────────────────
         const currentPath = window.location.pathname;
+
         document.querySelectorAll('.dropdown-content a').forEach(link => {
             try {
-                const linkPath = new URL(link.href).pathname;
-                if (currentPath === linkPath || currentPath.startsWith(linkPath) && linkPath.length > (typeof ctx !== 'undefined' ? ctx.length + 1 : Number.MAX_VALUE)) {
-                    const dropdownContent = link.closest('.dropdown-content');
-                    if (dropdownContent) {
-                        dropdownContent.style.display = 'block';
-                        // Keep dropdown button highlighted if you want
-                        dropdownContent.previousElementSibling.style.color = 'var(--neon-cyan)';
+                if (new URL(link.href).pathname === currentPath) {
+                    link.classList.add('active-link');
+                    const dc = link.closest('.dropdown-content');
+                    if (dc) {
+                        dc.previousElementSibling.classList.add('open');
+                        requestAnimationFrame(() => { dc.style.maxHeight = dc.scrollHeight + 'px'; dc.style.opacity = '1'; });
                     }
-                    link.style.color = 'var(--neon-cyan)';
-                    link.style.boxShadow = 'inset 3px 0 0 var(--neon-cyan)';
-                    link.style.background = 'rgba(0, 229, 255, 0.1)';
                 }
-            } catch (err) {}
+            } catch(e) {}
         });
-        
-        // Handle standalone links highlighting
+
+        // ── Highlight top-level standalone links (e.g. Dashboard) ──────────
         document.querySelectorAll('.sidebar nav > ul > li > a:not(.dropdown-btn)').forEach(link => {
-            try {
-               const linkPath = new URL(link.href).pathname;
-               if (currentPath === linkPath) {
-                    link.style.color = 'var(--neon-cyan)';
-                    link.style.boxShadow = 'inset 3px 0 0 var(--neon-cyan)';
-                    link.style.background = 'rgba(0, 229, 255, 0.1)';
-               }
-            } catch (e) {}
+            try { if (new URL(link.href).pathname === currentPath) link.classList.add('active-link'); } catch(e) {}
         });
     });
 </script>
+
