@@ -1,5 +1,6 @@
 <%@ tag description="AppShell Layout Wrapping Component" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags/shared" %>
 <%@ attribute name="cssClass" required="false" type="java.lang.String" %>
 <%@ attribute name="hideSidebar" required="false" type="java.lang.Boolean" %>
 

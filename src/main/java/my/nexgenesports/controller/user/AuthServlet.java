@@ -72,6 +72,7 @@ public class AuthServlet extends HttpServlet {
             User user = userSvc.authenticate(userID, password, selectedRole);
 
             HttpSession session = req.getSession(true);
+            session.setMaxInactiveInterval(30 * 60); // 30 minutes timeout
             session.setAttribute("username",       userID);
             session.setAttribute("role",           selectedRole);
             session.setAttribute("position",       user.getPosition());

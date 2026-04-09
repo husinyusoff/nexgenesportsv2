@@ -1,0 +1,206 @@
+/* === Core Game Module Tables (Neon Void) === */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--glass-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+}
+.data-table th {
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    padding: 18px 20px;
+    text-align: left;
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+.data-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    font-weight: 500;
+}
+.data-table tbody tr {
+    transition: var(--transition);
+}
+.data-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.table-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Mobile Data Cards */
+@media (max-width: 768px) {
+    .data-table, .data-table tbody {
+        display: block;
+        background: transparent;
+        border: none;
+        backdrop-filter: none;
+    }
+    .data-table thead {
+        display: none;
+    }
+    .data-table tr {
+        display: block;
+        background: var(--glass-bg);
+        margin-bottom: 20px;
+        border-radius: 12px;
+        border: 1px solid var(--glass-border);
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .data-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        text-align: right;
+    }
+    .data-table td:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .data-table td::before {
+        content: attr(data-label);
+        font-weight: 800;
+        color: var(--neon-cyan);
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+    .table-actions {
+        width: 100%;
+        margin-top: 15px;
+    }
+    .table-actions .btn {
+        flex: 1;
+    }
+}
+
+/* === Legacy Module Tables === */
+/* Manage Team Page */
+.team-page .summary-table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:24px;
+}
+.team-page .summary-table th,
+.team-page .summary-table td {
+    border:1px solid #ccc;
+    padding:8px 12px;
+    text-align:center;
+}
+.team-page .summary-table th {
+    background:#38b6ff;
+    color:#fff;
+    text-transform:uppercase;
+}
+
+.team-page .members-table,
+.team-page .achievement-table {
+    width:100%;
+    border-collapse:collapse;
+}
+.team-page .members-table th,
+.team-page .achievement-table th {
+    background:#38b6ff;
+    color:#fff;
+    text-transform:uppercase;
+}
+.team-page .members-table th,
+.team-page .members-table td,
+.team-page .achievement-table th,
+.team-page .achievement-table td {
+    border:1px solid #ccc;
+    padding:8px 12px;
+    text-align:center;
+}
+
+/* RBAC Table */
+.rbac-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    display: block;
+    overflow-x: auto;
+}
+.rbac-table th,
+.rbac-table td {
+    border: 1px solid #ddd;
+    padding: 0.5rem 0.75rem;
+    text-align: center;
+    white-space: nowrap;
+}
+.rbac-table th {
+    background: #259de3;
+    color: #fff;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.rbac-table .inh-col {
+    text-align: left;
+    min-width: 200px;
+}
+.rbac-table td.inh-col {
+    font-weight: bold;
+}
+
+/* Select Team Page */
+.select-team-page .summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+.select-team-page .summary-table th {
+  background: #f2f2f2;
+  color: #333;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+}
+.select-team-page .summary-table td {
+  background: #fff;
+  color: #333;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+}
+
+/* Tournament Page */
+body.tournament-page .content .summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+body.tournament-page .content .summary-table th,
+body.tournament-page .content .summary-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+body.tournament-page .content .summary-table th {
+  background: #38b6ff;
+  color: #fff;
+  text-transform: uppercase;
+}
+body.tournament-page .content .summary-table td .btn {
+  display: block;
+  width: 100px;
+  height: 32px;
+  line-height: 32px;
+  margin: 4px auto;
+  text-align: center;
+  padding: 0;
+  font-size: 0.85rem;
+}

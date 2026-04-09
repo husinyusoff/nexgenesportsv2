@@ -1,0 +1,59 @@
+/* === Auth Pages (Login/Register) === */
+.auth-box {
+    width: 100%;
+    max-width: 400px;
+}
+.auth-box h2 {
+    text-align: center;
+    color: var(--neon-cyan);
+    font-size: 2rem;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.password-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+}
+.password-wrapper .input-field {
+    margin-bottom: 0;
+    padding-right: 40px;
+}
+.eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 18px;
+}
+
+/* Error message */
+.error-msg {
+    color: var(--neon-pink);
+    background: rgba(255, 0, 127, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--neon-pink);
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.auth-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 0.85rem;
+}
+.auth-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+}
+.auth-links a:hover {
+    color: var(--neon-cyan);
+}

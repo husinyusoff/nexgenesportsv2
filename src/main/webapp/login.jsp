@@ -17,6 +17,9 @@
             </c:if>
             <c:if test="${param.status == 'passwordReset'}">
                 <t:Alert variant="success">Password reset successful! You can now login with your new password.</t:Alert>
+             </c:if>
+            <c:if test="${param.status == 'sessionExpired'}">
+                <t:Alert variant="danger">Your session has expired due to inactivity. Please log in again.</t:Alert>
             </c:if>
 
             <form action="${pageContext.request.contextPath}/LoginServlet" method="post">

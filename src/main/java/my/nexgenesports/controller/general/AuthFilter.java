@@ -65,7 +65,12 @@ public class AuthFilter implements Filter {
         // 2) Must be logged in
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("username") == null) {
-            res.sendRedirect(req.getContextPath() + "/login.jsp");
+            boolean isTimeout = req.getRequestedSessionId() != null && !req.isRequestedSessionIdValid();
+            if (isTimeout) {
+                res.sendRedirect(req.getContextPath() + "/login.jsp?status=sessionExpired");
+            } else {
+                res.sendRedirect(req.getContextPath() + "/login.jsp");
+            }
             return;
         }
 
