@@ -103,29 +103,48 @@ html {
     box-shadow: 0 0 16px var(--neon-cyan-glow), inset 0 0 10px rgba(0,229,255,0.05);
 }
 
-/* Two-icon swap system */
+/* ── Toggle Icon: d-property geometry morph ────────────────────────── */
 .toggle-icon {
     width: 22px;
     height: 22px;
-    position: absolute;
-    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    display: block;
+    overflow: visible;
 }
 
-/* Desktop - sidebar OPEN by default: show panel-collapse icon, hide bars */
-.icon-open   { opacity: 1; transform: scale(1); }
-.icon-closed { opacity: 0; transform: scale(0.7); }
+/* Each path transitions its geometry with staggered delays → cascading morph */
+.toggle-icon path {
+    transition:
+        d 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+        stroke 0.3s ease;
+}
+.toggle-icon .t-a { transition-delay: 0ms; }
+.toggle-icon .t-b { transition-delay: 60ms; }
+.toggle-icon .t-c { transition-delay: 120ms; }
 
-/* Desktop - sidebar COLLAPSED: swap icons */
-html.sidebar-collapsed .icon-open   { opacity: 0; transform: scale(0.7); }
-html.sidebar-collapsed .icon-closed { opacity: 1; transform: scale(1); }
+/* ── Desktop: sidebar OPEN (default) → show panel + chevron ────────── */
+/*   t-a: vertical bar on the left (represents the sidebar panel)        */
+/*   t-b: top half of left-pointing chevron                              */
+/*   t-c: bottom half of left-pointing chevron                           */
+.toggle-icon .t-a { d: path("M 3,3 L 3,21"); }
+.toggle-icon .t-b { d: path("M 14,7 L 9,12"); }
+.toggle-icon .t-c { d: path("M 9,12 L 14,17"); }
 
-/* Mobile - sidebar CLOSED by default: show bars, hide panel icon */
+/* ── Desktop: sidebar COLLAPSED → staggered gamer bars ─────────────── */
+/*   bars shrink in a cascade when opening, grow in a cascade when closing */
+html.sidebar-collapsed .toggle-icon .t-a { d: path("M 3,6 L 21,6"); }
+html.sidebar-collapsed .toggle-icon .t-b { d: path("M 3,12 L 15,12"); }
+html.sidebar-collapsed .toggle-icon .t-c { d: path("M 3,18 L 9,18"); }
+
+/* ── Mobile: sidebar CLOSED by default → show staggered bars ────────── */
 @media (max-width: 900px) {
-    .icon-open   { opacity: 0; transform: scale(0.7); }
-    .icon-closed { opacity: 1; transform: scale(1); }
-    /* Mobile sidebar opened: show panel-collapse icon */
-    html.sidebar-mobile-open .icon-open   { opacity: 1; transform: scale(1); }
-    html.sidebar-mobile-open .icon-closed { opacity: 0; transform: scale(0.7); }
+    .toggle-icon .t-a { d: path("M 3,6 L 21,6"); }
+    .toggle-icon .t-b { d: path("M 3,12 L 15,12"); }
+    .toggle-icon .t-c { d: path("M 3,18 L 9,18"); }
+
+    /* Mobile open → morph to panel + chevron */
+    html.sidebar-mobile-open .toggle-icon .t-a { d: path("M 3,3 L 3,21"); }
+    html.sidebar-mobile-open .toggle-icon .t-b { d: path("M 14,7 L 9,12"); }
+    html.sidebar-mobile-open .toggle-icon .t-c { d: path("M 9,12 L 14,17"); }
 }
 
 .logos {

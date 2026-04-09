@@ -23,17 +23,11 @@
         <%-- Animated SVG Hamburger Toggle - visible to all logged-in users --%>
         <c:if test="${not empty sessionScope.username}">
             <button id="menuToggle" class="menu-toggle" aria-label="Toggle sidebar">
-                <%-- Icon shown when sidebar is OPEN: panel + double-left chevron --%>
-                <svg class="toggle-icon icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="3" width="5" height="18" rx="1"/>
-                    <polyline points="16 7 12 12 16 17"/>
-                    <polyline points="20 7 16 12 20 17"/>
-                </svg>
-                <%-- Icon shown when sidebar is CLOSED: staggered gamer speed-bars --%>
-                <svg class="toggle-icon icon-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                    <line x1="3" y1="6"  x2="21" y2="6"/>
-                    <line x1="3" y1="12" x2="15" y2="12"/>
-                    <line x1="3" y1="18" x2="9"  y2="18"/>
+                <%-- Single SVG: 3 paths morph between panel-chevron and staggered bars via CSS d property --%>
+                <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path class="t-a" d="M 3,3 L 3,21"/>
+                    <path class="t-b" d="M 14,7 L 9,12"/>
+                    <path class="t-c" d="M 9,12 L 14,17"/>
                 </svg>
             </button>
         </c:if>
