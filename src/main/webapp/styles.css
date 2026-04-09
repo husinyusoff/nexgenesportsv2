@@ -149,7 +149,7 @@ html {
     overflow-y: auto;
 }
 
-.sidebar nav ul {
+.sidebar nav > ul {
     list-style: none;
     display: flex;
     flex-direction: column;
