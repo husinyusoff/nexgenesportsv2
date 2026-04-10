@@ -557,9 +557,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener("mousemove", (e) => handleMove(e.clientX, e.clientY));
     window.addEventListener("touchmove", (e) => {
-        e.preventDefault();
         handleMove(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: false });
+    }, { passive: true });
     window.addEventListener("touchstart", (e) => {
         isTouching = true;
         touchFadeStrength = 1.0;

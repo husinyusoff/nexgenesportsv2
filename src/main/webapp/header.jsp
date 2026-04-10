@@ -2,8 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css?v=6">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components.css?v=6">
     <meta name="theme-color" content="#09090b">
 
     <%-- FOUC Prevention: Apply sidebar state BEFORE paint so there's zero flicker on navigation --%>
@@ -16,7 +16,7 @@
     </script>
 </head>
 <%-- interactive background canvas script --%>
-<script src="${pageContext.request.contextPath}/js/bg-animation.js"></script>
+<script src="${pageContext.request.contextPath}/js/bg-animation.js?v=2"></script>
 
 <%-- shared top bar --%>
 <header class="header">

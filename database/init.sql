@@ -301,10 +301,9 @@ CREATE TABLE `gamingstation` (
 --
 
 INSERT INTO `gamingstation` (`stationID`, `stationName`, `normalPrice1Player`, `normalPrice2Player`, `happyHourPrice1Player`, `happyHourPrice2Player`) VALUES
-('PS4', 'PlayStation 4', 4.00, 6.00, 3.00, 5.00),
-('PS5A', 'PlayStation 5 A', 6.00, 10.00, 5.00, 8.00),
-('PS5B', 'PlayStation 5 B', 6.00, 10.00, 5.00, 8.00),
-('RSM', 'Racing Simulator', 13.00, NULL, 11.00, NULL);
+('PS5-01', 'PlayStation 5 (A)', 6.00, 10.00, 5.00, 8.00),
+('PS5-02', 'PlayStation 5 (B)', 6.00, 10.00, 5.00, 8.00),
+('RS01', 'Racing Simulator', 13.00, NULL, 11.00, NULL);
 
 -- --------------------------------------------------------
 

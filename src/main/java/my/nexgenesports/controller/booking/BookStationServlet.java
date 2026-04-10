@@ -37,7 +37,8 @@ public class BookStationServlet extends HttpServlet {
         String stationID   = req.getParameter("stationID");
         String pcParam     = req.getParameter("playerCount");
         if (stationID == null || pcParam == null) {
-            resp.sendRedirect(req.getContextPath() + "/selectStation");
+            resp.setContentType("text/html;charset=UTF-8");
+            resp.getWriter().write("<div class='error'>Error: Missing stationID or playerCount parameters.</div>");
             return;
         }
         int playerCount = Integer.parseInt(pcParam);
@@ -78,7 +79,7 @@ public class BookStationServlet extends HttpServlet {
             }
         }
 
-        req.getRequestDispatcher("bookStation.jsp")
+        req.getRequestDispatcher("slotFragment.jsp")
            .forward(req, resp);
     }
 

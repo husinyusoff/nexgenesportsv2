@@ -41,6 +41,22 @@ public class SelectStationServlet extends HttpServlet {
         List<Station> stations = stationSvc.listAll();
         req.setAttribute("stations", stations);
 
+        // 3) Push Dynamic Business Config limits to JSP
+        my.nexgenesports.service.booking.BusinessConfigService cfg = new my.nexgenesports.service.booking.BusinessConfigService();
+        int wdOpen = cfg.openingHour(java.time.DayOfWeek.MONDAY);
+        int weOpen = cfg.openingHour(java.time.DayOfWeek.FRIDAY);
+        int wdHappy = cfg.happyStart(java.time.DayOfWeek.MONDAY);
+        int weHappy = cfg.happyStart(java.time.DayOfWeek.FRIDAY);
+        int happyEnd = cfg.happyEnd();
+        int closeHr = cfg.closingHour();
+        
+        req.setAttribute("wdOpen", wdOpen > 12 ? (wdOpen-12) + ":00 PM" : wdOpen + ":00 AM");
+        req.setAttribute("weOpen", weOpen > 12 ? (weOpen-12) + ":00 PM" : weOpen + ":00 AM");
+        req.setAttribute("wdHappy", wdHappy > 12 ? (wdHappy-12) + ":00 PM" : wdHappy + ":00 PM");
+        req.setAttribute("weHappy", weHappy > 12 ? (weHappy-12) + ":00 PM" : weHappy + ":00 PM");
+        req.setAttribute("happyEnd", happyEnd >= 12 ? (happyEnd == 24 ? "12:00 AM" : (happyEnd == 12 ? "12:00 PM" : (happyEnd-12) + ":00 PM")) : happyEnd + ":00 AM");
+        req.setAttribute("closeHr", closeHr >= 12 ? (closeHr == 24 ? "12:00 AM" : (closeHr == 12 ? "12:00 PM" : (closeHr-12) + ":00 PM")) : closeHr + ":00 AM");
+
         // 3) Forward to view
         req.getRequestDispatcher("selectStation.jsp")
            .forward(req, resp);

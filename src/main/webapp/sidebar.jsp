@@ -7,6 +7,38 @@
     String position = (String) session.getAttribute("position");
     String ctx = request.getContextPath();
     request.setAttribute("ctx", ctx);
+
+    // Profile
+    boolean canAccessInGameProfile = PermissionChecker.hasAccess(roles, chosenRole, position, "/inGameProfile");
+
+    // Multiplayer Lounge
+    boolean canAccessSelectStation = PermissionChecker.hasAccess(roles, chosenRole, position, "/selectStation");
+    boolean canAccessManageBooking = PermissionChecker.hasAccess(roles, chosenRole, position, "/manageBooking");
+    boolean canAccessManageBookings = PermissionChecker.hasAccess(roles, chosenRole, position, "/manageBookings");
+    boolean canAccessManageStations = PermissionChecker.hasAccess(roles, chosenRole, position, "/manageStations");
+    boolean showMultiplayerLounge = canAccessSelectStation || canAccessManageBooking || canAccessManageBookings || canAccessManageStations;
+
+    // Programs
+    boolean canAccessProgCreate = PermissionChecker.hasAccess(roles, chosenRole, position, "/programs/create");
+    boolean canAccessProgJoin = PermissionChecker.hasAccess(roles, chosenRole, position, "/programs/join");
+    boolean canAccessPrograms = PermissionChecker.hasAccess(roles, chosenRole, position, "/programs");
+    boolean canAccessGames = PermissionChecker.hasAccess(roles, chosenRole, position, "/games");
+    boolean showPrograms = canAccessProgCreate || canAccessProgJoin || canAccessPrograms || canAccessGames;
+
+    // Teams
+    boolean canAccessTeamManage = PermissionChecker.hasAccess(roles, chosenRole, position, "/team/manage");
+    boolean canAccessTeamList = PermissionChecker.hasAccess(roles, chosenRole, position, "/team/list");
+    boolean showTeams = canAccessTeamManage || canAccessTeamList;
+
+    // Management / Logs
+    boolean canAccessNotifications = PermissionChecker.hasAccess(roles, chosenRole, position, "/notifications");
+    boolean canAccessAuditLog = PermissionChecker.hasAccess(roles, chosenRole, position, "/auditLog");
+
+    // Admin Management
+    boolean canAccessAdminUsers = PermissionChecker.hasAccess(roles, chosenRole, position, "/admin/users");
+    boolean canAccessAdminRbac = PermissionChecker.hasAccess(roles, chosenRole, position, "/admin/rbac");
+    boolean canAccessAdminMemberships = PermissionChecker.hasAccess(roles, chosenRole, position, "/admin/memberships");
+    boolean showAdmin = canAccessAdminUsers || canAccessAdminRbac || canAccessAdminMemberships;
 %>
 
 <!-- Sidebar Overlay Panel -->
@@ -19,88 +51,90 @@
                 <a href="javascript:void(0)" class="dropdown-btn">Profile <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                 <ul class="dropdown-content">
                     <li><a href="${ctx}/manageProfile">My Profile</a></li>
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/inGameProfile")) { %>
+                    <% if (canAccessInGameProfile) { %>
                     <li><a href="${ctx}/inGameProfile">In-Game Profile</a></li>
                     <% } %>
                     <li><a href="${ctx}/manageMembership">Membership &amp; Pass</a></li>
                 </ul>
             </li>
 
+            <% if (showMultiplayerLounge) { %>
             <li class="dropdown">
                 <a href="javascript:void(0)" class="dropdown-btn">Multiplayer Lounge <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                 <ul class="dropdown-content">
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/selectStation")) { %>
+                    <% if (canAccessSelectStation) { %>
                     <li><a href="${ctx}/selectStation">Book Gaming Session</a></li>
                     <% } %>
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/manageBooking")) { %>
+                    <% if (canAccessManageBooking) { %>
                     <li><a href="${ctx}/manageBooking">Manage My Booking</a></li>
                     <% } %>
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/manageBookings")) { %>
+                    <% if (canAccessManageBookings) { %>
                     <li><a href="${ctx}/manageBookings">Manage All Booking</a></li>
                     <% } %>
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/manageStations")) { %>
+                    <% if (canAccessManageStations) { %>
                     <li><a href="${ctx}/manageStations">Manage Stations</a></li>
                     <% } %>
                 </ul>
             </li>
+            <% } %>
 
+            <% if (showPrograms) { %>
             <li class="dropdown">
                 <a href="javascript:void(0)" class="dropdown-btn">Program <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                 <ul class="dropdown-content">
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/programs/create")) { %>
+                    <% if (canAccessProgCreate) { %>
                     <li><a href="${ctx}/programs/new">Create Program</a></li>
                     <% } %>
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/programs/join")) { %>
+                    <% if (canAccessProgJoin) { %>
                     <li><a href="${ctx}/programs/join">Join Program</a></li>
                     <% } %>
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/programs")) { %>
+                    <% if (canAccessPrograms) { %>
                     <li><a href="${ctx}/programs">Programs &amp; Tournaments</a></li>
                     <% } %>
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/games")) { %>
+                    <% if (canAccessGames) { %>
                     <li><a href="${ctx}/games">Games</a></li>
                     <% } %>
                 </ul>
             </li>
+            <% } %>
 
+            <% if (showTeams) { %>
             <li class="dropdown">
                 <a href="javascript:void(0)" class="dropdown-btn">Team <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                 <ul class="dropdown-content">
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/team/manage")) { %>
+                    <% if (canAccessTeamManage) { %>
                     <li><a href="${ctx}/team/manage">My Teams</a></li>
                     <% } %>
-                    <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/team/list")) { %>
+                    <% if (canAccessTeamList) { %>
                     <li><a href="${ctx}/team/list">Team List</a></li>
                     <% } %>
                 </ul>
             </li>
+            <% } %>
 
-            <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/notifications")) { %>
+            <% if (canAccessNotifications) { %>
             <li><a href="${ctx}/notifications">Notifications</a></li>
             <% } %>
-            <% if (PermissionChecker.hasAccess(roles, chosenRole, position, "/auditLog")) { %>
+            <% if (canAccessAuditLog) { %>
             <li><a href="${ctx}/auditLog">Audit Log</a></li>
-            <%}%>
+            <% } %>
             
-            <c:set var="canAccessUsers" value='<%= PermissionChecker.hasAccess((List<String>)request.getSession().getAttribute("effectiveRoles"), (String)request.getSession().getAttribute("role"), (String)request.getSession().getAttribute("position"), "/admin/users") %>' />
-            <c:set var="canAccessRbac" value='<%= PermissionChecker.hasAccess((List<String>)request.getSession().getAttribute("effectiveRoles"), (String)request.getSession().getAttribute("role"), (String)request.getSession().getAttribute("position"), "/admin/rbac") %>' />
-            <c:set var="canAccessMemberships" value='<%= PermissionChecker.hasAccess((List<String>)request.getSession().getAttribute("effectiveRoles"), (String)request.getSession().getAttribute("role"), (String)request.getSession().getAttribute("position"), "/admin/memberships") %>' />
-            
-            <c:if test="${canAccessUsers || canAccessRbac || canAccessMemberships}">
+            <% if (showAdmin) { %>
                 <li class="dropdown">
                     <a href="javascript:void(0)" class="dropdown-btn">Admin Management <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                     <ul class="dropdown-content">
-                        <c:if test="${canAccessUsers}">
+                        <% if (canAccessAdminUsers) { %>
                         <li><a href="${ctx}/admin/users">Manage Users</a></li>
-                        </c:if>
-                        <c:if test="${canAccessMemberships}">
+                        <% } %>
+                        <% if (canAccessAdminMemberships) { %>
                         <li><a href="${ctx}/admin/memberships">Manage Memberships</a></li>
-                        </c:if>
-                        <c:if test="${canAccessRbac}">
+                        <% } %>
+                        <% if (canAccessAdminRbac) { %>
                         <li><a href="${ctx}/admin/rbac">Manage Permissions</a></li>
-                        </c:if>
+                        <% } %>
                     </ul>
                 </li>
-            </c:if>
+            <% } %>
             
             <li><a href="${ctx}/logout" style="color: var(--neon-pink); border: 1px solid var(--neon-pink);">Logout</a></li>
         </ul>

@@ -3,6 +3,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* header.jsp */
@@ -25,6 +26,7 @@
     display: flex;
     align-items: center;
     gap: 15px;
+    flex: 1 1 0%;
 }
 
 .menu-toggle {
@@ -106,6 +108,10 @@ html.sidebar-collapsed .toggle-icon .t-c { d: path("M 3,18 L 9,18"); }
     color: var(--text-primary);
     text-shadow: 0 0 10px var(--neon-cyan-glow);
     text-transform: uppercase;
+    margin: 0;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    text-align: center;
 }
 @media (max-width: 600px) {
     .header h1 { display: none; } /* Hide text on small screens, keep logos/toggle */
@@ -114,6 +120,8 @@ html.sidebar-collapsed .toggle-icon .t-c { d: path("M 3,18 L 9,18"); }
 .header-right {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
+    flex: 1 1 0%;
 }
 .user-avatar {
     display: flex;
@@ -244,6 +252,7 @@ html.sidebar-collapsed .sidebar {
     min-height: calc(100vh - var(--header-height));
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
 }
 /* Expand content when sidebar collapses */
 html.sidebar-collapsed .content {
@@ -298,4 +307,13 @@ html.sidebar-collapsed .content {
         margin-left: 0 !important;
         padding: 15px;
     }
+}
+
+/* === Rigid Layout Foundation === */
+.rigid-layout-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    z-index: 10;
 }
