@@ -28,10 +28,10 @@ public class PaymentService {
     public String createCharge(String module, int id, BigDecimal amount) {
         if (simulate) {
             String reference = "SIM-" + System.currentTimeMillis();
-            return "/paymentCallback"
+            return "/mockGateway.jsp"
                 + "?module="    + module
                 + "&id="        + id
-                + "&paid=true"
+                + "&amount="    + amount
                 + "&reference=" + reference;
         }
         throw new UnsupportedOperationException("Real gateway not yet implemented");

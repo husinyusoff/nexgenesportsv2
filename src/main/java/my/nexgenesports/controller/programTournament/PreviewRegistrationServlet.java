@@ -3,6 +3,11 @@ package my.nexgenesports.controller.programTournament;
 
 import my.nexgenesports.model.ProgramTournament;
 import my.nexgenesports.service.programTournament.ProgramTournamentService;
+import my.nexgenesports.service.memberships.MembershipService;
+import my.nexgenesports.service.memberships.PassService;
+import my.nexgenesports.model.UserClubMembership;
+import my.nexgenesports.model.UserGamingPass;
+import my.nexgenesports.util.PricingEngine;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +19,8 @@ import java.util.List;
 @WebServlet("/programs/previewRegistration")
 public class PreviewRegistrationServlet extends HttpServlet {
     private final ProgramTournamentService progSvc = new ProgramTournamentService();
+    private final MembershipService memSvc = new MembershipService();
+    private final PassService passSvc = new PassService();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -58,6 +65,21 @@ public class PreviewRegistrationServlet extends HttpServlet {
         req.setAttribute("teamId", teamId);
         req.setAttribute("users", users);
         req.setAttribute("roles", roles);
+
+        String userID = (String) session.getAttribute("username");
+        try {
+            UserClubMembership mem = memSvc.getCurrentMembership(userID);
+            UserGamingPass pass = passSvc.getCurrentPass(userID);
+            int memDiscount = (mem != null) ? mem.getSession().getDiscountRate() : 0;
+            int passDiscount = (pass != null) ? pass.getTier().getDiscountRate() : 0;
+            PricingEngine.PricingResult pricing = PricingEngine.calculate(amount, memDiscount, passDiscount);
+
+            req.setAttribute("activeMem", mem);
+            req.setAttribute("activePass", pass);
+            req.setAttribute("pricing", pricing);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         req.getRequestDispatcher("/checkout.jsp")
            .forward(req, resp);

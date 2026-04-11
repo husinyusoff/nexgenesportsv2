@@ -215,7 +215,10 @@
                     .then(html => {
                         container.innerHTML = html;
                         setTimeout(function(){
-                            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            var headerHeight = document.querySelector('.header') ? document.querySelector('.header').offsetHeight : 0;
+                            var containerTop = container.getBoundingClientRect().top + window.scrollY;
+                            // Stops exactly 20px under the header's bottom border on any device
+                            window.scrollTo({ top: containerTop - headerHeight - 20, behavior: 'smooth' });
                         }, 100);
                     })
                     .catch(e => {
@@ -235,6 +238,7 @@
 
                     <!-- Page Hero -->
                     <div class="profile-hero" style="margin-bottom: 20px;">
+                        <div class="profile-hero-icon">🎮</div>
                         <h2>BOOK GAMING SESSION</h2>
                         <p class="subtitle">Choose your battleground and session configuration.</p>
                         <div style="margin-top: 20px; display: inline-flex; flex-direction: column; align-items: center; gap: 10px;">

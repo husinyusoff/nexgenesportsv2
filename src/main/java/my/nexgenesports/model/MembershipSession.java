@@ -14,6 +14,7 @@ public class MembershipSession {
     private boolean isActive;
     private Integer capacityLimit;
     private List<String> benefitLines;
+    private int discountRate;
 
     public MembershipSession() {}
 
@@ -24,7 +25,8 @@ public class MembershipSession {
                              BigDecimal fee,
                              boolean isActive,
                              Integer capacityLimit,
-                             List<String> benefitLines) {
+                             List<String> benefitLines,
+                             int discountRate) {
         this.sessionId = sessionId;
         this.sessionName = sessionName;
         this.startMembershipDate = startMembershipDate;
@@ -33,6 +35,7 @@ public class MembershipSession {
         this.isActive = isActive;
         this.capacityLimit = capacityLimit;
         this.benefitLines = benefitLines;
+        this.discountRate = discountRate;
     }
 
     public String getSessionId() {
@@ -99,6 +102,14 @@ public class MembershipSession {
         this.benefitLines = benefitLines;
     }
 
+    public int getDiscountRate() {
+        return discountRate;
+    }
+
+    public void setDiscountRate(int discountRate) {
+        this.discountRate = discountRate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -123,6 +134,7 @@ public class MembershipSession {
                ", isActive=" + isActive +
                ", capacityLimit=" + capacityLimit +
                ", benefitLines=" + benefitLines +
+               ", discountRate=" + discountRate +
                '}';
     }
 }

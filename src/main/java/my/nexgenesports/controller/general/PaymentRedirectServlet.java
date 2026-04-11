@@ -5,6 +5,14 @@ import my.nexgenesports.service.booking.BookingService;
 import my.nexgenesports.service.general.PaymentService;
 import my.nexgenesports.service.programTournament.ParticipantService;
 import my.nexgenesports.service.programTournament.ProgramTournamentService;
+import my.nexgenesports.service.memberships.MembershipService;
+import my.nexgenesports.service.memberships.PassService;
+import my.nexgenesports.model.UserClubMembership;
+import my.nexgenesports.model.UserGamingPass;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +27,8 @@ public class PaymentRedirectServlet extends HttpServlet {
     private final ProgramTournamentService programSvc = new ProgramTournamentService();
     private final ParticipantService partSvc          = new ParticipantService();
     private final PaymentService paymentSvc           = new PaymentService();
+    private final MembershipService memSvc            = new MembershipService();
+    private final PassService passSvc                 = new PassService();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -68,21 +78,48 @@ public class PaymentRedirectServlet extends HttpServlet {
                 }
 
                 case "booking" -> {
-                    int bookingId = Integer.parseInt(req.getParameter("bookingID"));
-                    Booking b = bookingSvc.find(bookingId);
-                    redirectUrl = paymentSvc.createCharge("booking", bookingId, b.getPrice());
+                    String userID = (String) session.getAttribute("username");
+                    String stationID = req.getParameter("stationID");
+                    LocalDate date = LocalDate.parse(req.getParameter("date"));
+                    int playerCount = Integer.parseInt(req.getParameter("playerCount"));
+                    String priceType = req.getParameter("priceType");
+                    String[] slotsArray = req.getParameterValues("slots");
+                    List<Integer> slots = new ArrayList<>();
+                    if (slotsArray != null) {
+                        for (String s : slotsArray) {
+                            slots.add(Integer.valueOf(s));
+                        }
+                    }
+                    Booking b = bookingSvc.createBooking(userID, stationID, date, slots, playerCount, priceType);
+                    redirectUrl = paymentSvc.createCharge("booking", b.getBookingID(), b.getPrice());
+                    if (b.getPaymentDeadline() != null) {
+                        long dMs = b.getPaymentDeadline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                        redirectUrl += "&deadlineMillis=" + dMs;
+                    }
                 }
 
                 case "membership" -> {
-                    int ucmId = Integer.parseInt(req.getParameter("ucmId"));
+                    String userID = (String) session.getAttribute("username");
+                    String sessionIdParam = req.getParameter("sessionId");
+                    UserClubMembership ucm = memSvc.createPending(userID, sessionIdParam);
                     BigDecimal fee = new BigDecimal(req.getParameter("fee"));
-                    redirectUrl = paymentSvc.createCharge("membership", ucmId, fee);
+                    redirectUrl = paymentSvc.createCharge("membership", ucm.getId(), fee);
+                    if (ucm.getPaymentDeadline() != null) {
+                        long dMs = ucm.getPaymentDeadline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                        redirectUrl += "&deadlineMillis=" + dMs;
+                    }
                 }
 
                 case "pass" -> {
-                    int ugpId = Integer.parseInt(req.getParameter("ugpId"));
+                    String userID = (String) session.getAttribute("username");
+                    int tierId = Integer.parseInt(req.getParameter("tierId"));
+                    UserGamingPass ugp = passSvc.createPending(userID, tierId);
                     BigDecimal p    = new BigDecimal(req.getParameter("price"));
-                    redirectUrl = paymentSvc.createCharge("pass", ugpId, p);
+                    redirectUrl = paymentSvc.createCharge("pass", ugp.getId(), p);
+                    if (ugp.getPaymentDeadline() != null) {
+                        long dMs = ugp.getPaymentDeadline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                        redirectUrl += "&deadlineMillis=" + dMs;
+                    }
                 }
 
                 default -> throw new IllegalArgumentException("Unknown module: " + module);

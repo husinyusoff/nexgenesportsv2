@@ -6,6 +6,11 @@ import my.nexgenesports.service.booking.BookingService;
 import my.nexgenesports.service.booking.BusinessConfigService;
 import my.nexgenesports.service.general.ServiceException;
 import my.nexgenesports.service.booking.StationService;
+import my.nexgenesports.service.memberships.MembershipService;
+import my.nexgenesports.service.memberships.PassService;
+import my.nexgenesports.model.UserClubMembership;
+import my.nexgenesports.model.UserGamingPass;
+import my.nexgenesports.util.PricingEngine;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,6 +28,8 @@ public class BookStationServlet extends HttpServlet {
     private final BookingService bookingSvc = new BookingService();
     private final StationService stationSvc = new StationService();
     private final BusinessConfigService cfg = new BusinessConfigService();
+    private final MembershipService memSvc = new MembershipService();
+    private final PassService passSvc = new PassService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -108,12 +115,26 @@ public class BookStationServlet extends HttpServlet {
             String priceType = (firstHr >= happyStart && firstHr <= happyEnd)
                     ? "HappyHour"
                     : "Normal";
-            // create & persist booking
-            Booking b = bookingSvc.createBooking(
+            // create summary booking record (unpersisted)
+            Booking b = bookingSvc.buildDraftBooking(
                 userID, stationID, date, slots, playerCount, priceType
             );
 
+            // Calculate Discounts
+            UserClubMembership mem = memSvc.getCurrentMembership(userID);
+            UserGamingPass pass = passSvc.getCurrentPass(userID);
+            
+            int memDiscount = (mem != null) ? mem.getSession().getDiscountRate() : 0;
+            int passDiscount = (pass != null) ? pass.getTier().getDiscountRate() : 0;
+            
+            PricingEngine.PricingResult pricing = PricingEngine.calculate(b.getPrice(), memDiscount, passDiscount);
+
             req.setAttribute("booking", b);
+            req.setAttribute("slots", slots);
+            req.setAttribute("activeMem", mem);
+            req.setAttribute("activePass", pass);
+            req.setAttribute("pricing", pricing);
+            
             req.getRequestDispatcher("checkout.jsp").forward(req, resp);
 
         } catch (ServiceException e) {

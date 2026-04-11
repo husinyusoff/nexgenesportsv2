@@ -21,7 +21,7 @@
                     <h3 style="margin: 0 0 5px 0; color: var(--neon-cyan); letter-spacing: 1px;">AVAILABLE SLOTS</h3>
                     <p style="margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.6);">Select your preferred booking schedule below.</p>
                 </div>
-                <div style="display: flex; gap: 15px; font-size: 0.85rem;">
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.85rem;">
                     <div style="background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 6px;">
                         <span style="color: rgba(255,255,255,0.5); display: block; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 2px;">Station</span>
                         <strong style="color: white;">${stationName}</strong>

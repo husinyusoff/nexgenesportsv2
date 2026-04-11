@@ -15,7 +15,7 @@ import my.nexgenesports.util.DBConnection;
 
 public class MembershipSessionDao {
     public MembershipSession findById(String sessionId) throws SQLException {
-        String sql = "SELECT sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit FROM membershipsessions WHERE sessionId = ?";
+        String sql = "SELECT sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit, discount_rate FROM membershipsessions WHERE sessionId = ?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, sessionId);
@@ -26,7 +26,7 @@ public class MembershipSessionDao {
     }
 
     public List<MembershipSession> findUpcomingAfter(LocalDateTime dateTime) throws SQLException {
-        String sql = "SELECT sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit FROM membershipsessions WHERE startMembershipDate > ? AND is_active = 1 ORDER BY startMembershipDate";
+        String sql = "SELECT sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit, discount_rate FROM membershipsessions WHERE startMembershipDate > ? AND is_active = 1 ORDER BY startMembershipDate";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(dateTime));
@@ -41,7 +41,7 @@ public class MembershipSessionDao {
     }
 
     public MembershipSession findActiveOn(LocalDateTime dateTime) throws SQLException {
-        String sql = "SELECT sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit FROM membershipsessions WHERE startMembershipDate <= ? AND endMembershipDate >= ? AND is_active = 1";
+        String sql = "SELECT sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit, discount_rate FROM membershipsessions WHERE startMembershipDate <= ? AND endMembershipDate >= ? AND is_active = 1";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             Timestamp ts = Timestamp.valueOf(dateTime);
@@ -54,7 +54,7 @@ public class MembershipSessionDao {
     }
 
     public List<MembershipSession> findAll() throws SQLException {
-        String sql = "SELECT sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit FROM membershipsessions";
+        String sql = "SELECT sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit, discount_rate FROM membershipsessions";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             try (ResultSet rs = ps.executeQuery()) {
@@ -68,7 +68,7 @@ public class MembershipSessionDao {
     }
 
     public void insert(MembershipSession session) throws SQLException {
-        String sql = "INSERT INTO membershipsessions\n  (sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit)\nVALUES (?, ?, ?, ?, ?, ?, ?)\n";
+        String sql = "INSERT INTO membershipsessions\n  (sessionId, sessionName, startMembershipDate, endMembershipDate, fee, is_active, capacity_limit, discount_rate)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?)\n";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);){
             ps.setString(1, session.getSessionId());
@@ -82,12 +82,13 @@ public class MembershipSessionDao {
             } else {
                 ps.setNull(7, 4);
             }
+            ps.setInt(8, session.getDiscountRate());
             ps.executeUpdate();
         }
     }
 
     public void update(MembershipSession session) throws SQLException {
-        String sql = "UPDATE membershipsessions\n   SET sessionName = ?, startMembershipDate = ?, endMembershipDate = ?,\n       fee = ?, is_active = ?, capacity_limit = ?\n WHERE sessionId = ?\n";
+        String sql = "UPDATE membershipsessions\n   SET sessionName = ?, startMembershipDate = ?, endMembershipDate = ?,\n       fee = ?, is_active = ?, capacity_limit = ?, discount_rate = ?\n WHERE sessionId = ?\n";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);){
             ps.setString(1, session.getSessionName());
@@ -100,7 +101,8 @@ public class MembershipSessionDao {
             } else {
                 ps.setNull(6, 4);
             }
-            ps.setString(7, session.getSessionId());
+            ps.setInt(7, session.getDiscountRate());
+            ps.setString(8, session.getSessionId());
             ps.executeUpdate();
         }
     }
@@ -124,6 +126,7 @@ public class MembershipSessionDao {
         s.setActive(rs.getBoolean("is_active"));
         int cap = rs.getInt("capacity_limit");
         s.setCapacityLimit(rs.wasNull() ? null : Integer.valueOf(cap));
+        s.setDiscountRate(rs.getInt("discount_rate"));
         return s;
     }
 }

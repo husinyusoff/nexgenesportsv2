@@ -36,15 +36,15 @@ public class PayPassServlet extends HttpServlet {
         }
 
         // 3) Create or reuse PENDING pass record
-        UserGamingPass p;
+        // 3) Create unpersisted pass record for display
+        UserGamingPass p = new UserGamingPass();
         try {
             int tierId = Integer.parseInt(tierIdStr);
-            p = ps.getCurrentPass(userId);
-            if (p == null || !"PENDING".equals(p.getStatus()) || p.getTier().getTierId() != tierId) {
-                p = ps.createPending(userId, tierId);
-            }
+            p.setUserId(userId);
+            p.setTier(ps.getTierById(tierId));
+            p.setStatus("PENDING");
         } catch (NumberFormatException | SQLException e) {
-            throw new ServletException("Failed to initialize pass payment", e);
+            throw new ServletException("Failed to load pass tier", e);
         }
 
         // 4) Expose into checkout.jsp

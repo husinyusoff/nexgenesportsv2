@@ -40,7 +40,27 @@ public class BookingService {
      * @return the newly created Booking (with bookingID set)
      * @throws java.sql.SQLException
      */
-public Booking createBooking(
+    public Booking createBooking(
+            String userID,
+            String stationID,
+            LocalDate date,
+            List<Integer> selectedSlots,
+            int playerCount,
+            String priceType
+    ) throws SQLException {
+        Booking b = buildDraftBooking(userID, stationID, date, selectedSlots, playerCount, priceType);
+        try {
+            dao.insert(b);
+            return b;
+        } catch (SQLException e) {
+            throw new ServiceException("Failed to create booking", e);
+        }
+    }
+
+    /**
+     * Builds a draft booking for checkout summary (without db insertion).
+     */
+    public Booking buildDraftBooking(
             String userID,
             String stationID,
             LocalDate date,
@@ -104,12 +124,7 @@ public Booking createBooking(
         }
         b.setPrice(rate.multiply(BigDecimal.valueOf(b.getHourCount())));
 
-        try {
-            dao.insert(b);
-            return b;
-        } catch (SQLException e) {
-            throw new ServiceException("Failed to create booking", e);
-        }
+        return b;
     }
 
     /**

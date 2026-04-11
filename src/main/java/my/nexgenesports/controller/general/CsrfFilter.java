@@ -43,6 +43,7 @@ public class CsrfFilter implements Filter {
          || path.equals("/register.jsp")
          || path.equals("/auth")
          || path.equals("/manageProfile")
+         || path.equals("/paymentCallback")
          || path.equals("/inGameProfile")) {
             chain.doFilter(rq, rs);
             return;
