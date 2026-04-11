@@ -175,7 +175,7 @@
                 <div class="card-actions">
                   <c:choose>
                       <c:when test="${currentMembership != null && currentMembership.status == 'ACTIVE'}">
-                          <button class="btn-renew disabled" disabled>Active</button>
+                          <button class="btn-locked" disabled>Locked</button>
                       </c:when>
                       <c:when test="${currentMembership != null && currentMembership.status == 'EXPIRED'}">
                           <form action="${pageContext.request.contextPath}/payMembership" method="get">
@@ -276,7 +276,7 @@
                       <c:when test="${currentPass.status == 'ACTIVE'}">
                         <c:choose>
                           <c:when test="${tier.tierId == currentPass.tier.tierId}">
-                            <button class="btn-current" disabled>Current Plan</button>
+                            <button class="btn-locked" disabled>Locked</button>
                           </c:when>
                           <c:when test="${tier.tierId > currentPass.tier.tierId}">
                             <form action="${pageContext.request.contextPath}/payPass" method="get">

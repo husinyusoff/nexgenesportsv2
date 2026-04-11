@@ -92,6 +92,11 @@ public class UserService {
                 throw new ServiceException("Invalid user ID or password.");
 
             String actualRole = rpDao.findRoleByRpId(u.getRpId());
+            
+            if ("disabled".equals(actualRole)) {
+                throw new ServiceException("Your account has been deactivated.");
+            }
+
             List<String> eff = getEffectiveRoles(actualRole, u.getPosition());
 
             if (!eff.contains(selectedRole))

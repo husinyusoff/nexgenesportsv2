@@ -52,8 +52,9 @@ public class ProfileServlet extends HttpServlet {
 
         try {
             User user = userSvc.getProfile(username);
+            String formType = req.getParameter("formType");
 
-            if ("/inGameProfile".equals(path)) {
+            if ("/inGameProfile".equals(path) || "esports".equals(formType)) {
                 user.setIgn(req.getParameter("ign"));
                 user.setBio(req.getParameter("bio"));
                 user.setDiscordID(req.getParameter("discordID"));

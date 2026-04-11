@@ -317,3 +317,54 @@ html.sidebar-collapsed .content {
     position: relative;
     z-index: 10;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   DASHBOARD — Structural Layout Grids
+   (widget-level styles live in utilities.css)
+═══════════════════════════════════════════════════════════════════ */
+
+/* 4-column stat command strip */
+.dash-stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* 2-column identity card row (membership + pass) */
+.dash-identity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+/* 2-column panel row (upcoming booking + tournaments) */
+.dash-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+/* 4-column quick launch tile grid */
+.dash-quicklaunch-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* ── Responsive breakpoints ────────────────────────────────── */
+@media (max-width: 1024px) {
+    .dash-stat-strip      { grid-template-columns: repeat(2, 1fr); }
+    .dash-quicklaunch-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .dash-stat-strip       { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .dash-identity-grid    { grid-template-columns: 1fr; }
+    .dash-two-col          { grid-template-columns: 1fr; }
+    .dash-quicklaunch-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
+

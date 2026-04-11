@@ -63,6 +63,24 @@ public class AdminManageUsersServlet extends HttpServlet {
                     req.getSession().setAttribute("adminErrorMsg", "Database error updating user role: " + e.getMessage());
                 }
             }
+        } else if ("deactivate".equals(action)) {
+            String targetUserID = req.getParameter("targetUserID");
+            if (targetUserID != null) {
+                try {
+                    // ensure disabled role exists
+                    try (java.sql.Connection c = my.nexgenesports.util.DBConnection.getConnection();
+                         java.sql.Statement s = c.createStatement()) {
+                        s.executeUpdate("INSERT IGNORE INTO roles (role) VALUES ('disabled')");
+                        s.executeUpdate("INSERT IGNORE INTO role_positions (id, role, position) VALUES (6, 'disabled', NULL)");
+                    } catch(Exception ignored) {} // ignore if already exists or other error
+                    
+                    // disabled role rpId is 6
+                    userDao.updateUserRole(targetUserID, 6);
+                    req.getSession().setAttribute("adminSuccessMsg", "Successfully deactivated user: " + targetUserID);
+                } catch (SQLException e) {
+                    req.getSession().setAttribute("adminErrorMsg", "Database error deactivating user: " + e.getMessage());
+                }
+            }
         }
         
         resp.sendRedirect(req.getContextPath() + "/admin/users");

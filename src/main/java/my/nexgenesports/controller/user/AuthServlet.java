@@ -79,7 +79,7 @@ public class AuthServlet extends HttpServlet {
             session.setAttribute("effectiveRoles", userSvc.getEffectiveRoles(selectedRole, user.getPosition()));
             session.setAttribute("csrfToken",      UUID.randomUUID().toString());
 
-            resp.sendRedirect(req.getContextPath() + "/dashboard.jsp");
+            resp.sendRedirect(req.getContextPath() + "/dashboard");
         } catch (ServiceException e) {
             resp.sendRedirect(req.getContextPath() + "/login.jsp?error=badcreds");
         }

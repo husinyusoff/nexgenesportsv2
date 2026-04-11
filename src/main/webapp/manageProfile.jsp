@@ -139,7 +139,8 @@
                             </button>
                         </div>
 
-                        <form id="form-esports" action="${pageContext.request.contextPath}/inGameProfile" method="post">
+                        <form id="form-esports" action="${pageContext.request.contextPath}/manageProfile" method="post">
+                            <input type="hidden" name="formType" value="esports">
 
                             <div class="form-group">
                                 <label>In-Game Name (IGN)</label>

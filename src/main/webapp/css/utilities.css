@@ -1006,3 +1006,805 @@ textarea.profile-input {
 input[type="radio"].station-radio {
     display: none;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   DASHBOARD — Player Command Center (page-scoped widget styles)
+   Layout grids are in layout.css. Tokens from tokens.css/base.css.
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── Hero Identity Block ──────────────────────────────────────── */
+.dash-hero {
+    position: relative;
+    padding: 36px 40px;
+    margin-bottom: 28px;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.04) 0%, rgba(176,38,255,0.04) 100%);
+    border: 1px solid rgba(0, 229, 255, 0.15);
+    border-radius: 20px;
+    overflow: hidden;
+}
+.dash-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-purple), transparent);
+}
+/* CSS scanline sweep animation */
+.dash-hero-scanline {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        180deg,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,229,255,0.015) 3px,
+        rgba(0,229,255,0.015) 4px
+    );
+    pointer-events: none;
+}
+.dash-hero-inner {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.dash-hero-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(0, 229, 255, 0.6);
+    margin-bottom: 10px;
+    font-family: 'Inter', sans-serif;
+}
+.dash-hero-callsign-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(0,229,255,0.5);
+    margin-bottom: 4px;
+}
+.dash-hero-username {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px rgba(0,229,255,0.1);
+    margin: 0 0 14px;
+    line-height: 1.1;
+}
+.dash-hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.dash-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+}
+.dash-role-athlete  { color: var(--neon-cyan);   background: rgba(0,229,255,0.1);   border: 1px solid rgba(0,229,255,0.3); }
+.dash-role-staff    { color: var(--neon-yellow);  background: rgba(255,221,0,0.1);   border: 1px solid rgba(255,221,0,0.3); }
+.dash-role-admin    { color: var(--neon-pink);    background: rgba(255,0,127,0.1);   border: 1px solid rgba(255,0,127,0.3); animation: dashAdminPulse 2s infinite; }
+.dash-role-position { color: var(--neon-purple);  background: rgba(176,38,255,0.1);  border: 1px solid rgba(176,38,255,0.3); }
+
+@keyframes dashAdminPulse {
+    0%, 100% { box-shadow: 0 0 6px rgba(255,0,127,0.3); }
+    50%       { box-shadow: 0 0 16px rgba(255,0,127,0.7); }
+}
+
+/* Clock */
+.dash-hero-right    { text-align: right; flex-shrink: 0; }
+.dash-hero-clock-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(0,229,255,0.5);
+    margin-bottom: 4px;
+}
+.dash-hero-clock {
+    font-family: 'Rajdhani', monospace;
+    font-size: 4.5rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 15px var(--neon-cyan);
+    letter-spacing: 2px;
+    line-height: 1;
+}
+.dash-hero-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+.dash-hero-last-login {
+    font-size: 0.70rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 12px;
+}
+
+/* ── Stat Command Strip Cards ─────────────────────────────────── */
+.dash-stat-card {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 32px 24px;
+    text-align: right;
+    overflow: hidden;
+}
+.dash-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+    opacity: 0.7;
+}
+.dash-stat-icon {
+    font-size: 2.6rem;
+    margin-bottom: 0;
+    opacity: 0.8;
+}
+.dash-stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.dash-stat-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 15px rgba(0,229,255,0.4);
+    line-height: 1;
+    margin-bottom: 6px;
+}
+.dash-stat-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* ── Identity Cards ───────────────────────────────────────────── */
+.dash-id-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 36px;
+}
+.dash-id-card--membership { border-top: 2px solid var(--neon-cyan); }
+.dash-id-card--pass       { border-top: 2px solid var(--neon-purple); }
+
+.dash-id-card__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.dash-id-card__icon  { font-size: 1.4rem; }
+.dash-id-card__title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+.dash-id-card__name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+.dash-id-discount-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--neon-green);
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+}
+.dash-id-discount-badge--pass {
+    color: var(--neon-purple);
+    background: rgba(176,38,255,0.1);
+    border-color: rgba(176,38,255,0.3);
+}
+.dash-id-active-split {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+.dash-id-split-left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+}
+.dash-id-split-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    text-align: right;
+    border-left: 1px solid rgba(255,255,255,0.07);
+    padding-left: 24px;
+}
+.dash-ring-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+}
+.dash-ring {
+    width: 80px;
+    height: 80px;
+    transform: rotate(-90deg);
+}
+.dash-ring__bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width: 8;
+}
+.dash-ring__fill {
+    fill: none;
+    stroke: var(--neon-cyan);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dashoffset: 0;
+    transition: stroke-dasharray 1s ease-in-out;
+    filter: drop-shadow(0 0 4px var(--neon-cyan));
+}
+.dash-ring__fill--pass {
+    fill: none;
+    stroke: var(--neon-purple);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dashoffset: 0;
+    transition: stroke-dasharray 1s ease-in-out;
+    filter: drop-shadow(0 0 4px var(--neon-purple));
+}
+.dash-ring__fill--urgent,
+.dash-ring__fill--pass.dash-ring__fill--urgent {
+    stroke: var(--neon-pink);
+    filter: drop-shadow(0 0 6px var(--neon-pink));
+    animation: dashRingUrgent 1s ease-in-out infinite alternate;
+}
+@keyframes dashRingUrgent {
+    from { filter: drop-shadow(0 0 4px var(--neon-pink)); }
+    to   { filter: drop-shadow(0 0 14px var(--neon-pink)); }
+}
+.dash-ring-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+.dash-ring-days {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+.dash-ring-unit {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+.dash-ring-labels {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+.dash-id-expiry {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: right;
+    line-height: 1.3;
+}
+.dash-id-expiry strong {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+.dash-id-card__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+.dash-id-card__empty-icon {
+    font-size: 2rem;
+    opacity: 0.4;
+}
+
+/* ── Panel Heading (shared) ───────────────────────────────────── */
+.dash-panel-heading {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--neon-cyan);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+/* ── Upcoming Booking Panel ───────────────────────────────────── */
+.dash-booking-panel { padding: 36px; }
+.dash-booking-station {
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+.dash-booking-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.dash-booking-left {
+    display: flex;
+    flex-direction: column;
+}
+.dash-booking-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    border-left: 1px solid rgba(255,255,255,0.07);
+    padding-left: 24px;
+}
+.dash-booking-time {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-shadow: 0 0 15px rgba(0,229,255,0.2);
+    line-height: 1.1;
+    margin-bottom: 4px;
+}
+.dash-booking-date {
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+}
+.dash-booking-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.dash-booking-meta-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.dash-pricetype-happyhour { color: var(--neon-yellow); border-color: rgba(255,221,0,0.3); background: rgba(255,221,0,0.08); }
+.dash-booking-price {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--neon-green);
+    text-shadow: 0 0 10px rgba(0,255,136,0.3);
+    white-space: nowrap;
+}
+
+/* ── Open Tournaments Panel ───────────────────────────────────── */
+.dash-tourney-panel {
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.dash-tourney-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+.dash-tourney-list::-webkit-scrollbar {
+    display: none;
+}
+.dash-tourney-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.dash-tourney-item:last-child { border-bottom: none; }
+.dash-tourney-split-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.dash-tourney-split-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-left: 1px solid rgba(255,255,255,0.07);
+    padding-left: 24px;
+}
+    margin-bottom: 6px;
+}
+.dash-tourney-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.dash-tourney-type-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: var(--neon-purple);
+    background: rgba(176,38,255,0.1);
+    border: 1px solid rgba(176,38,255,0.3);
+    flex-shrink: 0;
+}
+.dash-tourney-item-meta {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+}
+.dash-tourney-prize {
+    color: var(--neon-yellow);
+    font-weight: 700;
+}
+.dash-tourney-fee   { color: var(--text-muted); }
+.dash-tourney-countdown {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dash-countdown-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(0,229,255,0.5);
+}
+.dash-countdown-timer {
+    font-family: 'Rajdhani', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--neon-cyan);
+}
+.dash-view-all-link {
+    display: inline-block;
+    margin-top: auto;
+    padding-top: 16px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--neon-cyan);
+    text-decoration: none;
+    transition: var(--transition);
+}
+.dash-view-all-link:hover {
+    text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* ── Empty State (shared across panels) ───────────────────────── */
+.dash-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    padding: 36px;
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+.dash-empty-icon { font-size: 2.5rem; opacity: 0.4; }
+
+/* ── Recent Activity Log ──────────────────────────────────────── */
+.dash-activity-section { padding: 36px; margin-bottom: 24px; }
+.dash-activity-log     { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.dash-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.dash-activity-item:last-child { border-bottom: none; }
+.dash-activity-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.dash-activity-dot--paid    { background: var(--neon-green);  box-shadow: 0 0 6px var(--neon-green); }
+.dash-activity-dot--pending { background: var(--neon-yellow); box-shadow: 0 0 6px var(--neon-yellow); }
+.dash-activity-dot--failed  { background: var(--neon-pink);   box-shadow: 0 0 6px var(--neon-pink); }
+.dash-activity-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.dash-activity-station {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.dash-activity-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: 'Inter', monospace;
+    letter-spacing: 0.3px;
+}
+.dash-activity-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+}
+.dash-activity-price {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ── Quick Launch Tiles ───────────────────────────────────────── */
+.dash-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+    padding: 36px 20px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    text-decoration: none;
+    transition: transform 0.3s cubic-bezier(0.25,0.8,0.25,1),
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.dash-tile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,229,255,0) 0%, rgba(0,229,255,0.06) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.dash-tile:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,229,255,0.2);
+    border-color: rgba(0,229,255,0.5);
+}
+.dash-tile:hover::before { opacity: 1; }
+.dash-tile-icon {
+    font-size: 2.5rem;
+    display: block;
+    animation: dashTileIconFloat 4s ease-in-out infinite;
+}
+@keyframes dashTileIconFloat {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-4px); }
+}
+.dash-tile-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+.dash-tile-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+}
+/* Stagger the float animation per tile */
+#tile-book       .dash-tile-icon { animation-delay: 0s;    }
+#tile-programs   .dash-tile-icon { animation-delay: 0.5s;  }
+#tile-team       .dash-tile-icon { animation-delay: 1s;    }
+#tile-membership .dash-tile-icon { animation-delay: 1.5s;  }
+
+/* ── Admin Ops Banner ─────────────────────────────────────────── */
+.dash-ops-banner {
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    border-top: 2px solid var(--neon-yellow) !important;
+    border-color: rgba(255,221,0,0.3) !important;
+}
+.dash-ops-banner__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.dash-ops-banner__icon  { font-size: 1.4rem; }
+.dash-ops-banner__title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--neon-yellow);
+}
+.dash-ops-banner__badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    border-radius: 20px;
+    color: var(--neon-yellow);
+    background: rgba(255,221,0,0.1);
+    border: 1px solid rgba(255,221,0,0.3);
+}
+.dash-ops-links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.dash-ops-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    color: var(--neon-yellow);
+    background: rgba(255,221,0,0.08);
+    border: 1px solid rgba(255,221,0,0.25);
+    transition: var(--transition);
+}
+.dash-ops-link:hover {
+    background: rgba(255,221,0,0.15);
+    box-shadow: 0 0 14px rgba(255,221,0,0.3);
+}
+
+.dash-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.dash-profile-pic {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0,229,255,0.2), inset 0 0 15px rgba(0,229,255,0.1);
+    background: rgba(0, 229, 255, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+}
+.dash-profile-initial {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    text-shadow: 0 0 10px var(--neon-cyan);
+}
+.dash-profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* ── Mobile adjustments for dashboard widgets ─────────────────── */
+@media (max-width: 768px) {
+    .dash-hero           { padding: 24px 20px; }
+    .dash-hero-callsign-label { font-size: 0.9rem; margin-top: 6px; }
+    .dash-hero-username  { font-size: 2.2rem; }
+    .dash-hero-clock     { font-size: 3.2rem; }
+    .dash-hero-inner     { flex-direction: column; align-items: center; text-align: center; gap: 24px; }
+    
+    .dash-hero-left      { flex-direction: column; align-items: center; text-align: center; gap: 16px; }
+    .dash-profile-info   { align-items: center; text-align: center; }
+    .dash-hero-badges    { justify-content: center; }
+    .dash-hero-right     { text-align: center; width: 100%; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; }
+    
+    .dash-stat-card      { padding: 16px 12px; }
+    .dash-stat-value     { font-size: 2rem; }
+
+    .dash-id-card        { padding: 20px; }
+    .dash-id-active-split { flex-direction: column; align-items: flex-start; gap: 24px; }
+    .dash-id-split-right { width: 100%; justify-content: space-between; border-left: none; padding-left: 0; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 24px; }
+    .dash-ring-labels    { align-items: flex-start; text-align: left; }
+    .dash-id-expiry      { text-align: left; }
+
+    .dash-booking-flex { flex-direction: column; gap: 24px; }
+    .dash-booking-right { width: 100%; border-left: none; padding-left: 0; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 24px; align-items: center; text-align: center; justify-content: center; }
+
+    .dash-tourney-item { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .dash-tourney-split-right { width: 100%; border-left: none; padding-left: 0; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 16px; align-items: center; justify-content: center; }
+
+    .dash-booking-panel,
+    .dash-tourney-panel  { padding: 20px; }
+    .dash-booking-time   { font-size: 1.8rem; }
+
+    .dash-tile           { padding: 20px 12px; }
+    .dash-tile-icon      { font-size: 1.6rem; }
+
+    .dash-ops-links      { flex-direction: column; }
+}
+
