@@ -371,8 +371,237 @@
     color: var(--text-muted);
 }
 
+
 .empty-subscribe h3 {
     margin: 0;
     color: var(--text-primary);
     font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STATION BOOKING — Role Pills (player count selector)
+═══════════════════════════════════════════════════════════════════ */
+.role-pill-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+.role-pill {
+    position: relative;
+    flex: 1;
+}
+.role-pill input[type="radio"],
+.role-pill input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+.role-pill label {
+    display: flex;
+    padding: 12px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(15, 15, 20, 0.8);
+    color: rgba(255, 255, 255, 0.6);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 0.9rem;
+    height: 100%;
+    text-align: center;
+}
+.role-pill input[type="radio"]:checked + label,
+.role-pill input[type="checkbox"]:checked + label {
+    border-color: var(--neon-cyan);
+    background: rgba(0, 229, 255, 0.1);
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+}
+.role-pill input[type="radio"]:disabled + label,
+.role-pill input[type="checkbox"]:disabled + label {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STATION BOOKING — Cover-Flow Carousel
+═══════════════════════════════════════════════════════════════════ */
+.cover-flow-wrapper {
+    position: relative;
+    width: 100%;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Carousel nav arrows */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 15;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+    transition: all 0.3s ease;
+}
+.carousel-btn:hover {
+    background: var(--neon-cyan);
+    color: black;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
+}
+.carousel-btn.prev { left: 10px; }
+.carousel-btn.next { right: 10px; }
+
+/* Carousel scroll track */
+.station-carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 2rem;
+    padding: 3rem calc(50% - 170px);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+}
+.station-carousel::-webkit-scrollbar { display: none; }
+
+/* Individual station cards */
+.station-carousel > .station-card {
+    flex: 0 0 340px;
+    width: 340px;
+    min-width: 340px;
+    scroll-snap-align: center;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+                filter 0.25s ease,
+                opacity 0.25s ease;
+    filter: blur(5px);
+    opacity: 0.6;
+    transform: scale(0.85);
+    will-change: transform, opacity, filter;
+}
+.station-carousel > .station-card.active-card {
+    filter: blur(0px);
+    opacity: 1;
+    transform: scale(1.05);
+    z-index: 5;
+}
+/* Suppresses ALL card transitions while the user is actively scrolling.
+   This prevents the scale/blur animation from fighting scroll-snap momentum
+   (the root cause of the "stutter / collision" feel). Transitions are
+   re-enabled by JS once scrollend fires. */
+.station-carousel.is-scrolling > .station-card {
+    transition: none !important;
+}
+
+/* ── Dot Pagination bar ───────────────────────────────────────── */
+.carousel-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 18px;
+    margin-bottom: 2rem;
+}
+.carousel-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 12px;
+}
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(0, 229, 255, 0.25);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.carousel-dot.active {
+    background: var(--neon-cyan);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.7);
+    transform: scale(1.2);
+}
+.carousel-dot.small {
+    width: 5px;
+    height: 5px;
+    opacity: 0.5;
+}
+.carousel-counter {
+    font-family: var(--font-main);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: rgba(0, 229, 255, 0.6);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    min-width: 36px;
+    text-align: left;
+}
+
+/* ── Intermediate breakpoint: prevent 768→769 snap deformation ── */
+@media (min-width: 769px) and (max-width: 900px) {
+    .station-carousel > .station-card {
+        flex: 0 0 300px;
+        width: 300px;
+        min-width: 300px;
+    }
+    .station-carousel {
+        padding: 2rem calc(50% - 150px);
+    }
+    /* No scale on active card at this width — avoids overflow */
+    .station-carousel > .station-card.active-card {
+        transform: scale(1.0);
+    }
+}
+
+/* ── Mobile: Instagram-style full-screen single-card view ───── */
+@media (max-width: 768px) {
+    .carousel-btn {
+        display: none;
+    }
+    /* Clip the scroll track so adjacent cards are NEVER visible */
+    .cover-flow-wrapper {
+        overflow: hidden;
+    }
+    .station-carousel {
+        /* Cards fill full width — zero horizontal padding, zero gap */
+        padding: 2rem 0;
+        gap: 0;
+    }
+    .station-carousel > .station-card {
+        /* Each card takes up exactly 100% of the carousel width */
+        flex: 0 0 100%;
+        width: 100%;
+        min-width: 0;
+        /* No effects — adjacent cards are off-screen, not visible */
+        transform: none;
+        filter: none;
+        opacity: 1;
+    }
+    .station-carousel > .station-card.active-card {
+        transform: none;
+        filter: none;
+        opacity: 1;
+    }
+    .station-carousel > .station-card:not(.active-card) {
+        transform: none;
+        filter: none;
+        opacity: 1;
+    }
 }

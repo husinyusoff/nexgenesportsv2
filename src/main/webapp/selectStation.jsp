@@ -6,145 +6,62 @@
     <head>
         <meta charset="UTF-8">
         <title>Book Gaming Session – NexGen Esports</title>
-        <link rel="stylesheet" href="styles.css">
-        <style>
-        <style>
-            .role-pill-group {
-                display: flex;
-                gap: 10px;
-                justify-content: center;
-                margin-top: 10px;
-            }
-            .role-pill {
-                position: relative;
-                flex: 1;
-            }
-            .role-pill input[type="radio"], .role-pill input[type="checkbox"] {
-                position: absolute; /* Changed to position absolute so we can't accidentally click empty space */
-                opacity: 0;
-                cursor: pointer;
-                height: 0;
-                width: 0;
-            }
-            .role-pill label {
-                display: flex;
-                padding: 12px 10px;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 8px;
-                background: rgba(15, 15, 20, 0.8);
-                color: rgba(255, 255, 255, 0.6);
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                font-weight: 600;
-                font-size: 0.9rem;
-                height: 100%;
-                text-align: center;
-            }
-            .role-pill input[type="radio"]:checked + label, .role-pill input[type="checkbox"]:checked + label {
-                border-color: var(--neon-cyan);
-                background: rgba(0, 229, 255, 0.1);
-                color: white;
-                box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
-            }
-            .role-pill input[type="radio"]:disabled + label, .role-pill input[type="checkbox"]:disabled + label {
-                opacity: 0.4;
-                cursor: not-allowed;
-            }
-            
-            /* Cover Flow Wrapper */
-            .cover-flow-wrapper {
-                position: relative;
-                width: 100%;
-                margin-top: 2rem;
-                margin-bottom: 2rem;
-            }
-            /* Carousel Arrows */
-            .carousel-btn {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                z-index: 15;
-                background: rgba(0, 0, 0, 0.7);
-                backdrop-filter: blur(5px);
-                border: 1px solid var(--neon-cyan);
-                color: var(--neon-cyan);
-                width: 48px;
-                height: 48px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                font-size: 1.5rem;
-                box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
-                transition: all 0.3s ease;
-            }
-            .carousel-btn:hover {
-                background: var(--neon-cyan);
-                color: black;
-                box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
-            }
-            .carousel-btn.prev { left: 10px; }
-            .carousel-btn.next { right: 10px; }
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css?v=7">
 
-            /* Station Carousel Horizontal List */
-            .station-carousel {
-                display: flex;
-                overflow-x: auto;
-                gap: 2rem;
-                padding: 3rem calc(50% - 170px); /* 340px total width / 2 => centers first/last elements */
-                scroll-snap-type: x mandatory;
-                scrollbar-width: none; /* Hide standard scrollbar */
-                scroll-behavior: smooth;
-            }
-            .station-carousel::-webkit-scrollbar {
-                display: none;
-            }
-            .station-carousel > .station-card {
-                flex: 0 0 340px; 
-                width: 340px;
-                min-width: 340px;
-                scroll-snap-align: center;
-                transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.5s ease, opacity 0.5s ease;
-                filter: blur(5px);
-                opacity: 0.6;
-                transform: scale(0.85); /* shrink peripheral cards */
-            }
-            .station-carousel > .station-card.active-card {
-                filter: blur(0px);
-                opacity: 1;
-                transform: scale(1.05); /* elevate central card */
-                z-index: 5;
-            }
-
-            @media(max-width: 768px) {
-                .station-carousel > .station-card {
-                    flex: 0 0 260px;
-                    width: 260px;
-                    min-width: 260px;
-                }
-                .station-carousel {
-                    padding: 2rem calc(50% - 130px);
-                }
-                .carousel-btn { 
-                    width: 32px; 
-                    height: 32px; 
-                    font-size: 1rem; 
-                    opacity: 0.3;
-                    background: rgba(0,0,0,0.6);
-                }
-                .carousel-btn.prev { left: 4px; }
-                .carousel-btn.next { right: 4px; }
-            }
-        </style>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 const carousel = document.querySelector('.station-carousel');
                 const cards = document.querySelectorAll('.station-card');
+                const dotsContainer = document.getElementById('carousel-dots');
+                const counterEl = document.getElementById('carousel-counter');
 
-                if(cards.length === 0) return;
+                if (cards.length === 0) return;
+
+                const total = cards.length;
+                let currentIndex = 0;
+
+                // ── Build Dot Indicators ──────────────────────────────────────────
+                function buildDots() {
+                    dotsContainer.innerHTML = '';
+                    if (total <= 1) return;
+
+                    const MAX_DOTS = 7;        // maximum dots visible at once
+                    const EDGE_SHRINK = 5;     // how many from each end to show as small when > MAX_DOTS
+
+                    if (total <= MAX_DOTS) {
+                        // Show all dots, no miniaturisation needed
+                        for (let i = 0; i < total; i++) {
+                            const dot = document.createElement('span');
+                            dot.className = 'carousel-dot' + (i === currentIndex ? ' active' : '');
+                            dot.setAttribute('data-index', i);
+                            dot.addEventListener('click', () => goToIndex(i));
+                            dotsContainer.appendChild(dot);
+                        }
+                    } else {
+                        // Instagram window: always show MAX_DOTS (7)
+                        // Window: center the active index inside [start, start+6]
+                        let windowStart = Math.max(0, Math.min(currentIndex - 3, total - MAX_DOTS));
+                        let windowEnd = windowStart + MAX_DOTS - 1;
+
+                        for (let i = windowStart; i <= windowEnd; i++) {
+                            const dot = document.createElement('span');
+                            const posInWindow = i - windowStart; // 0..6
+                            let sizeClass = '';
+                            // Edge dots (position 0 or 6 in window) are small
+                            if (posInWindow === 0 || posInWindow === MAX_DOTS - 1) {
+                                sizeClass = ' small';
+                            }
+                            dot.className = 'carousel-dot' + sizeClass + (i === currentIndex ? ' active' : '');
+                            dot.setAttribute('data-index', i);
+                            dot.addEventListener('click', () => goToIndex(i));
+                            dotsContainer.appendChild(dot);
+                        }
+                    }
+                }
+
+                function updateCounter() {
+                    if (counterEl) counterEl.textContent = (currentIndex + 1) + '/' + total;
+                }
 
                 function updateActiveCard() {
                     let minDx = Infinity;
@@ -163,55 +80,96 @@
                     });
 
                     cards.forEach((card, i) => {
-                        if (i === activeIndex) {
-                            card.classList.add('active-card');
-                        } else {
-                            card.classList.remove('active-card');
-                        }
+                        card.classList.toggle('active-card', i === activeIndex);
                     });
+
+                    if (activeIndex !== currentIndex) {
+                        currentIndex = activeIndex;
+                        buildDots();
+                        updateCounter();
+                    }
                 }
 
-                // Attach scroll event for intersection mapping
-                carousel.addEventListener('scroll', updateActiveCard);
-                // Initial update
-                updateActiveCard();
-
-                window.scrollCarousel = function(dir) {
-                    const active = document.querySelector('.station-card.active-card');
-                    if(!active) return;
-                    const index = Array.from(cards).indexOf(active);
-                    let targetIndex = index + dir;
-                    
-                    if (targetIndex < 0) targetIndex = 0;
-                    if (targetIndex >= cards.length) targetIndex = cards.length - 1;
-                    
-                    // Optional: remove flip states when traversing via arrows
+                function goToIndex(idx) {
+                    if (idx < 0) idx = 0;
+                    if (idx >= total) idx = total - 1;
                     cards.forEach(c => c.classList.remove('flipped', 'selected'));
-                    
-                    cards[targetIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+                    // Calculate the exact scroll position to center this card.
+                    // Using scrollTo() instead of scrollIntoView() prevents the
+                    // double-animation bug where scrollIntoView animates first,
+                    // then scroll-snap fires a second micro-correction = stutter.
+                    const card = cards[idx];
+                    const carouselCenter = carousel.offsetWidth / 2;
+                    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                    const targetScrollLeft = cardCenter - carouselCenter;
+
+                    carousel.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+                }
+
+                // Initial build
+                updateActiveCard();
+                buildDots();
+                updateCounter();
+
+                // ── Scroll event strategy: update ONLY after scroll settles ──────
+                // Root cause of stutter: toggling .active-card class mid-scroll
+                // triggers a 0.5s CSS transition that fights scroll-snap momentum.
+                // Fix: suppress transitions while scrolling (.is-scrolling), then
+                // update the active card only once the scroll has fully settled.
+
+                let scrollSettleTimer = null;
+
+                function onScrollStart() {
+                    carousel.classList.add('is-scrolling');
+                }
+
+                function onScrollEnd() {
+                    carousel.classList.remove('is-scrolling');
+                    updateActiveCard();
+                }
+
+                // Use the native scrollend event if the browser supports it (Chrome 114+, FF 109+, iOS 16.4+)
+                // Detection: check both window and element prototype for broadest mobile support
+                const hasNativeScrollEnd = typeof window.onscrollend !== 'undefined'
+                                        || 'onscrollend' in document.createElement('div');
+                if (hasNativeScrollEnd) {
+                    carousel.addEventListener('scroll', onScrollStart, { passive: true });
+                    carousel.addEventListener('scrollend', onScrollEnd, { passive: true });
+                } else {
+                    // Fallback debounce for older iOS Safari & Android WebView.
+                    // 200ms gives enough buffer for momentum scroll to fully settle.
+                    carousel.addEventListener('scroll', () => {
+                        onScrollStart();
+                        clearTimeout(scrollSettleTimer);
+                        scrollSettleTimer = setTimeout(onScrollEnd, 200);
+                    }, { passive: true });
+                }
+
+                // ── Touch / Swipe note ────────────────────────────────────────────
+                // Native browser scroll-snap handles all touch swipe gestures.
+                // DO NOT add touchstart/touchend handlers here — they fight scroll-snap
+                // momentum and cause double-jumps (e.g. swipe card 1→2 but land on 3).
+                // The scrollend listener above already updates currentIndex after each snap.
+
+
+                // ── Arrow navigation ─────────────────────────────────────────────
+                window.scrollCarousel = function(dir) {
+                    goToIndex(currentIndex + dir);
                 };
 
                 window.flipCard = function(stationId) {
-                    var card = document.getElementById('card-' + stationId);
-                    
-                    // If it's a peripheral card, only bring it to center. Do NOT flip it.
+                    const card = document.getElementById('card-' + stationId);
                     if (!card.classList.contains('active-card')) {
-                        cards.forEach(function(c) { c.classList.remove('flipped', 'selected'); });
+                        cards.forEach(c => c.classList.remove('flipped', 'selected'));
                         card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                         return;
                     }
-                    
-                    var wasFlipped = card.classList.contains('flipped');
-                    
-                    // Unflip all others
-                    document.querySelectorAll('.station-card').forEach(function(c) {
-                        if(c.id !== 'card-' + stationId) {
-                            c.classList.remove('flipped', 'selected');
-                        }
+                    const wasFlipped = card.classList.contains('flipped');
+                    document.querySelectorAll('.station-card').forEach(c => {
+                        if (c.id !== 'card-' + stationId) c.classList.remove('flipped', 'selected');
                     });
-                    
-                    // Toggle current
-                    if(!wasFlipped) {
+                    if (!wasFlipped) {
                         card.classList.add('flipped', 'selected');
                     } else {
                         card.classList.remove('flipped', 'selected');
@@ -286,17 +244,12 @@
                             <div style="margin-top: 15px; padding: 10px 20px; width: 100%;">
                                 <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; color: rgba(255,255,255,0.7);">
                                     <tr>
-                                        <td style="padding: 5px 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">Monday – Thursday</td>
+                                        <td style="padding: 5px 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">Sunday – Thursday</td>
                                         <td style="padding: 5px 15px; text-align: left; font-weight: bold; color: white;">${wdOpen} – ${closeHr}</td>
                                         <td style="padding: 5px 15px; text-align: left; color: var(--neon-purple);">Happy Hour: ${wdHappy} – ${happyEnd}</td>
                                     </tr>
                                     <tr>
-                                        <td style="padding: 5px 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">Friday</td>
-                                        <td style="padding: 5px 15px; text-align: left; font-weight: bold; color: white;">${weOpen} – ${closeHr}</td>
-                                        <td style="padding: 5px 15px; text-align: left; color: var(--neon-purple);">Happy Hour: ${weHappy} – ${happyEnd}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 5px 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">Saturday – Sunday</td>
+                                        <td style="padding: 5px 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">Friday – Saturday</td>
                                         <td style="padding: 5px 15px; text-align: left; font-weight: bold; color: white;">${weOpen} – ${closeHr}</td>
                                         <td style="padding: 5px 15px; text-align: left; color: var(--neon-purple);">Happy Hour: ${weHappy} – ${happyEnd}</td>
                                     </tr>
@@ -408,6 +361,12 @@
                                     </div>
                                 </div>
                             </c:forEach>
+                        </div>
+
+                        <!-- ── Dot Pagination + Counter ── -->
+                        <div class="carousel-footer">
+                            <div class="carousel-dots" id="carousel-dots"></div>
+                            <span class="carousel-counter" id="carousel-counter"></span>
                         </div>
                     </div>
 
