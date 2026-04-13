@@ -14,9 +14,7 @@
     // Multiplayer Lounge
     boolean canAccessSelectStation = PermissionChecker.hasAccess(roles, chosenRole, position, "/selectStation");
     boolean canAccessManageBooking = PermissionChecker.hasAccess(roles, chosenRole, position, "/manageBooking");
-    boolean canAccessManageBookings = PermissionChecker.hasAccess(roles, chosenRole, position, "/manageBookings");
-    boolean canAccessManageStations = PermissionChecker.hasAccess(roles, chosenRole, position, "/manageStations");
-    boolean showMultiplayerLounge = canAccessSelectStation || canAccessManageBooking || canAccessManageBookings || canAccessManageStations;
+    boolean showMultiplayerLounge = canAccessSelectStation || canAccessManageBooking;
 
     // Programs
     boolean canAccessProgCreate = PermissionChecker.hasAccess(roles, chosenRole, position, "/programs/create");
@@ -35,10 +33,12 @@
     boolean canAccessAuditLog = PermissionChecker.hasAccess(roles, chosenRole, position, "/auditLog");
 
     // Admin Management
+    boolean canAccessManageBookings = PermissionChecker.hasAccess(roles, chosenRole, position, "/manageBookings");
+    boolean canAccessManageStations = PermissionChecker.hasAccess(roles, chosenRole, position, "/manageStations");
     boolean canAccessAdminUsers = PermissionChecker.hasAccess(roles, chosenRole, position, "/admin/users");
     boolean canAccessAdminRbac = PermissionChecker.hasAccess(roles, chosenRole, position, "/admin/rbac");
     boolean canAccessAdminMemberships = PermissionChecker.hasAccess(roles, chosenRole, position, "/admin/memberships");
-    boolean showAdmin = canAccessAdminUsers || canAccessAdminRbac || canAccessAdminMemberships;
+    boolean showAdmin = canAccessAdminUsers || canAccessAdminRbac || canAccessAdminMemberships || canAccessManageBookings || canAccessManageStations;
 %>
 
 <!-- Sidebar Overlay Panel -->
@@ -67,12 +67,6 @@
                     <% } %>
                     <% if (canAccessManageBooking) { %>
                     <li><a href="${ctx}/manageBooking">Manage My Booking</a></li>
-                    <% } %>
-                    <% if (canAccessManageBookings) { %>
-                    <li><a href="${ctx}/manageBookings">Manage All Booking</a></li>
-                    <% } %>
-                    <% if (canAccessManageStations) { %>
-                    <li><a href="${ctx}/manageStations">Manage Stations</a></li>
                     <% } %>
                 </ul>
             </li>
@@ -123,6 +117,12 @@
                 <li class="dropdown">
                     <a href="javascript:void(0)" class="dropdown-btn">Admin Management <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
                     <ul class="dropdown-content">
+                        <% if (canAccessManageBookings) { %>
+                        <li><a href="${ctx}/manageBookings">Manage All Booking</a></li>
+                        <% } %>
+                        <% if (canAccessManageStations) { %>
+                        <li><a href="${ctx}/manageStations">Manage Stations</a></li>
+                        <% } %>
                         <% if (canAccessAdminUsers) { %>
                         <li><a href="${ctx}/admin/users">Manage Users</a></li>
                         <% } %>

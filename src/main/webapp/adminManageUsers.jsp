@@ -1,83 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8" session="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>👤 Manage Users – NexGen Esports</title>
-  <style>
-    /* Table specific styles for neon void */
-    .neon-table-wrapper {
-        overflow-x: auto;
-        margin-top: 10px;
-    }
-    .neon-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-    .neon-table th {
-        background: rgba(0, 229, 255, 0.05);
-        color: var(--neon-cyan);
-        text-transform: uppercase;
-        font-family: var(--font-heading);
-        font-size: 0.85rem;
-        letter-spacing: 1.5px;
-        padding: 14px;
-        text-align: left;
-        border-bottom: 1px solid rgba(0, 229, 255, 0.2);
-    }
-    .neon-table td {
-        padding: 16px 14px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        font-family: var(--font-main);
-        font-size: 0.95rem;
-        color: var(--text-primary);
-        transition: var(--transition);
-    }
-    .neon-table tr:hover td {
-        background-color: rgba(255, 255, 255, 0.03);
-    }
-    .user-row.is-disabled td {
-        opacity: 0.5;
-        background-color: rgba(255, 0, 127, 0.02);
-    }
-    .user-row.is-disabled:hover td {
-        background-color: rgba(255, 0, 127, 0.05);
-    }
-    
-    .neon-table th[data-sort] {
-        cursor: pointer;
-        user-select: none;
-        transition: background-color 0.2s ease;
-    }
-    .neon-table th[data-sort]:hover {
-        background: rgba(0, 229, 255, 0.1);
-    }
-    .sort-icon {
-        display: inline-block;
-        margin-left: 5px;
-        font-size: 0.8rem;
-    }
-    
-    .filter-combo-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-    .filter-combo-row .form-group {
-        flex: 1;
-        min-width: 200px;
-        margin-bottom: 0;
-    }
-    
-    /* Action Buttons */
-    .action-group {
-        display: flex;
-        gap: 10px;
-    }
-  </style>
+
 </head>
 <body class="app-wrapper">
   <!-- global header -->
@@ -112,148 +42,226 @@
         </c:if>
 
         <div class="profile-panels-grid" style="grid-template-columns: 1fr;">
-            
-            <!-- CONTROLS PANEL -->
-            <div class="profile-panel">
-                <div class="panel-header" style="margin-bottom: 20px;">
-                    <div class="panel-title"><span class="panel-icon">🔍</span> Search & Filters</div>
+
+            <!-- FILTER PANEL -->
+            <div class="profile-panel" style="padding: 18px 20px;">
+                <div class="panel-header" style="margin-bottom: 14px; padding-bottom: 12px;">
+                    <div class="panel-title"><span class="panel-icon">🔍</span> Search &amp; Filters</div>
                 </div>
-                
-                <div class="filter-combo-row">
-                    <div class="form-group">
-                        <label>Search Query</label>
-                        <input type="text" id="searchInput" class="profile-input" placeholder="Username, Name, or Email...">
+                <div class="filter-bar">
+                    <div class="filter-bar-row">
+                        <div class="form-group">
+                            <label>Search</label>
+                            <input type="text" id="searchInput" class="profile-input" placeholder="Username, name, or email...">
+                        </div>
+                        <div class="form-group">
+                            <label>Role</label>
+                            <select id="roleFilter" class="profile-input">
+                                <option value="ALL">All Roles</option>
+                                <c:forEach var="role" items="${rolesList}">
+                                    <option value="${role.role}">${role.role}<c:if test="${not empty role.position}"> - ${role.position}</c:if></option>
+                                </c:forEach>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Role Filter</label>
-                        <select id="roleFilter" class="profile-input">
-                            <option value="ALL">All Roles</option>
-                            <c:forEach var="role" items="${rolesList}">
-                                <option value="${role.role}">${role.role} <c:if test="${not empty role.position}"> - ${role.position}</c:if></option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: auto; padding-bottom: 8px;">
-                        <input type="checkbox" id="hideDisabledToggle" checked style="width: 18px; height: 18px; accent-color: var(--neon-cyan); cursor: pointer;">
-                        <label for="hideDisabledToggle" style="margin-bottom: 0; cursor: pointer; color: var(--text-muted); font-size: 0.9rem;">Hide Disabled Users</label>
+                    <div class="filter-check">
+                        <input type="checkbox" id="hideDisabledToggle" checked>
+                        <label for="hideDisabledToggle">Hide Deactivated Users</label>
                     </div>
                 </div>
             </div>
 
             <!-- REGISTRY PANEL -->
-            <div class="profile-panel">
-                <div class="panel-header">
+            <div class="profile-panel" style="padding: 18px 20px;">
+                <div class="panel-header" style="margin-bottom: 0; padding-bottom: 12px;">
                     <div class="panel-title"><span class="panel-icon">📋</span> User Registry</div>
+                    <span style="font-size:0.75rem; color:var(--text-muted); letter-spacing:1px;">Click a row to expand</span>
                 </div>
-                
-                <div class="neon-table-wrapper">
-                    <table class="neon-table" id="usersTable">
-                      <thead>
-                        <tr>
-                          <th data-sort="id">Username (ID) <span class="sort-icon"></span></th>
-                          <th data-sort="name">Name <span class="sort-icon"></span></th>
-                          <th data-sort="email">Email <span class="sort-icon"></span></th>
-                          <th data-sort="date">Registered On <span class="sort-icon"></span></th>
-                          <th data-sort="role">Current Role <span class="sort-icon"></span></th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <c:forEach var="user" items="${usersList}">
-                          <%-- Find Role Text --%>
-                          <c:set var="userRoleText" value=""/>
-                          <c:set var="userRoleRaw" value=""/>
-                          <c:forEach var="r" items="${rolesList}">
-                            <c:if test="${r.id == user.rpId}">
-                              <c:set var="userRoleText" value="${r.role}"/>
-                              <c:set var="userRoleRaw" value="${r.role}"/>
-                              <c:if test="${not empty r.position}">
-                                <c:set var="userRoleText" value="${r.role} - ${r.position}"/>
-                              </c:if>
-                            </c:if>
-                          </c:forEach>
-                          
-                          <tr class="user-row ${userRoleRaw == 'disabled' ? 'is-disabled' : ''}" data-search="${user.userID.toLowerCase()} ${user.name.toLowerCase()} ${user.email.toLowerCase()}" data-role="${userRoleRaw}" data-year="${user.registrationDate.getYear()}">
-                            <td><strong style="color: var(--neon-cyan);">${user.userID}</strong></td>
-                            <td>${user.name}</td>
-                            <td>${user.email}</td>
-                            <td style="color: var(--text-muted);">${user.registrationDate.toLocalDate()}</td>
-                            <td>
-                              <c:choose>
-                                  <c:when test="${userRoleRaw == 'disabled'}">
-                                      <span class="badge badge-danger">Deactivated</span>
-                                  </c:when>
-                                  <c:otherwise>
-                                      <span class="badge badge-success" style="background: rgba(0, 229, 255, 0.1); color: var(--neon-cyan); border-color: rgba(0, 229, 255, 0.5);">
-                                        ${userRoleText}
-                                      </span>
-                                  </c:otherwise>
-                              </c:choose>
-                            </td>
-                            <td>
-                               <div class="action-group">
-                                 <button type="button" class="btn-panel-edit" onclick="openEditModal('${user.userID}', '${user.rpId}', '${user.name}')">✎ Edit</button>
-                                 <c:if test="${userRoleRaw != 'disabled'}">
-                                     <button type="button" class="btn-panel-edit cancel" onclick="openDeactivateModal('${user.userID}', '${user.name}')">✕ Deactivate</button>
-                                 </c:if>
-                               </div>
-                            </td>
-                          </tr>
-                        </c:forEach>
-                        <c:if test="${empty usersList}">
-                          <tr>
-                            <td colspan="6">
-                                <div class="empty-state" style="border: none; background: transparent;">
-                                    <div class="empty-icon">👥</div>
-                                    <div class="empty-message">No users found.</div>
-                                </div>
-                            </td>
-                          </tr>
-                        </c:if>
-                      </tbody>
-                    </table>
-                </div>
+
+                <div class="user-list" id="userList">
+                <c:forEach var="user" items="${usersList}">
+                  <c:set var="userRoleText" value=""/>
+                  <c:set var="userRoleRaw" value=""/>
+                  <c:forEach var="r" items="${rolesList}">
+                    <c:if test="${r.id == user.rpId}">
+                      <c:set var="userRoleText" value="${r.role}"/>
+                      <c:set var="userRoleRaw" value="${r.role}"/>
+                      <c:if test="${not empty r.position}">
+                        <c:set var="userRoleText" value="${r.role} - ${r.position}"/>
+                      </c:if>
+                    </c:if>
+                  </c:forEach>
+
+                  <div class="user-card ${userRoleRaw == 'disabled' ? 'is-disabled' : ''}"
+                       data-search="${user.userID.toLowerCase()} ${user.name.toLowerCase()} ${user.email.toLowerCase()}"
+                       data-role="${userRoleRaw}">
+
+                    <div class="user-card-summary" onclick="toggleCard(this.parentElement)">
+                      <div class="user-avatar-sm">${fn:substring(user.name,0,1)}</div>
+                      <div class="user-card-meta">
+                        <div class="user-card-name">${user.name}</div>
+                        <div class="user-card-uid">${user.userID}</div>
+                      </div>
+                      <div class="user-card-badges">
+                        <c:choose>
+                          <c:when test="${userRoleRaw == 'disabled'}">
+                            <span class="badge badge-danger">Deactivated</span>
+                          </c:when>
+                          <c:otherwise>
+                            <span class="badge" style="background:rgba(0,229,255,0.1);color:var(--neon-cyan);border:1px solid rgba(0,229,255,0.4);">${userRoleText}</span>
+                          </c:otherwise>
+                        </c:choose>
+                      </div>
+                      <span class="user-card-chevron">▼</span>
+                    </div>
+
+                    <div class="user-card-details">
+                      <div class="user-card-details-inner">
+                        <div class="detail-field">
+                          <span class="df-label">Email</span>
+                          <span class="df-value ${empty user.email ? 'empty' : ''}">${empty user.email ? '—' : user.email}</span>
+                        </div>
+                        <div class="detail-field">
+                          <span class="df-label">Registered</span>
+                          <span class="df-value">${user.registrationDate.toLocalDate()}</span>
+                        </div>
+                        <div class="detail-field">
+                          <span class="df-label">Phone</span>
+                          <span class="df-value ${empty user.phoneNumber ? 'empty' : ''}">${empty user.phoneNumber ? '—' : user.phoneNumber}</span>
+                        </div>
+                        <div class="detail-field">
+                          <span class="df-label">Matric / Staff</span>
+                          <span class="df-value ${empty user.matricNumber ? 'empty' : ''}">${empty user.matricNumber ? '—' : user.matricNumber}</span>
+                        </div>
+                      </div>
+
+                      <div class="user-card-actions">
+                        <button type="button" class="btn-panel-edit" onclick="openPersonalModal('${user.userID}')">🪪 Personal Info</button>
+                        <button type="button" class="btn-panel-edit" style="border-color:rgba(176,38,255,0.5);color:var(--neon-purple);" onclick="openEsportsModal('${user.userID}')">🎮 Esports ID</button>
+                        <c:choose>
+                          <c:when test="${userRoleRaw == 'disabled'}">
+                            <button type="button" class="btn-panel-edit" style="border-color:rgba(0,255,136,0.5);color:var(--neon-green);" onclick="openReactivateModal('${user.userID}','${fn:escapeXml(user.name)}')">✓ Enable</button>
+                          </c:when>
+                          <c:otherwise>
+                            <button type="button" class="btn-panel-edit cancel" onclick="openDeactivateModal('${user.userID}','${fn:escapeXml(user.name)}')">✕ Deactivate</button>
+                          </c:otherwise>
+                        </c:choose>
+                      </div>
+                    </div>
+
+                    <template id="user-data-${user.userID}">
+                      <span class="d-id"><c:out value="${user.userID}"/></span>
+                      <span class="d-name"><c:out value="${user.name}"/></span>
+                      <span class="d-email"><c:out value="${user.email}"/></span>
+                      <span class="d-phone"><c:out value="${user.phoneNumber}"/></span>
+                      <span class="d-matric"><c:out value="${user.matricNumber}"/></span>
+                      <span class="d-ign"><c:out value="${user.ign}"/></span>
+                      <span class="d-discord"><c:out value="${user.discordID}"/></span>
+                      <span class="d-bio"><c:out value="${user.bio}"/></span>
+                      <span class="d-rpid"><c:out value="${user.rpId}"/></span>
+                    </template>
+                  </div>
+                </c:forEach>
+
+                <c:if test="${empty usersList}">
+                  <div class="empty-state" style="border:none;background:transparent;">
+                    <div class="empty-icon">👥</div>
+                    <div class="empty-message">No users found.</div>
+                  </div>
+                </c:if>
+                </div><%-- /user-list --%>
             </div>
 
-        </div><!-- /.profile-panels-grid -->
+        </div><%-- /.profile-panels-grid --%>
 
-      </div><!-- /.rigid-layout-container -->
-    </main><!-- /.content -->
-  </div><!-- /.main-container -->
+      </div><%-- /.rigid-layout-container --%>
+    </main><%-- /.content --%>
+  </div><%-- /.main-container --%>
+
+
+
 
   <jsp:include page="/footer.jsp"/>
 
-  <!-- Edit Role Modal -->
-  <div id="editModal" class="modal-overlay">
-      <div class="modal-content profile-panel" style="background: rgba(10, 10, 18, 0.95); margin: 20px;">
-          <div class="panel-header">
-              <div class="panel-title"><span class="panel-icon">✎</span> Edit User Role</div>
+  <!-- Personal Info Modal -->
+  <div id="personalModal" class="modal-overlay">
+      <div class="modal-content profile-panel" style="background: rgba(10, 10, 18, 0.97); margin: 20px; max-width: 500px; padding: 0; max-height: 90vh; display: flex; flex-direction: column;">
+          <div class="panel-header" style="padding: 20px 28px; margin: 0; border-bottom: 1px solid rgba(0,229,255,0.12); flex-shrink: 0;">
+              <div class="panel-title"><span class="panel-icon">🪪</span> Personal Info: <span id="personalModalUserName" style="color: var(--neon-cyan);"></span></div>
               <button type="button" class="btn-close" onclick="closeModals()">×</button>
           </div>
-          
-          <p style="color: var(--text-muted); margin-bottom: 1.5rem;" id="editModalInfo"></p>
-          <form action="${pageContext.request.contextPath}/admin/users" method="post">
+          <form action="${pageContext.request.contextPath}/admin/users" method="post" style="display: flex; flex-direction: column; overflow-y: auto; flex: 1;">
               <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-              <input type="hidden" name="action" value="updateRole">
-              <input type="hidden" name="targetUserID" id="editUserID" value="">
-              
-              <div class="form-group">
-                  <label for="editRpId">Select New Role</label>
-                  <select name="rpId" id="editRpId" class="profile-input" style="width: 100%; display: block;" required>
-                    <c:forEach var="role" items="${rolesList}">
-                        <c:if test="${role.role != 'disabled'}">
-                            <option value="${role.id}">
-                                ${role.role} <c:if test="${not empty role.position}"> - ${role.position}</c:if>
-                            </option>
-                        </c:if>
-                    </c:forEach>
-                  </select>
+              <input type="hidden" name="action" value="updateUser">
+              <input type="hidden" name="targetUserID" id="personalUserID" value="">
+              <div style="padding: 24px 28px; flex: 1;">
+                  <div class="form-group">
+                      <label>Full Name</label>
+                      <input type="text" name="name" id="personalName" class="profile-input" required>
+                  </div>
+                  <div class="form-group">
+                      <label>Email Address</label>
+                      <input type="email" name="email" id="personalEmail" class="profile-input" required>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                      <div class="form-group">
+                          <label>Phone Number</label>
+                          <input type="tel" name="phoneNumber" id="personalPhone" class="profile-input">
+                      </div>
+                      <div class="form-group">
+                          <label>Matric / Staff No.</label>
+                          <input type="text" name="matricNumber" id="personalMatric" class="profile-input">
+                      </div>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                      <label>System Role</label>
+                      <select name="rpId" id="personalRpId" class="profile-input" required>
+                          <c:forEach var="role" items="${rolesList}">
+                              <c:if test="${role.role != 'disabled'}">
+                                  <option value="${role.id}">
+                                      ${role.role}<c:if test="${not empty role.position}"> - ${role.position}</c:if>
+                                  </option>
+                              </c:if>
+                          </c:forEach>
+                      </select>
+                  </div>
               </div>
-              
-              <div class="save-row visible" style="border-top: none;">
-                  <button type="button" class="btn-panel-edit" onclick="closeModals()" style="flex: 0.5; justify-content: center;">Cancel</button>
-                  <button type="submit" class="btn-save" style="flex: 1;">💾 Save Changes</button>
+              <div class="save-row visible" style="border-top: 1px solid rgba(255,255,255,0.05); padding: 14px 28px; background: rgba(10,10,18,0.97); border-radius: 0 0 16px 16px;">
+                  <button type="button" class="btn-panel-edit" onclick="closeModals()" style="flex: 0.4; justify-content: center;">Cancel</button>
+                  <button type="submit" class="btn-save" style="flex: 1;">💾 Save Personal Info</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <!-- Esports Identity Modal -->
+  <div id="esportsModal" class="modal-overlay">
+      <div class="modal-content profile-panel" style="background: rgba(10, 10, 18, 0.97); margin: 20px; max-width: 500px; padding: 0; max-height: 90vh; display: flex; flex-direction: column; border-color: rgba(176,38,255,0.35);">
+          <div class="panel-header" style="padding: 20px 28px; margin: 0; border-bottom: 1px solid rgba(176,38,255,0.12); flex-shrink: 0;">
+              <div class="panel-title" style="color: var(--neon-purple);"><span class="panel-icon">🎮</span> Esports Identity: <span id="esportsModalUserName" style="color: var(--neon-purple);"></span></div>
+              <button type="button" class="btn-close" onclick="closeModals()">×</button>
+          </div>
+          <form action="${pageContext.request.contextPath}/admin/users" method="post" style="display: flex; flex-direction: column; overflow-y: auto; flex: 1;">
+              <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+              <input type="hidden" name="action" value="updateUser">
+              <input type="hidden" name="targetUserID" id="esportsUserID" value="">
+              <div style="padding: 24px 28px; flex: 1;">
+                  <div class="form-group">
+                      <label>In-Game Name (IGN)</label>
+                      <input type="text" name="ign" id="esportsIgn" class="profile-input" placeholder="e.g. NexG_Player1">
+                  </div>
+                  <div class="form-group">
+                      <label>Discord ID</label>
+                      <input type="text" name="discordID" id="esportsDiscord" class="profile-input" placeholder="e.g. username#1234">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                      <label>Bio</label>
+                      <textarea name="bio" id="esportsBio" class="profile-input" rows="4" placeholder="Player bio, achievements, game preferences..."></textarea>
+                  </div>
+              </div>
+              <div class="save-row visible" style="border-top: 1px solid rgba(255,255,255,0.05); padding: 14px 28px; background: rgba(10,10,18,0.97); border-radius: 0 0 16px 16px;">
+                  <button type="button" class="btn-panel-edit" onclick="closeModals()" style="flex: 0.4; justify-content: center;">Cancel</button>
+                  <button type="submit" class="btn-save" style="flex: 1; background: linear-gradient(90deg, var(--neon-purple), #8b3fc8);">💾 Save Esports Info</button>
               </div>
           </form>
       </div>
@@ -284,125 +292,116 @@
       </div>
   </div>
 
-  <script>
-    const searchInput = document.getElementById('searchInput');
-    const roleFilter = document.getElementById('roleFilter');
-    const hideDisabledToggle = document.getElementById('hideDisabledToggle');
-    const tbody = document.querySelector('#usersTable tbody');
-    let userRowsArray = Array.from(document.querySelectorAll('.user-row'));
+  <!-- Reactivate Modal -->
+  <div id="reactivateModal" class="modal-overlay">
+      <div class="modal-content profile-panel" style="background: rgba(10, 20, 15, 0.97); border-color: rgba(0,255,136,0.35); margin: 20px; max-width: 480px;">
+          <div class="panel-header">
+              <div class="panel-title" style="color: var(--neon-green);"><span class="panel-icon">✅</span> Confirm Re-enable</div>
+              <button type="button" class="btn-close" onclick="closeModals()">×</button>
+          </div>
+          <p style="color: var(--text-primary); margin-bottom: 1rem;" id="reactivateModalInfo"></p>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5;">
+              This will restore the user's access as an <strong style="color: var(--neon-green);">Athlete</strong>. You can adjust their role using the Personal Info editor after re-enabling.
+          </p>
+          <form action="${pageContext.request.contextPath}/admin/users" method="post">
+              <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+              <input type="hidden" name="action" value="reactivate">
+              <input type="hidden" name="targetUserID" id="reactivateUserID" value="">
+              <div class="save-row visible" style="border-top: none;">
+                  <button type="button" class="btn-panel-edit" onclick="closeModals()" style="flex: 0.5; justify-content: center;">Cancel</button>
+                  <button type="submit" class="btn-save" style="background: linear-gradient(90deg, var(--neon-green), #00b35a); color: #000; flex: 1;">Re-enable Account</button>
+              </div>
+          </form>
+      </div>
+  </div>
 
-    // --- Filter Logic ---
-    function filterTable() {
-        const query = searchInput.value.toLowerCase().trim();
-        const role = roleFilter.value;
+  <script>
+    const searchInput       = document.getElementById('searchInput');
+    const roleFilter        = document.getElementById('roleFilter');
+    const hideDisabledToggle = document.getElementById('hideDisabledToggle');
+    const userList          = document.getElementById('userList');
+    let cards = Array.from(document.querySelectorAll('.user-card'));
+
+    // ── Accordion ──────────────────────────────────────────────
+    function toggleCard(card) {
+        const isOpen = card.classList.contains('is-open');
+        // Close all others
+        cards.forEach(c => c.classList.remove('is-open'));
+        if (!isOpen) card.classList.add('is-open');
+    }
+
+    // ── Filter ─────────────────────────────────────────────────
+    function filterCards() {
+        const query       = searchInput.value.toLowerCase().trim();
+        const role        = roleFilter.value;
         const hideDisabled = hideDisabledToggle.checked;
 
-        userRowsArray.forEach(row => {
-            const rowRole = row.getAttribute('data-role');
-            const matchesSearch = row.getAttribute('data-search').includes(query);
-            const matchesRole = (role === 'ALL' || rowRole === role);
-            const matchesDisabledFilter = !(hideDisabled && rowRole === 'disabled');
-            
-            if (matchesSearch && matchesRole && matchesDisabledFilter) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+        cards.forEach(card => {
+            const cardRole    = card.getAttribute('data-role');
+            const matchSearch = card.getAttribute('data-search').includes(query);
+            const matchRole   = (role === 'ALL' || cardRole === role);
+            const matchActive = !(hideDisabled && cardRole === 'disabled');
+            card.style.display = (matchSearch && matchRole && matchActive) ? '' : 'none';
         });
     }
 
-    searchInput.addEventListener('input', filterTable);
-    roleFilter.addEventListener('change', filterTable);
-    hideDisabledToggle.addEventListener('change', filterTable);
-    
-    // Initial Filter pass to hide deactivated users by default
-    filterTable();
+    searchInput.addEventListener('input', filterCards);
+    roleFilter.addEventListener('change', filterCards);
+    hideDisabledToggle.addEventListener('change', filterCards);
+    filterCards(); // initial pass
 
-    // --- Sort Logic ---
-    let currentSortCol = null;
-    let currentSortDir = 'asc';
-
-    // Initialize Icons
-    document.querySelectorAll('.neon-table th[data-sort] .sort-icon').forEach(icon => {
-        icon.textContent = ' ⇅';
-        icon.style.opacity = '0.3';
-    });
-
-    document.querySelectorAll('.neon-table th[data-sort]').forEach(th => {
-        th.addEventListener('click', () => {
-            const sortKey = th.getAttribute('data-sort');
-            
-            // Direction toggle
-            if (currentSortCol === sortKey) {
-                currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
-            } else {
-                currentSortCol = sortKey;
-                currentSortDir = 'asc';
-            }
-
-            // Update Header Styling
-            document.querySelectorAll('.neon-table th[data-sort] .sort-icon').forEach(icon => {
-                icon.textContent = ' ⇅';
-                icon.style.opacity = '0.3';
-            });
-            const activeIcon = th.querySelector('.sort-icon');
-            activeIcon.textContent = currentSortDir === 'asc' ? ' ▲' : ' ▼';
-            activeIcon.style.opacity = '1';
-
-            // Sort Array
-            userRowsArray.sort((a, b) => {
-                let valA = getCellValue(a, sortKey);
-                let valB = getCellValue(b, sortKey);
-                
-                if (sortKey === 'date') {
-                    valA = new Date(valA).getTime();
-                    valB = new Date(valB).getTime();
-                } else {
-                    valA = valA.toLowerCase();
-                    valB = valB.toLowerCase();
-                }
-
-                if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
-                if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
-                return 0;
-            });
-
-            // Reattach rows based on sorted array
-            userRowsArray.forEach(row => tbody.appendChild(row));
-        });
-    });
-
-    function getCellValue(row, sortKey) {
-        const idxMap = { 'id': 0, 'name': 1, 'email': 2, 'date': 3, 'role': 4 };
-        const idx = idxMap[sortKey];
-        if (idx === undefined) return '';
-        const td = row.children[idx];
-        return td ? td.textContent.trim() : '';
+    // ── Modal helpers ──────────────────────────────────────────
+    function getTemplateVal(userID, cls) {
+        const tpl = document.getElementById('user-data-' + userID);
+        if (!tpl) return '';
+        const el = tpl.content.querySelector(cls);
+        return el ? el.textContent.trim() : '';
     }
 
-    // Modal Logic
-    function openEditModal(userID, currentRpId, userName) {
-        document.getElementById('editUserID').value = userID;
-        const select = document.getElementById('editRpId');
-        for(let i = 0; i < select.options.length; i++) {
-            if(select.options[i].value === currentRpId) {
-                select.options[i].selected = true;
-                break;
-            }
+    function openPersonalModal(userID) {
+        const name = getTemplateVal(userID, '.d-name');
+        document.getElementById('personalUserID').value = userID;
+        document.getElementById('personalModalUserName').textContent = name + ' (' + userID + ')';
+        document.getElementById('personalName').value  = name;
+        document.getElementById('personalEmail').value = getTemplateVal(userID, '.d-email');
+        document.getElementById('personalPhone').value = getTemplateVal(userID, '.d-phone');
+        document.getElementById('personalMatric').value = getTemplateVal(userID, '.d-matric');
+        const rpId = getTemplateVal(userID, '.d-rpid');
+        const select = document.getElementById('personalRpId');
+        for (let i = 0; i < select.options.length; i++) {
+            select.options[i].selected = (select.options[i].value === rpId);
         }
-        document.getElementById('editModalInfo').textContent = "Updating role for user: " + userName + " (" + userID + ")";
-        document.getElementById('editModal').classList.add('active');
+        document.getElementById('personalModal').classList.add('active');
+    }
+
+    function openEsportsModal(userID) {
+        const name = getTemplateVal(userID, '.d-name');
+        document.getElementById('esportsUserID').value = userID;
+        document.getElementById('esportsModalUserName').textContent = name + ' (' + userID + ')';
+        document.getElementById('esportsIgn').value     = getTemplateVal(userID, '.d-ign');
+        document.getElementById('esportsDiscord').value = getTemplateVal(userID, '.d-discord');
+        document.getElementById('esportsBio').value     = getTemplateVal(userID, '.d-bio');
+        document.getElementById('esportsModal').classList.add('active');
     }
 
     function openDeactivateModal(userID, userName) {
         document.getElementById('deactivateUserID').value = userID;
-        document.getElementById('deactivateModalInfo').innerHTML = "Are you sure you want to deactivate <strong>" + userName + "</strong> (" + userID + ")?";
+        document.getElementById('deactivateModalInfo').innerHTML =
+            'Are you sure you want to deactivate <strong>' + userName + '</strong> (' + userID + ')?';
         document.getElementById('deactivateModal').classList.add('active');
+    }
+
+    function openReactivateModal(userID, userName) {
+        document.getElementById('reactivateUserID').value = userID;
+        document.getElementById('reactivateModalInfo').innerHTML =
+            'Re-enable account for <strong>' + userName + '</strong> (' + userID + ')?';
+        document.getElementById('reactivateModal').classList.add('active');
     }
 
     function closeModals() {
         document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
     }
   </script>
+
 </body>
 </html>

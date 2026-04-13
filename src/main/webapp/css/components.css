@@ -1,4 +1,4 @@
-/* Modal */
+﻿/* Modal */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -156,6 +156,27 @@
     height: 2px;
     background: var(--neon-cyan);
     box-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* Tab Block & Panels */
+.tab-block {
+    background: rgba(10, 10, 18, 0.7);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0, 229, 255, 0.07), 0 20px 60px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+}
+.panel {
+    display: none;
+}
+.panel.active {
+    display: block;
+    animation: panelIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+@keyframes panelIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Empty State */
@@ -705,4 +726,107 @@
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+
+/* ═════════════════════════════════════════════════════════════
+
+/* === ACCORDION CARD LIST (Manage Users / Bookings / Stations) === */
+
+/* Filter bar */
+.filter-bar { display: flex; flex-direction: column; gap: 12px; }
+.filter-bar-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.filter-bar-row .form-group { flex: 1 1 140px; min-width: 0; margin-bottom: 0; }
+.filter-bar-row .profile-input { width: 100%; box-sizing: border-box; }
+.filter-check { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.filter-check input[type=checkbox] {
+    width: 16px; height: 16px; accent-color: var(--neon-cyan);
+    cursor: pointer; flex-shrink: 0;
+}
+.filter-check label {
+    margin: 0; cursor: pointer; color: var(--text-muted);
+    font-size: 0.82rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+}
+
+/* Card container */
+.user-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+
+/* Individual card */
+.user-card {
+    background: rgba(10,10,20,0.6);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.25s ease;
+}
+.user-card.is-disabled { border-color: rgba(255,0,127,0.15); opacity: 0.75; }
+.user-card.is-open { border-color: rgba(0,229,255,0.35); }
+
+/* Summary row */
+.user-card-summary {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; cursor: pointer; user-select: none;
+    transition: background 0.2s ease;
+}
+.user-card-summary:hover { background: rgba(255,255,255,0.03); }
+
+/* Avatar circle */
+.user-avatar-sm {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0,229,255,0.2), rgba(176,38,255,0.2));
+    border: 1.5px solid rgba(0,229,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-heading); font-size: 0.95rem; font-weight: 900;
+    color: var(--neon-cyan); flex-shrink: 0; text-transform: uppercase;
+}
+.user-card.is-disabled .user-avatar-sm {
+    border-color: rgba(255,0,127,0.3); color: var(--neon-pink);
+    background: linear-gradient(135deg, rgba(255,0,127,0.1), rgba(100,0,40,0.1));
+}
+
+/* Meta text */
+.user-card-meta { flex: 1; min-width: 0; }
+.user-card-name {
+    font-weight: 700; font-size: 0.9rem; color: var(--text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.user-card-uid { font-size: 0.72rem; color: rgba(0,229,255,0.6); font-family: monospace; margin-top: 1px; }
+
+/* Right-side badges + chevron */
+.user-card-badges { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.user-card-chevron { font-size: 0.75rem; color: var(--text-muted); transition: transform 0.3s ease; flex-shrink: 0; }
+.user-card.is-open .user-card-chevron { transform: rotate(180deg); }
+
+/* Expandable details panel */
+.user-card-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.25,0.8,0.25,1);
+    border-top: 0px solid rgba(0,229,255,0.1);
+}
+.user-card.is-open .user-card-details {
+    max-height: 400px;
+    border-top-width: 1px;
+}
+.user-card-details-inner {
+    padding: 14px 16px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px;
+}
+
+/* Detail field */
+.detail-field { display: flex; flex-direction: column; gap: 2px; }
+.detail-field .df-label {
+    font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700;
+}
+.detail-field .df-value { font-size: 0.82rem; color: var(--text-primary); word-break: break-all; }
+.detail-field .df-value.empty { color: var(--text-muted); font-style: italic; }
+
+/* Action bar inside expanded card */
+.user-card-actions {
+    padding: 10px 16px 14px; display: flex; flex-wrap: wrap; gap: 7px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+.user-card-actions .btn-panel-edit {
+    font-size: 0.72rem; padding: 5px 12px;
+    flex: 1 1 auto; justify-content: center; text-align: center;
 }

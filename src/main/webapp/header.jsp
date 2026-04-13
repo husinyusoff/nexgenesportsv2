@@ -2,8 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css?v=6">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components.css?v=6">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css?v=7">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components.css?v=7">
     <meta name="theme-color" content="#09090b">
 
     <%-- FOUC Prevention: Apply sidebar state BEFORE paint so there's zero flicker on navigation --%>

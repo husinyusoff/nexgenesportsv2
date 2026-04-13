@@ -47,20 +47,36 @@ public class AdminManageUsersServlet extends HttpServlet {
         }
 
         String action = req.getParameter("action");
-        if ("updateRole".equals(action)) {
+        if ("updateUser".equals(action)) {
             String targetUserID = req.getParameter("targetUserID");
-            String rpIdStr = req.getParameter("rpId");
-
-            if (targetUserID != null && rpIdStr != null) {
+            if (targetUserID != null) {
                 try {
-                    int rpId = Integer.parseInt(rpIdStr);
-                    userDao.updateUserRole(targetUserID, rpId);
-                    
-                    req.getSession().setAttribute("adminSuccessMsg", "Successfully updated role for user: " + targetUserID);
+                    User u = userDao.findByUserID(targetUserID);
+                    if (u != null) {
+                        u.setName(req.getParameter("name"));
+                        u.setEmail(req.getParameter("email"));
+                        u.setPhoneNumber(req.getParameter("phoneNumber"));
+                        u.setMatricNumber(req.getParameter("matricNumber"));
+                        u.setIgn(req.getParameter("ign"));
+                        u.setDiscordID(req.getParameter("discordID"));
+                        u.setBio(req.getParameter("bio"));
+
+                        userDao.updateProfile(u, targetUserID);
+                        
+                        String rpIdStr = req.getParameter("rpId");
+                        if (rpIdStr != null && !rpIdStr.trim().isEmpty()) {
+                            int rpId = Integer.parseInt(rpIdStr);
+                            userDao.updateUserRole(targetUserID, rpId);
+                        }
+                        
+                        req.getSession().setAttribute("adminSuccessMsg", "Successfully updated profile for user: " + targetUserID);
+                    } else {
+                        req.getSession().setAttribute("adminErrorMsg", "User not found: " + targetUserID);
+                    }
                 } catch (NumberFormatException e) {
                     req.getSession().setAttribute("adminErrorMsg", "Invalid role ID.");
                 } catch (SQLException e) {
-                    req.getSession().setAttribute("adminErrorMsg", "Database error updating user role: " + e.getMessage());
+                    req.getSession().setAttribute("adminErrorMsg", "Database error updating user: " + e.getMessage());
                 }
             }
         } else if ("deactivate".equals(action)) {
@@ -79,6 +95,17 @@ public class AdminManageUsersServlet extends HttpServlet {
                     req.getSession().setAttribute("adminSuccessMsg", "Successfully deactivated user: " + targetUserID);
                 } catch (SQLException e) {
                     req.getSession().setAttribute("adminErrorMsg", "Database error deactivating user: " + e.getMessage());
+                }
+            }
+        } else if ("reactivate".equals(action)) {
+            String targetUserID = req.getParameter("targetUserID");
+            if (targetUserID != null) {
+                try {
+                    // Restore to athlete role (rpId = 1)
+                    userDao.updateUserRole(targetUserID, 1);
+                    req.getSession().setAttribute("adminSuccessMsg", "Successfully re-enabled user: " + targetUserID);
+                } catch (SQLException e) {
+                    req.getSession().setAttribute("adminErrorMsg", "Database error re-enabling user: " + e.getMessage());
                 }
             }
         }

@@ -1,4 +1,27 @@
 /* === Layout Shell === */
+/* Custom Scrollbar (Neon Void Theme) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(10, 10, 18, 0.8);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 229, 255, 0.4);
+    border-radius: 4px;
+    border: 1px solid rgba(0, 229, 255, 0.1);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 229, 255, 0.7);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 229, 255, 0.4) rgba(10, 10, 18, 0.8);
+}
+
 .app-wrapper {
     display: flex;
     flex-direction: column;
